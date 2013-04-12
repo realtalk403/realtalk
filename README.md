@@ -5,3 +5,4 @@ RealTalk is an application that allows users to chat with others in the same vic
 
 Commit Testing:
 -Colin Kho
+- Jory Rice
