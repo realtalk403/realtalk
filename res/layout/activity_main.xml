@@ -15,16 +15,6 @@
         android:text="@string/intro_message"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/editQuery"
-        android:layout_alignTop="@+id/editQuery"
-        android:layout_toRightOf="@+id/editQuery"
-        android:text="@string/query_button"
-        android:onClick="retrieveQuery" />
-
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
@@ -41,31 +31,50 @@
         android:layout_alignLeft="@+id/textView3"
         android:layout_below="@+id/textView3"
         android:ems="10"
-        android:hint="@string/query_hint"
+        android:hint="@string/uname_hint"
         android:inputType="text" >
 
         <requestFocus />
     </EditText>
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editQuery"
-        android:layout_below="@+id/editQuery"
-        android:layout_marginTop="48dp"
-        android:text="@string/query_header"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
         android:id="@+id/query_results_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView2"
-        android:layout_alignRight="@+id/button1"
-        android:layout_below="@+id/textView2"
-        android:layout_marginTop="14dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="95dp"
         android:text="@string/query_results"
         android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/query_results_textView"
+        android:layout_alignLeft="@+id/editQuery"
+        android:layout_marginBottom="16dp"
+        android:text="@string/query_header"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/editPword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/editQuery"
+        android:layout_below="@+id/editQuery"
+        android:ems="10"
+        android:hint="@string/pword_hint"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/query_results_textView"
+        android:layout_below="@+id/editPword"
+        android:layout_marginTop="16dp"
+        android:onClick="retrieveQuery"
+        android:text="@string/create_user_string" />
 
 </RelativeLayout>

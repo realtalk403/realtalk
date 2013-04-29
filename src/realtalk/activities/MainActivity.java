@@ -45,8 +45,10 @@ public class MainActivity extends Activity {
 
 	public void retrieveQuery(View view) {
 	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
+	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
-	    new UserAdder(new User("someID", stUsername, "somePword"), chatmanager).execute();
+	    String stPword = edittextPword.getText().toString();
+	    new UserAdder(new User("someID", stUsername, stPword), chatmanager).execute();
 	}
 	
 	class UserAdder extends AsyncTask<String, String, Boolean> {
