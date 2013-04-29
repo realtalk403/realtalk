@@ -1,14 +1,14 @@
-package com.example.realtalk;
+package realtalk.util;
 
 import java.util.Date;
 
 public class Message {
-	String message;
+	String stMessage;
 	User user;
 	Date dateTimestamp;
 	
-	public Message(String message, User user, Date dateTimestamp) {
-		this.message = message;
+	public Message(String stMessage, User user, Date dateTimestamp) {
+		this.stMessage = stMessage;
 		this.user = user;
 		this.dateTimestamp = dateTimestamp;
 	}

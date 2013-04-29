@@ -1,6 +1,7 @@
-package com.example.realtalk;
+package realtalk.util;
 
 import java.util.List;
+
 
 public class ChatManager {
 	public ChatManager(String username, String id) {

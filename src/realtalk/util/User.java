@@ -1,4 +1,4 @@
-package com.example.realtalk;
+package realtalk.util;
 
 public class User {
 	String id;
