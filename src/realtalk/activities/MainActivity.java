@@ -46,7 +46,46 @@ public class MainActivity extends Activity {
 	public void retrieveQuery(View view) {
 	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
 	    String stUsername = edittextUser.getText().toString();
-	    new Authenticator(new User("", stUsername, ""), chatmanager).execute();
+	    new UserAdder(new User("someID", stUsername, "somePword"), chatmanager).execute();
+	}
+	
+	class UserAdder extends AsyncTask<String, String, Boolean> {
+		private User user;
+		private ChatManager chatmangager;
+		public UserAdder(User user, ChatManager chatmanager) {
+			this.user = user;
+			this.chatmangager = chatmanager;
+		}
+		
+	    @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Loading user details. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+	    
+	    
+        @Override
+        protected Boolean doInBackground(String... params) {
+        	return chatmanager.addUser(user);
+        }
+        
+        @Override
+        protected void onPostExecute(Boolean fAuthenticated) {
+            pDialog.dismiss();
+            TextView authenticationResults = (TextView) findViewById(R.id.query_results_textView);
+            String text;
+            if (!fAuthenticated) {
+                text = "User Not Added";
+                authenticationResults.setText(text);
+            } else {
+                text = "User added!";
+                authenticationResults.setText(text);
+            }
+        }
 	}
 	
 	class Authenticator extends AsyncTask<String, String, Boolean> {
