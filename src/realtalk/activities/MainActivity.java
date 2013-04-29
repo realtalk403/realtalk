@@ -9,7 +9,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import realtalk.util.ChatManager;
 import realtalk.util.JSONParser;
+import realtalk.util.User;
 
 import com.example.realtalk.R;
 
@@ -23,18 +25,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-    public static final String url_get_user_id = "http://chatrealtalk.herokuapp.com/db_get_users.php";
-    public static final String TAG_USER = "user";
-    public static final String TAG_SUCCESS = "success";
-    public static final String TAG_NAME = "name";
-    public static final String TAG_ID = "id";
     
     private ProgressDialog pDialog;
+    private ChatManager chatmanager;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) { 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		chatmanager = new ChatManager();
 	}
 
 	@Override
@@ -45,12 +44,19 @@ public class MainActivity extends Activity {
 	}
 
 	public void retrieveQuery(View view) {
-	    EditText editText = (EditText) findViewById(R.id.editQuery);
-	    String query = editText.getText().toString();
-	    new GetUserDetails().execute(query);
+	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
+	    String stUsername = edittextUser.getText().toString();
+	    new Authenticator(new User("", stUsername, ""), chatmanager).execute();
 	}
 	
-	class GetUserDetails extends AsyncTask<String, String, JSONObject> {
+	class Authenticator extends AsyncTask<String, String, Boolean> {
+		private User user;
+		private ChatManager chatmangager;
+		public Authenticator(User user, ChatManager chatmanager) {
+			this.user = user;
+			this.chatmangager = chatmanager;
+		}
+		
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -63,50 +69,21 @@ public class MainActivity extends Activity {
 	    
 	    
         @Override
-        protected JSONObject doInBackground(String... params) {
-            int success = 0;
-            try {
-                // Make GET params in NameValuePair List
-                List<NameValuePair> getParams = new ArrayList<NameValuePair>();
-                getParams.add(new BasicNameValuePair("user", params[0]));
-                
-                // Make http request to obtain results
-                JSONParser jsonParser = new JSONParser();
-                JSONObject json = jsonParser.makeHttpRequest(url_get_user_id, "GET", getParams);
-                
-                success = json.getInt(TAG_SUCCESS);
-                
-                if (success == 1) {
-                    JSONArray userObj = json.getJSONArray(TAG_USER);
-                    
-                    JSONObject user = userObj.getJSONObject(0);
-                    
-                    return user;                  
-                    
-                } else {
-                    return null;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
+        protected Boolean doInBackground(String... params) {
+        	return chatmanager.authenticate(user);
         }
         
         @Override
-        protected void onPostExecute(JSONObject result) {
+        protected void onPostExecute(Boolean fAuthenticated) {
             pDialog.dismiss();
-            TextView queryResults = (TextView) findViewById(R.id.query_results_textView);
+            TextView authenticationResults = (TextView) findViewById(R.id.query_results_textView);
             String text;
-            if (result == null) {
+            if (!fAuthenticated) {
                 text = "User Not Found";
-                queryResults.setText(text);
+                authenticationResults.setText(text);
             } else {
-                try {
-                    text = "User Name: " + result.getString(TAG_NAME) + "\n" + "User ID  : " + result.getString(TAG_ID);
-                    queryResults.setText(text);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                text = "Authenticated!";
+                authenticationResults.setText(text);
             }
         }
 	}
