@@ -1,39 +1,26 @@
 package realtalk.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import realtalk.util.ChatManager;
-import realtalk.util.JSONParser;
 import realtalk.util.User;
-
-import com.example.realtalk.R;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.realtalk.R;
+
 public class MainActivity extends Activity {
     
     private ProgressDialog pDialog;
-    private ChatManager chatmanager;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) { 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		chatmanager = new ChatManager();
 	}
 
 	@Override
