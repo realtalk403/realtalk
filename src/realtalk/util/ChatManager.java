@@ -13,6 +13,7 @@ public class ChatManager {
 	
     public static final String url_get_user_id = "http://chatrealtalk.herokuapp.com/db_get_users.php";
     public static final String url_add_user = "http://realtalkserver.herokuapp.com/register";
+    public static final String url_authenticate = "http://realtalkserver.herokuapp.com/authenticate";
     public static final String TAG_USER = "user";
     public static final String TAG_SUCCESS = "success";
     public static final String TAG_NAME = "name";
@@ -22,19 +23,20 @@ public class ChatManager {
 		
 	}
 	
-	public boolean authenticate(User user) {
-        int fAuthenticated = 0;
+	public boolean authenticateUser(User user) {
+        boolean fAuthenticated;
         try {
-            // Make GET params in NameValuePair List
             List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-            rgParams.add(new BasicNameValuePair("user", user.username));
+            rgParams.add(new BasicNameValuePair("PARAMETER_REG_ID", user.id));
+            rgParams.add(new BasicNameValuePair("PARAMETER_USER", user.username));
+            rgParams.add(new BasicNameValuePair("PARAMETER_PWORD", user.password));
             
             // Make http request to obtain results
             JSONParser jsonParser = new JSONParser();
-            JSONObject json = jsonParser.makeHttpRequest(url_get_user_id, "GET", rgParams);
+            JSONObject json = jsonParser.makeHttpRequest(url_authenticate, "POST", rgParams);
             
-            fAuthenticated = json.getInt(TAG_SUCCESS);
-            return fAuthenticated == 1;
+            fAuthenticated = json.getString(TAG_SUCCESS).equals("true");
+            return fAuthenticated;
             
         } catch (JSONException e) {
             e.printStackTrace();
@@ -43,7 +45,7 @@ public class ChatManager {
 	}
 	
 	public boolean addUser(User user) {
-        String fAddSucceeded;
+        boolean fAddSucceeded;
         try {
             List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
             rgParams.add(new BasicNameValuePair("PARAMETER_REG_ID", user.id));
@@ -54,8 +56,8 @@ public class ChatManager {
             JSONParser jsonParser = new JSONParser();
             JSONObject json = jsonParser.makeHttpRequest(url_add_user, "POST", rgParams);
             
-            fAddSucceeded = json.getString("PARAMETER_REG_ID");
-            return fAddSucceeded == user.id;
+            fAddSucceeded = json.getString("PARAMETER_REG_ID").equals(user.id);
+            return fAddSucceeded;
             
         } catch (JSONException e) {
             e.printStackTrace();

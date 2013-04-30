@@ -111,7 +111,7 @@ public class MainActivity extends Activity {
 	    
         @Override
         protected Boolean doInBackground(String... params) {
-        	return chatmanager.authenticate(user);
+        	return chatmanager.authenticateUser(user);
         }
         
         @Override
