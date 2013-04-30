@@ -13,6 +13,7 @@ public class ChatManager {
 	
     public static final String url_get_user_id = "http://chatrealtalk.herokuapp.com/db_get_users.php";
     public static final String url_add_user = "http://realtalkserver.herokuapp.com/register";
+    public static final String url_remove_user = "http://realtalkserver.herokuapp.com/unregister";
     public static final String url_authenticate = "http://realtalkserver.herokuapp.com/authenticate";
     public static final String TAG_USER = "user";
     public static final String TAG_SUCCESS = "success";
@@ -66,7 +67,24 @@ public class ChatManager {
 	}
 	
 	public boolean removeUser(User user) {
-		return true;
+        boolean fRemovalSucceeded;
+        try {
+            List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
+            rgParams.add(new BasicNameValuePair("PARAMETER_REG_ID", user.id));
+            rgParams.add(new BasicNameValuePair("PARAMETER_USER", user.username));
+            rgParams.add(new BasicNameValuePair("PARAMETER_PWORD", user.password));
+            
+            // Make http request to obtain results
+            JSONParser jsonParser = new JSONParser();
+            JSONObject json = jsonParser.makeHttpRequest(url_remove_user, "POST", rgParams);
+            
+            fRemovalSucceeded = json.getString("PARAMETER_REG_ID").equals(user.id);
+            return fRemovalSucceeded;
+            
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
 	}
 	
 	public boolean changePassword(User user, String stPasswordNew) {

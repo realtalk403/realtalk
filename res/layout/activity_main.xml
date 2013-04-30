@@ -15,47 +15,18 @@
         android:text="@string/intro_message"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:text="@string/query_instr"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
     <EditText
         android:id="@+id/editQuery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_below="@+id/textView3"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1"
         android:ems="10"
         android:hint="@string/uname_hint"
         android:inputType="text" >
 
         <requestFocus />
     </EditText>
-
-    <TextView
-        android:id="@+id/query_results_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="95dp"
-        android:text="@string/query_results"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/query_results_textView"
-        android:layout_alignLeft="@+id/editQuery"
-        android:layout_marginBottom="16dp"
-        android:text="@string/query_header"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <EditText
         android:id="@+id/editPword"
@@ -67,14 +38,42 @@
         android:hint="@string/pword_hint"
         android:inputType="text" />
 
+    <TextView
+        android:id="@+id/query_results_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editPword"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="34dp"
+        android:text="@string/query_results"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/query_results_textView"
+        android:layout_alignLeft="@+id/editPword"
         android:layout_below="@+id/editPword"
-        android:layout_marginTop="16dp"
-        android:onClick="retrieveQuery"
+        android:layout_marginTop="15dp"
+        android:onClick="addUser"
         android:text="@string/create_user_string" />
+
+    <Button
+        android:id="@+id/Button01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button1"
+        android:layout_below="@+id/button1"
+        android:onClick="removeUser"
+        android:text="@string/remove_user_string" />
+
+    <Button
+        android:id="@+id/Button02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/Button01"
+        android:layout_below="@+id/Button01"
+        android:onClick="authenticateUser"
+        android:text="@string/authenticate_user_string" />
 
 </RelativeLayout>

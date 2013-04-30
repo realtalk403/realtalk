@@ -43,12 +43,28 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
-	public void retrieveQuery(View view) {
+	public void addUser(View view) {
 	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
 	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
 	    new UserAdder(new User("someID", stUsername, stPword), chatmanager).execute();
+	}
+	
+	public void authenticateUser(View view) {
+	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
+	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
+	    String stUsername = edittextUser.getText().toString();
+	    String stPword = edittextPword.getText().toString();
+	    new Authenticator(new User("someID", stUsername, stPword), chatmanager).execute();
+	}
+	
+	public void removeUser(View view) {
+	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
+	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
+	    String stUsername = edittextUser.getText().toString();
+	    String stPword = edittextPword.getText().toString();
+	    new UserRemover(new User("someID", stUsername, stPword), chatmanager).execute();
 	}
 	
 	class UserAdder extends AsyncTask<String, String, Boolean> {
@@ -76,16 +92,55 @@ public class MainActivity extends Activity {
         }
         
         @Override
-        protected void onPostExecute(Boolean fAuthenticated) {
+        protected void onPostExecute(Boolean fAdded) {
             pDialog.dismiss();
-            TextView authenticationResults = (TextView) findViewById(R.id.query_results_textView);
+            TextView addingResults = (TextView) findViewById(R.id.query_results_textView);
             String text;
-            if (!fAuthenticated) {
+            if (!fAdded) {
                 text = "User Not Added";
-                authenticationResults.setText(text);
+                addingResults.setText(text);
             } else {
                 text = "User added!";
-                authenticationResults.setText(text);
+                addingResults.setText(text);
+            }
+        }
+	}
+
+	class UserRemover extends AsyncTask<String, String, Boolean> {
+		private User user;
+		private ChatManager chatmangager;
+		public UserRemover(User user, ChatManager chatmanager) {
+			this.user = user;
+			this.chatmangager = chatmanager;
+		}
+		
+	    @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Loading user details. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+	    
+	    
+        @Override
+        protected Boolean doInBackground(String... params) {
+        	return chatmanager.removeUser(user);
+        }
+        
+        @Override
+        protected void onPostExecute(Boolean fRemoved) {
+            pDialog.dismiss();
+            TextView removalResults = (TextView) findViewById(R.id.query_results_textView);
+            String text;
+            if (!fRemoved) {
+                text = "User Not Removed";
+                removalResults.setText(text);
+            } else {
+                text = "User removed!";
+                removalResults.setText(text);
             }
         }
 	}

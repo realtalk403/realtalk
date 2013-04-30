@@ -3,8 +3,10 @@
 
     <string name="app_name">RealTalk</string>
     <string name="action_settings">Settings</string>
-    <string name="intro_message">RealTalk (Zero Feature Release)</string>
+    <string name="intro_message">RealTalk (Alpha Release)</string>
     <string name="create_user_string">Create User</string>
+    <string name="authenticate_user_string">Login</string>
+    <string name="remove_user_string">Unregister</string>
     <string name="query_header">Query Results:</string>
     <string name="query_results">Press Query to display User ID</string>
     <string name="uname_hint">Type user name</string>
