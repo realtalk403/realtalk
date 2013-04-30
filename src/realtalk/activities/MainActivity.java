@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
 	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
-	    new UserAdder(new User("someID", stUsername, stPword), chatmanager).execute();
+	    new UserAdder(new User("someID", stUsername, stPword)).execute();
 	}
 	
 	public void authenticateUser(View view) {
@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
 	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
-	    new Authenticator(new User("someID", stUsername, stPword), chatmanager).execute();
+	    new Authenticator(new User("someID", stUsername, stPword)).execute();
 	}
 	
 	public void removeUser(View view) {
@@ -64,15 +64,13 @@ public class MainActivity extends Activity {
 	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
-	    new UserRemover(new User("someID", stUsername, stPword), chatmanager).execute();
+	    new UserRemover(new User("someID", stUsername, stPword)).execute();
 	}
 	
 	class UserAdder extends AsyncTask<String, String, Boolean> {
 		private User user;
-		private ChatManager chatmangager;
-		public UserAdder(User user, ChatManager chatmanager) {
+		public UserAdder(User user) {
 			this.user = user;
-			this.chatmangager = chatmanager;
 		}
 		
 	    @Override
@@ -88,7 +86,7 @@ public class MainActivity extends Activity {
 	    
         @Override
         protected Boolean doInBackground(String... params) {
-        	return chatmanager.addUser(user);
+        	return ChatManager.addUser(user);
         }
         
         @Override
@@ -108,10 +106,8 @@ public class MainActivity extends Activity {
 
 	class UserRemover extends AsyncTask<String, String, Boolean> {
 		private User user;
-		private ChatManager chatmangager;
-		public UserRemover(User user, ChatManager chatmanager) {
+		public UserRemover(User user) {
 			this.user = user;
-			this.chatmangager = chatmanager;
 		}
 		
 	    @Override
@@ -127,7 +123,7 @@ public class MainActivity extends Activity {
 	    
         @Override
         protected Boolean doInBackground(String... params) {
-        	return chatmanager.removeUser(user);
+        	return ChatManager.removeUser(user);
         }
         
         @Override
@@ -147,10 +143,8 @@ public class MainActivity extends Activity {
 	
 	class Authenticator extends AsyncTask<String, String, Boolean> {
 		private User user;
-		private ChatManager chatmangager;
-		public Authenticator(User user, ChatManager chatmanager) {
+		public Authenticator(User user) {
 			this.user = user;
-			this.chatmangager = chatmanager;
 		}
 		
 	    @Override
@@ -166,7 +160,7 @@ public class MainActivity extends Activity {
 	    
         @Override
         protected Boolean doInBackground(String... params) {
-        	return chatmanager.authenticateUser(user);
+        	return ChatManager.authenticateUser(user);
         }
         
         @Override

@@ -15,16 +15,9 @@ public class ChatManager {
     public static final String url_add_user = "http://realtalkserver.herokuapp.com/register";
     public static final String url_remove_user = "http://realtalkserver.herokuapp.com/unregister";
     public static final String url_authenticate = "http://realtalkserver.herokuapp.com/authenticate";
-    public static final String TAG_USER = "user";
     public static final String TAG_SUCCESS = "success";
-    public static final String TAG_NAME = "name";
-    public static final String TAG_ID = "id";
 	
-	public ChatManager() {
-		
-	}
-	
-	public boolean authenticateUser(User user) {
+	public static boolean authenticateUser(User user) {
         boolean fAuthenticated;
         try {
             List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
@@ -45,7 +38,7 @@ public class ChatManager {
         return false;
 	}
 	
-	public boolean addUser(User user) {
+	public static boolean addUser(User user) {
         boolean fAddSucceeded;
         try {
             List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
@@ -66,7 +59,7 @@ public class ChatManager {
         return false;
 	}
 	
-	public boolean removeUser(User user) {
+	public static boolean removeUser(User user) {
         boolean fRemovalSucceeded;
         try {
             List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
@@ -87,39 +80,39 @@ public class ChatManager {
         return false;
 	}
 	
-	public boolean changePassword(User user, String stPasswordNew) {
+	public static boolean changePassword(User user, String stPasswordNew) {
 		return true;
 	}
 	
-	public boolean changeID(User user, String stIDNew) {
+	public static boolean changeID(User user, String stIDNew) {
 		return true;
 	}
 	
-	public boolean sendMessage(Message message) {
+	public static boolean sendMessage(Message message) {
 		return true;
 	}
 	
-	List<Message> rgstChatLogGet(String stRoomName) {
+	public static List<Message> rgstChatLogGet(String stRoomName) {
 		return null;
 	}
 	
-	public boolean unregisterDevice() {
+	public static boolean unregisterDevice() {
 		return true;
 	}
 	
-	List<User> rgUserGet(String stRoomName) {
+	public static List<User> rgUserGet(String stRoomName) {
 		return null;
 	}
 	
-	public boolean joinRoom(String stRoomName) {
+	public static boolean joinRoom(String stRoomName) {
 		return true;
 	}
 	
-	public boolean leaveRoom(String stRoomName) {
+	public static boolean leaveRoom(String stRoomName) {
 		return true;
 	}
 	
-	public boolean createRoom(String stRoomName) {
+	public static boolean createRoom(String stRoomName) {
 		return true;
 	}
 }
