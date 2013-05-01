@@ -16,6 +16,7 @@ public class ChatManager {
     public static final String url_remove_user = "http://realtalkserver.herokuapp.com/unregister";
     public static final String url_authenticate = "http://realtalkserver.herokuapp.com/authenticate";
     public static final String url_change_password = "http://realtalkserver.herokuapp.com/changePwd";
+    public static final String url_change_id = "http://realtalkserver.herokuapp.com/changeRegId";
     
     private static JSONObject makePostRequest(List<NameValuePair> rgParams, String url)
     {
@@ -90,8 +91,21 @@ public class ChatManager {
         return false;
 	}
 	
-	public static boolean changeID(User user, String stIDNew) {
-		return true;
+	public static boolean changeID(User user, String stIdNew) {
+        boolean fIdChanged;
+        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_REG_ID, stIdNew));
+        JSONObject json = makePostRequest(rgParams, url_change_id);
+        try {
+            fIdChanged = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
+            return fIdChanged;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
 	}
 	
 	public static boolean sendMessage(Message message) {
