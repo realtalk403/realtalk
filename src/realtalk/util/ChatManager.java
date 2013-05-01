@@ -15,7 +15,7 @@ public class ChatManager {
     public static final String url_add_user = "http://realtalkserver.herokuapp.com/register";
     public static final String url_remove_user = "http://realtalkserver.herokuapp.com/unregister";
     public static final String url_authenticate = "http://realtalkserver.herokuapp.com/authenticate";
-    public static final String TAG_SUCCESS = "success";
+    public static final String url_change_password = "http://realtalkserver.herokuapp.com/changePwd";
     
     private static JSONObject makePostRequest(List<NameValuePair> rgParams, String url)
     {
@@ -28,12 +28,12 @@ public class ChatManager {
 	public static boolean authenticateUser(User user) {
         boolean fAuthenticated;
         List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair("PARAMETER_REG_ID", user.id));
-        rgParams.add(new BasicNameValuePair("PARAMETER_USER", user.username));
-        rgParams.add(new BasicNameValuePair("PARAMETER_PWORD", user.password));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
         JSONObject json = makePostRequest(rgParams, url_authenticate);
         try {
-            fAuthenticated = json.getString(TAG_SUCCESS).equals("true");
+            fAuthenticated = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
             return fAuthenticated;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -44,12 +44,12 @@ public class ChatManager {
 	public static boolean addUser(User user) {
         boolean fAdded;
         List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair("PARAMETER_REG_ID", user.id));
-        rgParams.add(new BasicNameValuePair("PARAMETER_USER", user.username));
-        rgParams.add(new BasicNameValuePair("PARAMETER_PWORD", user.password));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
         JSONObject json = makePostRequest(rgParams, url_add_user);
         try {
-            fAdded = json.getString(TAG_SUCCESS).equals("true");
+            fAdded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
             return fAdded;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -60,12 +60,12 @@ public class ChatManager {
 	public static boolean removeUser(User user) {
         boolean fRemoved;
         List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair("PARAMETER_REG_ID", user.id));
-        rgParams.add(new BasicNameValuePair("PARAMETER_USER", user.username));
-        rgParams.add(new BasicNameValuePair("PARAMETER_PWORD", user.password));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
         JSONObject json = makePostRequest(rgParams, url_remove_user);
         try {
-            fRemoved = json.getString(TAG_SUCCESS).equals("true");
+            fRemoved = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
             return fRemoved;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -76,12 +76,13 @@ public class ChatManager {
 	public static boolean changePassword(User user, String stPasswordNew) {
         boolean fPwdChanged;
         List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair("PARAMETER_REG_ID", user.id));
-        rgParams.add(new BasicNameValuePair("PARAMETER_USER", user.username));
-        rgParams.add(new BasicNameValuePair("PARAMETER_PWORD", user.password));
-        JSONObject json = makePostRequest(rgParams, url_remove_user);
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
+        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_PWORD, stPasswordNew));
+        JSONObject json = makePostRequest(rgParams, url_change_password);
         try {
-            fPwdChanged = json.getString(TAG_SUCCESS).equals("true");
+            fPwdChanged = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
             return fPwdChanged;
         } catch (JSONException e) {
             e.printStackTrace();
