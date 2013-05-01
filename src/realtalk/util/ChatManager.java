@@ -74,7 +74,19 @@ public class ChatManager {
 	}
 	
 	public static boolean changePassword(User user, String stPasswordNew) {
-		return true;
+        boolean fPwdChanged;
+        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
+        rgParams.add(new BasicNameValuePair("PARAMETER_REG_ID", user.id));
+        rgParams.add(new BasicNameValuePair("PARAMETER_USER", user.username));
+        rgParams.add(new BasicNameValuePair("PARAMETER_PWORD", user.password));
+        JSONObject json = makePostRequest(rgParams, url_remove_user);
+        try {
+            fPwdChanged = json.getString(TAG_SUCCESS).equals("true");
+            return fPwdChanged;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
 	}
 	
 	public static boolean changeID(User user, String stIDNew) {
