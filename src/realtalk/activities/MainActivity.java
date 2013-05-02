@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
 	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
-	    new UserAdder(new User("someID", stUsername, stPword)).execute();
+	    new UserAdder(new User(stUsername, stPword)).execute();
 	}
 	
 	public void authenticateUser(View view) {
@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
 	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
-	    new Authenticator(new User("someID", stUsername, stPword)).execute();
+	    new Authenticator(new User(stUsername, stPword)).execute();
 	}
 	
 	public void removeUser(View view) {
@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
 	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
-	    new UserRemover(new User("someID", stUsername, stPword)).execute();
+	    new UserRemover(new User(stUsername, stPword)).execute();
 	}
 	
 	class UserAdder extends AsyncTask<String, String, RequestResultSet> {
@@ -70,7 +70,6 @@ public class MainActivity extends Activity {
             pDialog.setCancelable(true);
             pDialog.show();
         }
-	    
 	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
@@ -101,7 +100,6 @@ public class MainActivity extends Activity {
             pDialog.show();
         }
 	    
-	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
         	return ChatManager.removeUser(user);
@@ -130,7 +128,6 @@ public class MainActivity extends Activity {
             pDialog.setCancelable(true);
             pDialog.show();
         }
-	    
 	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
