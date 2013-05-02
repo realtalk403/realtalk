@@ -25,6 +25,13 @@ public class ChatManager {
     public static final String url_leave_room = url_qualifier+"leaveRoom";
     public static final String url_post_message = url_qualifier+"post";
     
+    private static List<NameValuePair> rgparamsUserBasicInfo(User user) {
+        List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
+        return rgparams;
+    }
     
     private static RequestResultSet makeUserPostRequest(List<NameValuePair> rgParams, String url, String stSuccess,
     		String stFailure)
@@ -43,43 +50,28 @@ public class ChatManager {
     }
 	
 	public static RequestResultSet authenticateUser(User user) {
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
+        List<NameValuePair> rgParams = rgparamsUserBasicInfo(user);
         return makeUserPostRequest(rgParams, url_authenticate, "Authenticated!", "Incorrect username/password.");
 	}
 	
 	public static RequestResultSet addUser(User user) {
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
+        List<NameValuePair> rgParams = rgparamsUserBasicInfo(user);
         return makeUserPostRequest(rgParams, url_add_user, "User added!", "User already exists.");
 	}
 	
 	public static RequestResultSet removeUser(User user) {
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
+        List<NameValuePair> rgParams = rgparamsUserBasicInfo(user);
         return makeUserPostRequest(rgParams, url_remove_user, "User removed!", "User does not exist.");
 	}
 	
 	public static RequestResultSet changePassword(User user, String stPasswordNew) {
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
+        List<NameValuePair> rgParams = rgparamsUserBasicInfo(user);
         rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_PWORD, stPasswordNew));
         return makeUserPostRequest(rgParams, url_change_password, "Password changed.", "Could not change password.");
 	}
 	
 	public static RequestResultSet changeID(User user, String stIdNew) {
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
+        List<NameValuePair> rgParams = rgparamsUserBasicInfo(user);
         rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_REG_ID, stIdNew));
         return makeUserPostRequest(rgParams, url_change_id, "ID changed.", "Could not change ID.");
 	}
