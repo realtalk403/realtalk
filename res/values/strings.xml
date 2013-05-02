@@ -11,6 +11,12 @@
     <string name="query_results">Press Query to display User ID</string>
     <string name="uname_hint">Type user name</string>
     <string name="query_instr">This tests the database connection which manages RealTalks users\nSimply enter a users name to return get the users id.\n (For Testing Purposes: use UserX where X = 1,2,3,4 etc)</string>
-    <string name="pword_hint">Type password</string> 
+    <string name="pword_hint">Type password</string>
+    <string name="title_activity_select_room">SelectRoomActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="view_rooms">View Rooms</string>
+    <string name="title_activity_chat_room">ChatRoomActivity</string>
+    <string name="send">Send</string>
+    <string name="enter_message">Enter message</string>
 
 </resources>

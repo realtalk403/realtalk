@@ -12,4 +12,9 @@ public class Message {
 		this.user = user;
 		this.dateTimestamp = dateTimestamp;
 	}
+	
+	public String toString() {
+		return stMessage + "\n" +
+			   "sent by " + user + " at " + dateTimestamp;
+	}
 }

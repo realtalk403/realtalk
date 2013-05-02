@@ -76,4 +76,14 @@
         android:onClick="authenticateUser"
         android:text="@string/authenticate_user_string" />
 
+    <Button
+        android:id="@+id/viewRooms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/Button02"
+        android:layout_below="@+id/Button02"
+        android:layout_marginTop="16dp"
+        android:onClick="viewRooms"
+        android:text="@string/view_rooms" />
+
 </RelativeLayout>

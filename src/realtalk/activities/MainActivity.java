@@ -4,6 +4,7 @@ import realtalk.util.ChatManager;
 import realtalk.util.User;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -28,6 +29,11 @@ public class MainActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	public void viewRooms(View view) {
+		Intent viewRs = new Intent(this, SelectRoomActivity.class);
+		this.startActivity(viewRs);
 	}
 
 	public void addUser(View view) {
