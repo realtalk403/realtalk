@@ -2,9 +2,11 @@ package realtalk.util;
 
 public class RequestResultSet {
 	boolean fSucceeded;
-	public String stMessage;
-	public RequestResultSet(boolean fSucceeded, String stMessage) {
+	public String stErrorMessage;
+	public String stErrorCode;
+	public RequestResultSet(boolean fSucceeded, String stErrorCode, String stErrorMessage) {
 		this.fSucceeded = fSucceeded;
-		this.stMessage = stMessage;
+		this.stErrorMessage = stErrorMessage;
+		this.stErrorCode = stErrorCode;
 	}
 }
