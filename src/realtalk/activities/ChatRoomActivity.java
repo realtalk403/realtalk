@@ -2,7 +2,7 @@ package realtalk.activities;
 
 import java.util.Date;
 
-import realtalk.util.Message;
+//import realtalk.util.Message;
 import realtalk.util.RequestParameters;
 import realtalk.util.User;
 
@@ -35,12 +35,12 @@ public class ChatRoomActivity extends Activity {
 		EditText text = (EditText)findViewById(R.id.message);
 		String value = text.getText().toString();
 		
-		Message message = new Message(value, user, new Date());
+		//Message message = new Message(value, user, new Date());
 		
-        String item = message.toString();
+        //String item = message.toString();
         			  
         
-        Toast.makeText(getBaseContext(), item, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getBaseContext(), item, Toast.LENGTH_LONG).show();
 	}
 
 }
