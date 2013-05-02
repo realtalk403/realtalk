@@ -27,9 +27,16 @@ public class ChatManager {
     
     private static List<NameValuePair> rgparamsUserBasicInfo(User user) {
         List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.getId()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.getUsername()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.getPassword()));
+        return rgparams;
+    }
+    
+    private static List<NameValuePair> rgparamsChatRoomBasicInfo(ChatRoomInfo chatroominfo) {
+        List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_NAME, chatroominfo.getName()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_ID, chatroominfo.getId()));
         return rgparams;
     }
     
@@ -76,15 +83,16 @@ public class ChatManager {
         return makeUserPostRequest(rgParams, url_change_id, "ID changed.", "Could not change ID.");
 	}
 	
-	public static RequestResultSet createRoom(String stRoomName) {
+	public static RequestResultSet createRoom(ChatRoomInfo chatroominfo) {
 		return null;
 	}
 	
-	public static RequestResultSet joinRoom(String stRoomName) {
+	public static RequestResultSet joinRoom(User user, ChatRoomInfo chatroominfo) {
+        List<NameValuePair> rgParams = rgparamsUserBasicInfo(user);
 		return null;
 	}
 	
-	public static RequestResultSet leaveRoom(String stRoomName) {
+	public static RequestResultSet leaveRoom(User user, ChatRoomInfo chatroominfo) {
 		return null;
 	}
 	
@@ -96,11 +104,11 @@ public class ChatManager {
 		return null;
 	}
 	
-	public static List<Message> rgstChatLogGet(String stRoomName) {
+	public static List<Message> rgstChatLogGet(ChatRoomInfo chatroominfo) {
 		return null;
 	}
 	
-	public static List<User> rgUserGet(String stRoomName) {
+	public static List<User> rgUserGet(ChatRoomInfo chatroominfo) {
 		return null;
 	}
 	
