@@ -11,128 +11,130 @@ import org.json.JSONObject;
 
 public class ChatManager {
 	
-    public static final String url_get_user_id = "http://chatrealtalk.herokuapp.com/db_get_users.php";
-    public static final String url_add_user = "http://realtalkserver.herokuapp.com/register";
-    public static final String url_remove_user = "http://realtalkserver.herokuapp.com/unregister";
-    public static final String url_authenticate = "http://realtalkserver.herokuapp.com/authenticate";
-    public static final String url_change_password = "http://realtalkserver.herokuapp.com/changePwd";
-    public static final String url_change_id = "http://realtalkserver.herokuapp.com/changeRegId";
+	public static final String url_qualifier = "http://realtalkserver.herokuapp.com/";
+	
+	//User servlets
+    public static final String url_add_user = url_qualifier+"register";
+    public static final String url_remove_user = url_qualifier+"unregister";
+    public static final String url_authenticate = url_qualifier+"authenticate";
+    public static final String url_change_password = url_qualifier+"changePwd";
+    public static final String url_change_id = url_qualifier+"changeRegId";
+    //Chat room servlets
+    public static final String url_add_room = url_qualifier+"addRoom";
+    public static final String url_join_room = url_qualifier+"joinRoom";
+    public static final String url_leave_room = url_qualifier+"leaveRoom";
+    public static final String url_post_message = url_qualifier+"post";
     
-    private static JSONObject makePostRequest(List<NameValuePair> rgParams, String url)
+    
+    private static List<NameValuePair> rgparamsMessageInfo(Message message) {
+        List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_TIMESTAMP, new Long(message.dateTimestamp.getTime()).toString()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_BODY, message.stMessage));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_SENDER, message.user.getUsername()));
+        return rgparams;
+    }
+    
+    private static List<NameValuePair> rgparamsUserBasicInfo(User user) {
+        List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.getId()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.getUsername()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.getPassword()));
+        return rgparams;
+    }
+    
+    private static List<NameValuePair> rgparamsChatRoomBasicInfo(ChatRoomInfo chatroominfo) {
+        List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_NAME, chatroominfo.getName()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_ID, chatroominfo.getId()));
+        return rgparams;
+    }
+    
+    private static RequestResultSet makeUserPostRequest(List<NameValuePair> rgparams, String url, String stSuccess,
+    		String stFailure)
     {
     	JSONObject json = null;
     	JSONParser jsonParser = new JSONParser();
-		json = jsonParser.makeHttpRequest(url, "POST", rgParams);
-    	return json;
+		json = jsonParser.makeHttpRequest(url, "POST", rgparams);
+        try {
+        	boolean fSucceeded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
+            String stMessage = fSucceeded ? stSuccess : stFailure;
+            return new RequestResultSet(fSucceeded, stMessage);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    	return null;
+    }
+    
+    private static RequestResultSet makeChatRoomPostRequest(List<NameValuePair> rgparams, String url) {
+    	JSONObject json = null;
+    	JSONParser jsonParser = new JSONParser();
+		json = jsonParser.makeHttpRequest(url, "POST", rgparams);
+        try {
+        	boolean fSucceeded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
+            return new RequestResultSet(fSucceeded, json.getString(RequestParameters.PARAMETER_MESSAGE_BODY));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    	return null;
     }
 	
-	public static boolean authenticateUser(User user) {
-        boolean fAuthenticated;
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
-        JSONObject json = makePostRequest(rgParams, url_authenticate);
-        try {
-            fAuthenticated = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
-            return fAuthenticated;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return false;
+	public static RequestResultSet authenticateUser(User user) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+        return makeUserPostRequest(rgparams, url_authenticate, "Authenticated!", "Incorrect username/password.");
 	}
 	
-	public static boolean addUser(User user) {
-        boolean fAdded;
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
-        JSONObject json = makePostRequest(rgParams, url_add_user);
-        try {
-            fAdded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
-            return fAdded;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return false;
+	public static RequestResultSet addUser(User user) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+        return makeUserPostRequest(rgparams, url_add_user, "User added!", "User already exists.");
 	}
 	
-	public static boolean removeUser(User user) {
-        boolean fRemoved;
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
-        JSONObject json = makePostRequest(rgParams, url_remove_user);
-        try {
-            fRemoved = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
-            return fRemoved;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return false;
+	public static RequestResultSet removeUser(User user) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+        return makeUserPostRequest(rgparams, url_remove_user, "User removed!", "User does not exist.");
 	}
 	
-	public static boolean changePassword(User user, String stPasswordNew) {
-        boolean fPwdChanged;
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_PWORD, stPasswordNew));
-        JSONObject json = makePostRequest(rgParams, url_change_password);
-        try {
-            fPwdChanged = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
-            return fPwdChanged;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return false;
+	public static RequestResultSet changePassword(User user, String stPasswordNew) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_PWORD, stPasswordNew));
+        return makeUserPostRequest(rgparams, url_change_password, "Password changed.", "Could not change password.");
 	}
 	
-	public static boolean changeID(User user, String stIdNew) {
-        boolean fIdChanged;
-        List<NameValuePair> rgParams = new ArrayList<NameValuePair>();
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.id));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.username));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.password));
-        rgParams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_REG_ID, stIdNew));
-        JSONObject json = makePostRequest(rgParams, url_change_id);
-        try {
-            fIdChanged = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
-            return fIdChanged;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return false;
+	public static RequestResultSet changeID(User user, String stIdNew) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_REG_ID, stIdNew));
+        return makeUserPostRequest(rgparams, url_change_id, "ID changed.", "Could not change ID.");
 	}
 	
-	public static boolean sendMessage(Message message) {
-		return true;
+	public static RequestResultSet addRoom(ChatRoomInfo chatroominfo) {
+        List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
+		return makeChatRoomPostRequest(rgparams, url_add_room);
 	}
 	
-	public static List<Message> rgstChatLogGet(String stRoomName) {
+	public static RequestResultSet joinRoom(User user, ChatRoomInfo chatroominfo) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+        rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
+		return makeChatRoomPostRequest(rgparams, url_join_room);
+	}
+	
+	public static RequestResultSet leaveRoom(User user, ChatRoomInfo chatroominfo) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+        rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
+		return makeChatRoomPostRequest(rgparams, url_leave_room);
+	}
+	
+	public static RequestResultSet postMessage(User user, ChatRoomInfo chatroominfo, Message message) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+        rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
+        rgparams.addAll(rgparamsMessageInfo(message));
+		return makeChatRoomPostRequest(rgparams, url_post_message);
+	}
+	
+	public static RequestResultSet unregisterDevice() {
 		return null;
 	}
 	
-	public static boolean unregisterDevice() {
-		return true;
-	}
-	
-	public static List<User> rgUserGet(String stRoomName) {
+	public static List<Message> rgstChatLogGet(ChatRoomInfo chatroominfo) {
 		return null;
 	}
 	
-	public static boolean joinRoom(String stRoomName) {
-		return true;
-	}
-	
-	public static boolean leaveRoom(String stRoomName) {
-		return true;
-	}
-	
-	public static boolean createRoom(String stRoomName) {
-		return true;
-	}
 }

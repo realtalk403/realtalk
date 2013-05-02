@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class ChatRoomActivity extends Activity {
-	User user = new User(RequestParameters.PARAMETER_REG_ID, RequestParameters.PARAMETER_USER, RequestParameters.PARAMETER_PWORD);
+	User user = new User(RequestParameters.PARAMETER_USER, RequestParameters.PARAMETER_PWORD);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
