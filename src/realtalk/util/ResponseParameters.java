@@ -3,8 +3,6 @@
  */
 package realtalk.util;
 
-import java.util.Collection;
-
 /**
  * Constants that define Response Codes or Messages
  * 
