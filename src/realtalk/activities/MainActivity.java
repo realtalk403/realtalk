@@ -1,6 +1,7 @@
 package realtalk.activities;
 
 import realtalk.util.ChatManager;
+import realtalk.util.RequestResultSet;
 import realtalk.util.User;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -54,7 +55,7 @@ public class MainActivity extends Activity {
 	    new UserRemover(new User("someID", stUsername, stPword)).execute();
 	}
 	
-	class UserAdder extends AsyncTask<String, String, Boolean> {
+	class UserAdder extends AsyncTask<String, String, RequestResultSet> {
 		private User user;
 		public UserAdder(User user) {
 			this.user = user;
@@ -72,26 +73,19 @@ public class MainActivity extends Activity {
 	    
 	    
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected RequestResultSet doInBackground(String... params) {
         	return ChatManager.addUser(user);
         }
         
         @Override
-        protected void onPostExecute(Boolean fAdded) {
+        protected void onPostExecute(RequestResultSet requestresultset) {
             pDialog.dismiss();
             TextView addingResults = (TextView) findViewById(R.id.query_results_textView);
-            String text;
-            if (!fAdded) {
-                text = "User Not Added";
-                addingResults.setText(text);
-            } else {
-                text = "User added!";
-                addingResults.setText(text);
-            }
+            addingResults.setText(requestresultset.stMessage);
         }
 	}
 
-	class UserRemover extends AsyncTask<String, String, Boolean> {
+	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
 		private User user;
 		public UserRemover(User user) {
 			this.user = user;
@@ -109,26 +103,19 @@ public class MainActivity extends Activity {
 	    
 	    
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected RequestResultSet doInBackground(String... params) {
         	return ChatManager.removeUser(user);
         }
         
         @Override
-        protected void onPostExecute(Boolean fRemoved) {
+        protected void onPostExecute(RequestResultSet requestresultset) {
             pDialog.dismiss();
             TextView removalResults = (TextView) findViewById(R.id.query_results_textView);
-            String text;
-            if (!fRemoved) {
-                text = "User Not Removed";
-                removalResults.setText(text);
-            } else {
-                text = "User removed!";
-                removalResults.setText(text);
-            }
+            removalResults.setText(requestresultset.stMessage);
         }
 	}
 	
-	class Authenticator extends AsyncTask<String, String, Boolean> {
+	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
 		private User user;
 		public Authenticator(User user) {
 			this.user = user;
@@ -146,22 +133,15 @@ public class MainActivity extends Activity {
 	    
 	    
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected RequestResultSet doInBackground(String... params) {
         	return ChatManager.authenticateUser(user);
         }
         
         @Override
-        protected void onPostExecute(Boolean fAuthenticated) {
+        protected void onPostExecute(RequestResultSet requestresultset) {
             pDialog.dismiss();
             TextView authenticationResults = (TextView) findViewById(R.id.query_results_textView);
-            String text;
-            if (!fAuthenticated) {
-                text = "User Not Found";
-                authenticationResults.setText(text);
-            } else {
-                text = "Authenticated!";
-                authenticationResults.setText(text);
-            }
+            authenticationResults.setText(requestresultset.stMessage);
         }
 	}
 }
