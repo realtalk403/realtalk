@@ -57,7 +57,9 @@ public class ChatManager {
 		json = jsonParser.makeHttpRequest(url, "POST", rgparams);
         try {
         	boolean fSucceeded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
-            return new RequestResultSet(fSucceeded, json.getString(ResponseParameters.PARAMETER_ERROR_CODE), json.getString(ResponseParameters.PARAMETER_ERROR_MSG));
+        	String stErrorCode = fSucceeded ? "NO ERROR MESSAGE" : json.getString(ResponseParameters.PARAMETER_ERROR_CODE);
+        	String stErrorMessage = fSucceeded ? "NO ERROR MESSAGE" : json.getString(ResponseParameters.PARAMETER_ERROR_MSG);
+            return new RequestResultSet(fSucceeded, stErrorCode, stErrorMessage);
         } catch (JSONException e) {
             e.printStackTrace();
         }
