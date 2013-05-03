@@ -1,38 +1,25 @@
 package realtalk.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import realtalk.util.JSONParser;
-
-import com.example.realtalk.R;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
+import realtalk.util.ChatManager;
+import realtalk.util.RequestResultSet;
+import realtalk.util.User;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.realtalk.R;
+
 public class MainActivity extends Activity {
-    public static final String url_get_user_id = "http://chatrealtalk.herokuapp.com/db_get_users.php";
-    public static final String TAG_USER = "user";
-    public static final String TAG_SUCCESS = "success";
-    public static final String TAG_NAME = "name";
-    public static final String TAG_ID = "id";
     
     private ProgressDialog pDialog;
     
 	@Override
-	protected void onCreate(Bundle savedInstanceState) { 
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	}
@@ -44,13 +31,36 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
-	public void retrieveQuery(View view) {
-	    EditText editText = (EditText) findViewById(R.id.editQuery);
-	    String query = editText.getText().toString();
-	    new GetUserDetails().execute(query);
+	public void addUser(View view) {
+	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
+	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
+	    String stUsername = edittextUser.getText().toString();
+	    String stPword = edittextPword.getText().toString();
+	    new UserAdder(new User(stUsername, stPword)).execute();
 	}
 	
-	class GetUserDetails extends AsyncTask<String, String, JSONObject> {
+	public void authenticateUser(View view) {
+	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
+	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
+	    String stUsername = edittextUser.getText().toString();
+	    String stPword = edittextPword.getText().toString();
+	    new Authenticator(new User(stUsername, stPword)).execute();
+	}
+	
+	public void removeUser(View view) {
+	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
+	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
+	    String stUsername = edittextUser.getText().toString();
+	    String stPword = edittextPword.getText().toString();
+	    new UserRemover(new User(stUsername, stPword)).execute();
+	}
+	
+	class UserAdder extends AsyncTask<String, String, RequestResultSet> {
+		private User user;
+		public UserAdder(User user) {
+			this.user = user;
+		}
+		
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -61,53 +71,74 @@ public class MainActivity extends Activity {
             pDialog.show();
         }
 	    
-	    
         @Override
-        protected JSONObject doInBackground(String... params) {
-            int success = 0;
-            try {
-                // Make GET params in NameValuePair List
-                List<NameValuePair> getParams = new ArrayList<NameValuePair>();
-                getParams.add(new BasicNameValuePair("user", params[0]));
-                
-                // Make http request to obtain results
-                JSONParser jsonParser = new JSONParser();
-                JSONObject json = jsonParser.makeHttpRequest(url_get_user_id, "GET", getParams);
-                
-                success = json.getInt(TAG_SUCCESS);
-                
-                if (success == 1) {
-                    JSONArray userObj = json.getJSONArray(TAG_USER);
-                    
-                    JSONObject user = userObj.getJSONObject(0);
-                    
-                    return user;                  
-                    
-                } else {
-                    return null;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
+        protected RequestResultSet doInBackground(String... params) {
+        	return ChatManager.addUser(user);
         }
         
         @Override
-        protected void onPostExecute(JSONObject result) {
+        protected void onPostExecute(RequestResultSet requestresultset) {
             pDialog.dismiss();
-            TextView queryResults = (TextView) findViewById(R.id.query_results_textView);
-            String text;
-            if (result == null) {
-                text = "User Not Found";
-                queryResults.setText(text);
-            } else {
-                try {
-                    text = "User Name: " + result.getString(TAG_NAME) + "\n" + "User ID  : " + result.getString(TAG_ID);
-                    queryResults.setText(text);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+            TextView addingResults = (TextView) findViewById(R.id.query_results_textView);
+            addingResults.setText(requestresultset.stMessage);
+        }
+	}
+
+	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
+		private User user;
+		public UserRemover(User user) {
+			this.user = user;
+		}
+		
+	    @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Loading user details. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+	    
+        @Override
+        protected RequestResultSet doInBackground(String... params) {
+        	return ChatManager.removeUser(user);
+        }
+        
+        @Override
+        protected void onPostExecute(RequestResultSet requestresultset) {
+            pDialog.dismiss();
+            TextView removalResults = (TextView) findViewById(R.id.query_results_textView);
+            removalResults.setText(requestresultset.stMessage);
+        }
+	}
+	
+	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
+		private User user;
+		public Authenticator(User user) {
+			this.user = user;
+		}
+		
+	    @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Loading user details. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+	    
+        @Override
+        protected RequestResultSet doInBackground(String... params) {
+        	return ChatManager.authenticateUser(user);
+        }
+        
+        @Override
+        protected void onPostExecute(RequestResultSet requestresultset) {
+            pDialog.dismiss();
+            TextView authenticationResults = (TextView) findViewById(R.id.query_results_textView);
+            authenticationResults.setText(requestresultset.stMessage);
         }
 	}
 }
