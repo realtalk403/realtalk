@@ -87,7 +87,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(RequestResultSet requestresultset) {
             pDialog.dismiss();
             TextView addingResults = (TextView) findViewById(R.id.query_results_textView);
-            addingResults.setText(requestresultset.stMessage);
+            addingResults.setText(requestresultset.stErrorMessage);
         }
 	}
 
@@ -116,7 +116,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(RequestResultSet requestresultset) {
             pDialog.dismiss();
             TextView removalResults = (TextView) findViewById(R.id.query_results_textView);
-            removalResults.setText(requestresultset.stMessage);
+            removalResults.setText(requestresultset.stErrorMessage);
         }
 	}
 	
@@ -145,7 +145,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(RequestResultSet requestresultset) {
             pDialog.dismiss();
             TextView authenticationResults = (TextView) findViewById(R.id.query_results_textView);
-            authenticationResults.setText(requestresultset.stMessage);
+            authenticationResults.setText(requestresultset.stErrorMessage);
         }
 	}
 }
