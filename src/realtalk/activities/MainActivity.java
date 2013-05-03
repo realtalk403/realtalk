@@ -148,7 +148,7 @@ public class MainActivity extends Activity {
 	
 	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
 		private User user;
-		private Activity activity;
+		private Activity activity;	//use for pop up dialog later
 		
 		public Authenticator(User user, Activity activity) {
 			this.user = user;
@@ -171,34 +171,9 @@ public class MainActivity extends Activity {
         
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
-            pDialog.dismiss();
-            
-            if(requestresultset.fSucceeded == false) {
-            	//user does not exist pop up
-            	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertDialogBuilder.setTitle("Invalid fields");
-				
-				//set dialog message
-				alertDialogBuilder
-					.setMessage("Invalid username/password.")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							dialog.cancel();
-						}	
-				});
-				
-				//create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				
-				//show alert dialog
-				alertDialog.show();	
-            } else {
-            	TextView authenticationResults = (TextView) findViewById(R.id.query_results_textView);
-            	authenticationResults.setText(requestresultset.stErrorMessage);
-            }
+            pDialog.dismiss();       
+            TextView authenticationResults = (TextView) findViewById(R.id.query_results_textView);
+            authenticationResults.setText(requestresultset.stErrorMessage);
         }
 	}
 }
