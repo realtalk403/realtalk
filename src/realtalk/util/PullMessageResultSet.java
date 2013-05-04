@@ -1,5 +1,6 @@
 package realtalk.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PullMessageResultSet {
@@ -14,6 +15,23 @@ public class PullMessageResultSet {
 		this.fSucceeded = fSucceeded;
 		this.stErrorMessage = stErrorMessage;
 		this.stErrorCode = stErrorCode;
-		this.rgmessage = rgmessage;
+		this.rgmessage = new ArrayList<MessageInfo>(rgmessage);
 	}
+	
+   /**
+	 * Constructor that does not take a list of message info.
+	 * 
+	 * @param fSucceeded
+	 * @param stErrorMessage
+	 * @param stErrorCode
+	 */
+	public PullMessageResultSet(boolean fSucceeded, String stErrorMessage,
+			String stErrorCode) {
+		this.rgmessage = new ArrayList<MessageInfo>();
+		this.fSucceeded = fSucceeded;
+		this.stErrorMessage = stErrorMessage;
+		this.stErrorCode = stErrorCode;
+	}
+	
+	
 }

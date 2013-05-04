@@ -1,5 +1,6 @@
 package realtalk.util;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,8 @@ public class ChatManager {
     public static final String url_join_room = url_qualifier+"joinRoom";
     public static final String url_leave_room = url_qualifier+"leaveRoom";
     public static final String url_post_message = url_qualifier+"post";
-    public static final String url_get_messages = url_qualifier+"pullRecentChat";
+    public static final String url_get_recent_messages = url_qualifier+"pullRecentChat";
+    public static final String url_get_all_messages = url_qualifier + "pullChat";
     
     
     private static List<NameValuePair> rgparamsMessageInfo(MessageInfo message) {
@@ -84,7 +86,9 @@ public class ChatManager {
         		}
         		return new PullMessageResultSet(true, rgmessageinfo, "NO ERROR CODE", "NO ERROR MESSAGE");
         	}
-            return new PullMessageResultSet(false, new ArrayList<MessageInfo>(), json.getString(ResponseParameters.PARAMETER_ERROR_CODE), json.getString(ResponseParameters.PARAMETER_ERROR_MSG));
+            return new PullMessageResultSet(false, new ArrayList<MessageInfo>(), 
+            		json.getString(ResponseParameters.PARAMETER_ERROR_CODE), 
+            		json.getString(ResponseParameters.PARAMETER_ERROR_MSG));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -144,7 +148,32 @@ public class ChatManager {
 	
 	public static PullMessageResultSet rgstChatLogGet(ChatRoomInfo chatroominfo) {
         List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
-		return rgmessagePostRequest(rgparams, url_add_room);
+		return rgmessagePostRequest(rgparams, url_get_all_messages);
+	}
+	
+	/**
+	 * This method pulls all recent messages to a specific given chatroom after a given time as indicated
+	 * in timestamp
+	 * 
+	 * @param chatroominfo Information about chatroom to pull messages from.
+	 * @param timestamp    Time 
+	 * @return             Result set that contains a boolean that indicates success or failure and 
+	 *                     returns an error code and message if failure was occurred. If success,
+	 *                     it returns a list of MessageInfo that have a timestamp later than the given
+	 *                     timestamp
+	 */
+	public static PullMessageResultSet pullmessageresultsetChatRecentChat(ChatRoomInfo chatroominfo, Timestamp timestamp) {
+		long rawtimestamp = timestamp.getTime();
+		String stTimestamp = "";
+		try {
+			stTimestamp = String.valueOf(rawtimestamp);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return new PullMessageResultSet(false, "ERROR_INVALID_TIMESTAMP", "ERROR_MESSAGE_PARSING_ERROR");
+		}
+		List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
+		rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_TIMESTAMP, stTimestamp));
+		return rgmessagePostRequest(rgparams, url_get_recent_messages);
 	}
 	
 	public static RequestResultSet unregisterDevice() {
