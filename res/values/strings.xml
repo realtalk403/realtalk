@@ -6,7 +6,7 @@
     <string name="intro_message">RealTalk (Alpha Release)</string>
     <string name="create_user_string">Create User</string>
     <string name="authenticate_user_string">Login</string>
-    <string name="remove_user_string">Unregister</string>
+    <string name="remove_user_string">Delete Account</string>
     <string name="query_header">Query Results:</string>
     <string name="query_results">Press Query to display User ID</string>
     <string name="uname_hint">Type user name</string>
@@ -17,5 +17,6 @@
     <string name="confirm_password">Confirm password</string>
     <string name="create_account">Create Account</string>
     <string name="sign_up">Haven\'t signed up yet?</string>
+    <string name="ad">AD WOULD GO HERE</string>
 
 </resources>
