@@ -28,8 +28,12 @@ public class SelectRoomActivity extends Activity {
                     long id) {
                 
             	
-        		Intent viewRs = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
-        		SelectRoomActivity.this.startActivity(viewRs);
+        		Intent startChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
+        		Bundle extras = getIntent().getExtras();
+        		startChat.putExtras(extras);
+//        		startChat.putExtra("USER_NAME", extras.getString("USER_NAME"));
+//        		startChat.putExtra("PASSWORD", extras.getString("PASSWORD"));
+        		SelectRoomActivity.this.startActivity(startChat);
             }
         });
 		

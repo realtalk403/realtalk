@@ -9,7 +9,7 @@ public class PullMessageResultSet {
 	public String stErrorMessage;
 	public String stErrorCode;
 	//rgmessage is only populated if request succeeded
-	List<MessageInfo> rgmessage;
+	public List<MessageInfo> rgmessage;
 	public PullMessageResultSet(boolean fSucceeded, List<MessageInfo> rgmessage, String stErrorCode, String stErrorMessage) {
 		this.fSucceeded = fSucceeded;
 		this.stErrorMessage = stErrorMessage;

@@ -32,11 +32,6 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
-	public void viewRooms(View view) {
-		Intent viewRs = new Intent(this, SelectRoomActivity.class);
-		this.startActivity(viewRs);
-	}
 
 	public void addUser(View view) {
 	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
@@ -51,7 +46,7 @@ public class MainActivity extends Activity {
 	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
-	    new Authenticator(new User(stUsername, stPword)).execute();
+	    new Authenticator(new User(stUsername, stPword), this).execute();
 	}
 	
 	public void removeUser(View view) {
@@ -122,8 +117,10 @@ public class MainActivity extends Activity {
 	
 	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
 		private User user;
-		public Authenticator(User user) {
+		private Activity activity;
+		public Authenticator(User user, Activity activity) {
 			this.user = user;
+			this.activity = activity;
 		}
 		
 	    @Override
@@ -146,6 +143,17 @@ public class MainActivity extends Activity {
             pDialog.dismiss();
             TextView authenticationResults = (TextView) findViewById(R.id.query_results_textView);
             authenticationResults.setText(requestresultset.stErrorMessage);
+            
+            EditText uNameText = (EditText)findViewById(R.id.editQuery);
+    		String uName = uNameText.getText().toString();
+    		
+    		EditText pWordText = (EditText)findViewById(R.id.editPword);
+    		String pWord = pWordText.getText().toString();
+    		
+            Intent viewRs = new Intent(activity, SelectRoomActivity.class);
+            viewRs.putExtra("USER_NAME", uName);
+            viewRs.putExtra("PASSWORD", pWord);
+    		activity.startActivity(viewRs);
         }
 	}
 }
