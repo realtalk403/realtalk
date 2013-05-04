@@ -26,26 +26,27 @@ public class ChatRoomActivity extends Activity {
 	String uName;
 	String pWord;
 	List<MessageInfo> messages;
-	
-	ChatRoomInfo room = new ChatRoomInfo("Room001", "001", "everywhere", 
-			"hazarij", 1, new Timestamp(System.currentTimeMillis()));
+	ChatRoomInfo room;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_room);
 		
-//		Bundle extras = getIntent().getExtras();
-//		String uName = extras.getString("USER_NAME");
-//		String pWord = extras.getString("PASSWORD");
 		
-		uName = "hazarij";
-		pWord = "jordan";
+		messages = new ArrayList<MessageInfo>();
+		room = new ChatRoomInfo("Room001", "001", "everywhere", 
+				"hazarij", 1, new Timestamp(System.currentTimeMillis()));
+		Bundle extras = getIntent().getExtras();
+		uName = extras.getString("USER_NAME");
+		pWord = extras.getString("PASSWORD");
+//		uName = "hazarij";
+//		pWord = "jordan";
 		
-		//new MessageLoader().execute();
-		List<MessageInfo> messages = new ArrayList<MessageInfo>();
-		MessageInfo a = new MessageInfo("hello", "hazarij", new Timestamp(System.currentTimeMillis()));
-		messages.add(a);
+		new MessageLoader().execute();
+//		List<MessageInfo> messages = new ArrayList<MessageInfo>();
+//		MessageInfo a = new MessageInfo("hello", "hazarij", new Timestamp(System.currentTimeMillis()));
+//		messages.add(a);
 		
 		String[] messageArray = new String[messages.size()];
 		for (int i = 0; i < messages.size(); i++) {
@@ -85,11 +86,6 @@ public class ChatRoomActivity extends Activity {
 			this.user = new User(uName, pWord);
 			this.message = message;
 		}
-		
-	    @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
 
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
@@ -99,24 +95,12 @@ public class ChatRoomActivity extends Activity {
 	}
 	
 	class MessageLoader extends AsyncTask<String, String, PullMessageResultSet> {
-		//private ChatRoomInfo thisRoom;
-		
-		public MessageLoader() {
-			//thisRoom = room;
-		}
-		
-	    @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
 
 		@Override
 		protected PullMessageResultSet doInBackground(String... params) {
-			PullMessageResultSet result = ChatManager.rgstChatLogGet(room);
-			if(result.rgmessage != null)
-				messages = result.rgmessage;
-			else
-				messages = new ArrayList<MessageInfo>();
+			PullMessageResultSet result = ChatManager.pullmessageresultsetChatRecentChat
+					(room, new Timestamp(System.currentTimeMillis()-1000000000));
+			messages = result.rgmessage;
 			return result;
 		}
 		

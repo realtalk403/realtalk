@@ -26,6 +26,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="realtalk.activities.CreateAccountActivity"
+            android:label="@string/title_activity_create_account" >
+        </activity>
+        <activity
             android:name="realtalk.activities.SelectRoomActivity"
             android:label="@string/title_activity_select_room" >
         </activity>

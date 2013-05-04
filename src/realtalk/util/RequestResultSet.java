@@ -1,7 +1,7 @@
 package realtalk.util;
 
 public class RequestResultSet {
-	boolean fSucceeded;
+	public boolean fSucceeded;
 	public String stErrorMessage;
 	public String stErrorCode;
 	public RequestResultSet(boolean fSucceeded, String stErrorCode, String stErrorMessage) {
