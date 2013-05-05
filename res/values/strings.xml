@@ -18,5 +18,9 @@
     <string name="create_account">Create Account</string>
     <string name="sign_up">Haven\'t signed up yet?</string>
     <string name="ad">AD WOULD GO HERE</string>
+    <string name="message_hint">Enter message</string>
+    <string name="send">Send</string>
+    <string name="title_activity_select_room">SelectRoomActivity</string>
+    <string name="title_activity_chat_room">ChatRoomActivity</string>
 
 </resources>

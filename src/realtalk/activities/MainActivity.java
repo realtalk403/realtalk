@@ -1,3 +1,4 @@
+
 package realtalk.activities;
 
 import realtalk.util.ChatManager;
@@ -262,6 +263,7 @@ public class MainActivity extends Activity {
         
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
+
             pDialog.dismiss();       
             //invalid username/password
             if(requestresultset.fSucceeded == false) {
@@ -289,29 +291,18 @@ public class MainActivity extends Activity {
 				TextView textviewPword = (TextView) findViewById(R.id.editPword);
 	            textviewPword.setText("");
             } else {
-            	//PUT WHATEVER CODE FOR A SUCCESSFUL LOGIN HERE
-            	
-            	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertDialogBuilder.setTitle("Login successful");
-				
-				//set dialog message
-				alertDialogBuilder
-					.setMessage("Login Successful!")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							dialog.cancel();
-						}	
-				});
-				
-				//create alert dialog
-				AlertDialog alertdialogLoginSuccess = alertDialogBuilder.create();
-				
-				//show alert dialog
-				alertdialogLoginSuccess.show();	
+                EditText uNameText = (EditText)findViewById(R.id.editQuery);
+        		String uName = uNameText.getText().toString();
+        		
+        		EditText pWordText = (EditText)findViewById(R.id.editPword);
+        		String pWord = pWordText.getText().toString();
+        		
+                Intent viewRs = new Intent(activity, SelectRoomActivity.class);
+                viewRs.putExtra("USER_NAME", uName);
+                viewRs.putExtra("PASSWORD", pWord);
+        		activity.startActivity(viewRs);
             }
+
         }
 	}
 }
