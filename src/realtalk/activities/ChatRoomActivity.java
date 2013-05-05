@@ -9,7 +9,7 @@ import realtalk.util.MessageInfo;
 import realtalk.util.ChatManager;
 import realtalk.util.PullMessageResultSet;
 import realtalk.util.RequestResultSet;
-import realtalk.util.User;
+import realtalk.util.UserInfo;
 
 import com.example.realtalk.R;
 
@@ -27,8 +27,9 @@ import android.widget.ListView;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChatRoomActivity extends Activity {
+	private static final String DEFAULT_ID = "someID";
 	ChatRoomInfo room;
-	User user;
+	UserInfo user;
 	private ProgressDialog pDialog;
 	List<MessageInfo> messages = new ArrayList<MessageInfo>();
 	List<String> messageArray;
@@ -43,10 +44,8 @@ public class ChatRoomActivity extends Activity {
 		Bundle extras = getIntent().getExtras();
 		String uName = extras.getString("USER_NAME");
 		String pWord = extras.getString("PASSWORD");
-//		String uName = "hazarij";
-//		String pWord = "jordan";
 		
-		user = new User(uName, pWord);
+		user = new UserInfo(uName, pWord, DEFAULT_ID);
 		new RoomCreator(room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 
@@ -73,7 +72,7 @@ public class ChatRoomActivity extends Activity {
 		String value = text.getText().toString();
 		
 		MessageInfo message = new MessageInfo
-				(value, user.getUsername(), new Timestamp(System.currentTimeMillis()));
+				(value, user.getUserName(), new Timestamp(System.currentTimeMillis()));
 		
 		new MessageSender(message, room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		text.setText("");
