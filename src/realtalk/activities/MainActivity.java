@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -24,6 +25,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
 	}
 
@@ -55,9 +57,7 @@ public class MainActivity extends Activity {
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
 	    
-	    if(!stUsername.equals("") && !stUsername.equals("")) {
-	    	new Authenticator(new User(stUsername, stPword), this).execute();
-	    } else {
+	    if(stUsername.equals("") || stPword.equals("")) {	    	
 	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
 			alertDialogBuilder.setTitle("Invalid input");
@@ -79,6 +79,8 @@ public class MainActivity extends Activity {
 			
 			//show alert dialog
 			alertDialog.show();	
+	    } else {
+	    	new Authenticator(new User(stUsername, stPword), this).execute();
 	    }
 	    
 	}
@@ -236,7 +238,7 @@ public class MainActivity extends Activity {
 	
 	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
 		private User user;
-		private Activity activity;	//use for pop up dialog later
+		private Activity activity;
 		
 		public Authenticator(User user, Activity activity) {
 			this.user = user;
