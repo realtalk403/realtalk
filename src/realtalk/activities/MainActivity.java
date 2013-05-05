@@ -42,8 +42,8 @@ public class MainActivity extends Activity {
 	 * @param view
 	 */
 	public void addUser(View view) {
-		Intent createAcc = new Intent(this, CreateAccountActivity.class);
-		this.startActivity(createAcc);
+		Intent itCreateAcc = new Intent(this, CreateAccountActivity.class);
+		this.startActivity(itCreateAcc);
 	}
 	
 	/** 
@@ -75,10 +75,10 @@ public class MainActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
+			AlertDialog alertdialogEmptyFields = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertDialog.show();	
+			alertdialogEmptyFields.show();	
 	    } else {
 	    	new Authenticator(new User(stUsername, stPword), this).execute();
 	    }
@@ -114,10 +114,10 @@ public class MainActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
+			AlertDialog alertdialogEmptyFields = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertDialog.show();
+			alertdialogEmptyFields.show();
 		} else {
 			//confirmation pop up
 	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -148,10 +148,10 @@ public class MainActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
+			AlertDialog alertdialogDeleteAcc = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertDialog.show();	
+			alertdialogDeleteAcc.show();	
 		}
 	}
 
@@ -201,10 +201,10 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
+				AlertDialog alertdialogBadPword = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertDialog.show();	
+				alertdialogBadPword.show();	
             } else {
             	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
 				//set title
@@ -222,17 +222,17 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
+				AlertDialog alertdialogAccDeleted = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertDialog.show();	
+				alertdialogAccDeleted.show();	
 				
-				TextView username = (TextView) findViewById(R.id.editQuery);
-	            username.setText("");
+				TextView textviewUname = (TextView) findViewById(R.id.editQuery);
+	            textviewUname.setText("");
             }
             
-            TextView password = (TextView) findViewById(R.id.editPword);
-            password.setText("");
+            TextView textviewPword = (TextView) findViewById(R.id.editPword);
+            textviewPword.setText("");
         }
 	}
 	
@@ -281,13 +281,13 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
+				AlertDialog alertdialogBadPword = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertDialog.show();	
+				alertdialogBadPword.show();	
 				
-				TextView password = (TextView) findViewById(R.id.editPword);
-	            password.setText("");
+				TextView textviewPword = (TextView) findViewById(R.id.editPword);
+	            textviewPword.setText("");
             } else {
             	//PUT WHATEVER CODE FOR A SUCCESSFUL LOGIN HERE
             	
@@ -307,10 +307,10 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
+				AlertDialog alertdialogLoginSuccess = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertDialog.show();	
+				alertdialogLoginSuccess.show();	
             }
         }
 	}
