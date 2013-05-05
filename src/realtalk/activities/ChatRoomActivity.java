@@ -14,7 +14,9 @@ import realtalk.util.User;
 import com.example.realtalk.R;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.view.Menu;
@@ -23,10 +25,14 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChatRoomActivity extends Activity {
 	ChatRoomInfo room;
 	User user;
 	private ProgressDialog pDialog;
+	List<MessageInfo> messages = new ArrayList<MessageInfo>();
+	List<String> messageArray;
+	ArrayAdapter<String> adapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +47,18 @@ public class ChatRoomActivity extends Activity {
 //		String pWord = "jordan";
 		
 		user = new User(uName, pWord);
-		new RoomCreator(room).execute();
-		new MessageLoader(this, room).execute();
+		new RoomCreator(room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		
+
+		messageArray = new ArrayList<String>();
+
+		ListView listView = (ListView) findViewById(R.id.list);
+		// Binding resources Array to ListAdapter
+		adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.label, messageArray);
+		listView.setAdapter(adapter);
+		
+		new MessageLoader(this, room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        
 	}
 
 	@Override
@@ -59,7 +75,7 @@ public class ChatRoomActivity extends Activity {
 		MessageInfo message = new MessageInfo
 				(value, user.getUsername(), new Timestamp(System.currentTimeMillis()));
 		
-		new MessageSender(message, room).execute();
+		new MessageSender(message, room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		text.setText("");
 	}
 	
@@ -90,26 +106,27 @@ public class ChatRoomActivity extends Activity {
 
 		@Override
 		protected PullMessageResultSet doInBackground(String... params) {
-			List<MessageInfo> messages = new ArrayList<MessageInfo>();
-			
-			PullMessageResultSet result = ChatManager.pullmessageresultsetChatRecentChat
-					(chatroominfo, new Timestamp(System.currentTimeMillis()-10000000));
-			
-			messages = result.rgmessage;
-//			MessageInfo a = new MessageInfo("hello", "hazarij", new Timestamp(System.currentTimeMillis()));
-//			messages.add(a);
-
-			String[] messageArray = new String[messages.size()];
-			for (int i = 0; i < messages.size(); i++) {
-				String displayedMessage = messages.get(i).getSender() + ": " + 
-						messages.get(i).getBody();
-				messageArray[i] = displayedMessage;
+			while (true) {
+				PullMessageResultSet result = ChatManager.pullmessageresultsetChatRecentChat
+						(chatroominfo, new Timestamp(System.currentTimeMillis()-10000000));
+				
+				messages = result.rgmessage;
+				
+				chatroomactivity.runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						adapter.clear();
+						
+						for (int i = 0; i < messages.size(); i++) {
+							String displayedMessage = messages.get(i).getSender() + ": " + 
+									messages.get(i).getBody();
+							adapter.add(displayedMessage);
+						}
+						
+					}
+				});
 			}
-			ListView listView = (ListView) findViewById(R.id.list);
-			// Binding resources Array to ListAdapter
-	        listView.setAdapter(new ArrayAdapter<String>
-	        	(chatroomactivity, R.layout.list_item, R.id.label, messageArray));
-			return result;
 		}
 		
 	}
