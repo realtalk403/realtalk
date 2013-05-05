@@ -2,7 +2,7 @@ package realtalk.activities;
 
 import realtalk.util.ChatManager;
 import realtalk.util.RequestResultSet;
-import realtalk.util.User;
+import realtalk.util.UserInfo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -19,6 +19,7 @@ import com.example.realtalk.R;
 
 public class CreateAccountActivity extends Activity {
 	
+	private static final String DEFAULT_ID = "someID";
 	private ProgressDialog pDialog;
 	
 	@Override
@@ -93,17 +94,17 @@ public class CreateAccountActivity extends Activity {
 			//show alert dialog
 			alertdialogBadPword.show();	
 		} else {
-			new UserAdder(new User(stUsername, stPword), this).execute();
+			new UserAdder(new UserInfo(stUsername, stPword, DEFAULT_ID), this).execute();
 		}
 	}
 	
 	class UserAdder extends AsyncTask<String, String, RequestResultSet> {
 		//This class is called when a user is trying to be added to the database.
 		//If it fails, it updates a string on the 
-		private User user;
+		private UserInfo user;
 		private Activity activity;
 		
-		public UserAdder(User user, Activity activity) {
+		public UserAdder(UserInfo user, Activity activity) {
 			this.user = user;
 			this.activity = activity;
 		}

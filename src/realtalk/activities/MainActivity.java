@@ -3,7 +3,7 @@ package realtalk.activities;
 
 import realtalk.util.ChatManager;
 import realtalk.util.RequestResultSet;
-import realtalk.util.User;
+import realtalk.util.UserInfo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -21,6 +21,7 @@ import com.example.realtalk.R;
 
 public class MainActivity extends Activity {
     
+	private static final String DEFAULT_ID = "someID";
     private ProgressDialog pDialog;
     
 	@Override
@@ -81,7 +82,7 @@ public class MainActivity extends Activity {
 			//show alert dialog
 			alertdialogEmptyFields.show();	
 	    } else {
-	    	new Authenticator(new User(stUsername, stPword), this).execute();
+	    	new Authenticator(new UserInfo(stUsername, stPword, DEFAULT_ID), this).execute();
 	    }
 	    
 	}
@@ -137,7 +138,7 @@ public class MainActivity extends Activity {
 				    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 				    String stUsername = edittextUser.getText().toString();
 				    String stPword = edittextPword.getText().toString();
-				    new UserRemover(new User(stUsername, stPword), MainActivity.this).execute();
+				    new UserRemover(new UserInfo(stUsername, stPword, DEFAULT_ID), MainActivity.this).execute();
 				}	
 			});
 			
@@ -158,9 +159,9 @@ public class MainActivity extends Activity {
 
 
 	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
-		private User user;
+		private UserInfo user;
 		private Activity activity;
-		public UserRemover(User user, Activity activity) {
+		public UserRemover(UserInfo user, Activity activity) {
 			this.user = user;
 			this.activity = activity;
 		}
@@ -238,10 +239,10 @@ public class MainActivity extends Activity {
 	}
 	
 	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
-		private User user;
+		private UserInfo user;
 		private Activity activity;
 		
-		public Authenticator(User user, Activity activity) {
+		public Authenticator(UserInfo user, Activity activity) {
 			this.user = user;
 			this.activity = activity;
 		}
