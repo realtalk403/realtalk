@@ -53,6 +53,7 @@ public class ChatRoomActivity extends Activity {
 		messageArray = new ArrayList<String>();
 
 		ListView listView = (ListView) findViewById(R.id.list);
+		listView.setClickable(false);
 		// Binding resources Array to ListAdapter
 		adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.label, messageArray);
 		listView.setAdapter(adapter);
@@ -123,7 +124,6 @@ public class ChatRoomActivity extends Activity {
 									messages.get(i).getBody();
 							adapter.add(displayedMessage);
 						}
-						
 					}
 				});
 			}
