@@ -75,10 +75,10 @@ public class MainActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertdialog = alertDialogBuilder.create();
+			AlertDialog alertdialogEmptyFields = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertdialog.show();	
+			alertdialogEmptyFields.show();	
 	    } else {
 	    	new Authenticator(new User(stUsername, stPword), this).execute();
 	    }
@@ -114,10 +114,10 @@ public class MainActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertdialog = alertDialogBuilder.create();
+			AlertDialog alertdialogEmptyFields = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertdialog.show();
+			alertdialogEmptyFields.show();
 		} else {
 			//confirmation pop up
 	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -148,10 +148,10 @@ public class MainActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertdialog = alertDialogBuilder.create();
+			AlertDialog alertdialogDeleteAcc = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertdialog.show();	
+			alertdialogDeleteAcc.show();	
 		}
 	}
 
@@ -201,10 +201,10 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertdialog = alertDialogBuilder.create();
+				AlertDialog alertdialogBadPword = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertdialog.show();	
+				alertdialogBadPword.show();	
             } else {
             	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
 				//set title
@@ -222,10 +222,10 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertdialog = alertDialogBuilder.create();
+				AlertDialog alertdialogAccDeleted = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertdialog.show();	
+				alertdialogAccDeleted.show();	
 				
 				TextView textviewUname = (TextView) findViewById(R.id.editQuery);
 	            textviewUname.setText("");
@@ -281,10 +281,10 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertdialog = alertDialogBuilder.create();
+				AlertDialog alertdialogBadPword = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertdialog.show();	
+				alertdialogBadPword.show();	
 				
 				TextView textviewPword = (TextView) findViewById(R.id.editPword);
 	            textviewPword.setText("");
@@ -307,10 +307,10 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertdialog = alertDialogBuilder.create();
+				AlertDialog alertdialogLoginSuccess = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertdialog.show();	
+				alertdialogLoginSuccess.show();	
             }
         }
 	}

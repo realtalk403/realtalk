@@ -67,10 +67,10 @@ public class CreateAccountActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertdialog = alertDialogBuilder.create();
+			AlertDialog alertdialogEmptyField = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertdialog.show();
+			alertdialogEmptyField.show();
 		} else if(!stPword.equals(stConf)) {	//if the password doesn't match the confirmation password
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
@@ -88,10 +88,10 @@ public class CreateAccountActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertdialog = alertDialogBuilder.create();
+			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertdialog.show();	
+			alertdialogBadPword.show();	
 		} else {
 			new UserAdder(new User(stUsername, stPword), this).execute();
 		}
@@ -144,10 +144,10 @@ public class CreateAccountActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertdialog = alertDialogBuilder.create();
+				AlertDialog alertdialogBadUname = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertdialog.show();	
+				alertdialogBadUname.show();	
             } else {
             	//redirect back to LoginActivity if successful
             	Intent createAcc = new Intent(activity, MainActivity.class);
