@@ -5,7 +5,7 @@
    <object id="LifelineNode0" class="com.horstmann.violet.ImplicitParameterNode"> 
     <void property="name"> 
      <void property="text"> 
-      <string>:JSONParser</string> 
+      <string>JSONParser</string> 
      </void> 
     </void> 
    </object> 
@@ -20,7 +20,7 @@
    <object id="LifelineNode1" class="com.horstmann.violet.ImplicitParameterNode"> 
     <void property="name"> 
      <void property="text"> 
-      <string>:Register</string> 
+      <string>Register</string> 
      </void> 
     </void> 
    </object> 
@@ -35,7 +35,7 @@
    <object id="LifelineNode2" class="com.horstmann.violet.ImplicitParameterNode"> 
     <void property="name"> 
      <void property="text"> 
-      <string>:ChatManager</string> 
+      <string>ChatManager</string> 
      </void> 
     </void> 
    </object> 
@@ -50,7 +50,7 @@
    <object id="LifelineNode3" class="com.horstmann.violet.ImplicitParameterNode"> 
     <void property="name"> 
      <void property="text"> 
-      <string>:ChatRoom</string> 
+      <string>user1:Login</string> 
      </void> 
     </void> 
    </object> 
@@ -103,7 +103,7 @@
        <object id="LifelineNode5" class="com.horstmann.violet.ImplicitParameterNode"> 
         <void property="name"> 
          <void property="text"> 
-          <string>:UserManager</string> 
+          <string>UserManager</string> 
          </void> 
         </void> 
        </object> 
@@ -392,7 +392,7 @@
   <void method="connect"> 
    <object class="com.horstmann.violet.CallEdge"> 
     <void property="middleLabel"> 
-     <string>PostMessage(user, chatroom, message)</string> 
+     <string>addUser(user)</string> 
     </void> 
     <void property="signal"> 
      <boolean>true</boolean> 
