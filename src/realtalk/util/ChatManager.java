@@ -50,6 +50,7 @@ public class ChatManager {
         List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_NAME, chatroominfo.getName()));
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_ID, chatroominfo.getId()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_DESCRIPTION, chatroominfo.getDescription()));
         return rgparams;
     }
     
@@ -122,8 +123,9 @@ public class ChatManager {
         return makePostRequest(rgparams, url_change_id);
 	}
 	
-	public static RequestResultSet addRoom(ChatRoomInfo chatroominfo) {
+	public static RequestResultSet addRoom(ChatRoomInfo chatroominfo, User user) {
         List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
+        rgparams.addAll(rgparamsUserBasicInfo(user));
 		return makePostRequest(rgparams, url_add_room);
 	}
 	

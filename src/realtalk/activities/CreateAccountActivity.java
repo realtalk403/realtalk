@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 
 import com.example.realtalk.R;
@@ -23,6 +24,7 @@ public class CreateAccountActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_create_account);
 	}
 
@@ -40,12 +42,12 @@ public class CreateAccountActivity extends Activity {
 	 * @param v
 	 */
 	public void addUser(View v) {
-		EditText user = (EditText) findViewById(R.id.user);
-		EditText pword = (EditText) findViewById(R.id.pword);
-		EditText conf = (EditText) findViewById(R.id.conf_pword);
-		String stUsername = user.getText().toString();
-		String stPword = pword.getText().toString();
-		String stConf = conf.getText().toString();
+		EditText edittextUser = (EditText) findViewById(R.id.user);
+		EditText edittextPword = (EditText) findViewById(R.id.pword);
+		EditText edittextConfPword = (EditText) findViewById(R.id.conf_pword);
+		String stUsername = edittextUser.getText().toString();
+		String stPword = edittextPword.getText().toString();
+		String stConf = edittextConfPword.getText().toString();
 		
 		//if any fields are blank, dialog box pops up
 		if(stPword.equals("") || stUsername.equals("") || stConf.equals("")) {
@@ -65,10 +67,10 @@ public class CreateAccountActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
+			AlertDialog alertdialogEmptyField = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertDialog.show();
+			alertdialogEmptyField.show();
 		} else if(!stPword.equals(stConf)) {	//if the password doesn't match the confirmation password
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
@@ -86,10 +88,10 @@ public class CreateAccountActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
+			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
 			
 			//show alert dialog
-			alertDialog.show();	
+			alertdialogBadPword.show();	
 		} else {
 			new UserAdder(new User(stUsername, stPword), this).execute();
 		}
@@ -142,10 +144,10 @@ public class CreateAccountActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
+				AlertDialog alertdialogBadUname = alertDialogBuilder.create();
 				
 				//show alert dialog
-				alertDialog.show();	
+				alertdialogBadUname.show();	
             } else {
             	//redirect back to LoginActivity if successful
             	Intent createAcc = new Intent(activity, MainActivity.class);
