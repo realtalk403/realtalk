@@ -16,6 +16,7 @@ import com.example.realtalk.R;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -23,34 +24,24 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 public class ChatRoomActivity extends Activity {
-	String uName;
-	String pWord;
 	ChatRoomInfo room;
 	User user;
+	private ProgressDialog pDialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_room);
 		
-		room = new ChatRoomInfo("Room001", "001", "everywhere", 
-				"hazarij", 1, new Timestamp(System.currentTimeMillis()));
+		room = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
 		Bundle extras = getIntent().getExtras();
-		uName = extras.getString("USER_NAME");
-		pWord = extras.getString("PASSWORD");
-//		uName = "hazarij";
-//		pWord = "jordan";
+		String uName = extras.getString("USER_NAME");
+		String pWord = extras.getString("PASSWORD");
+//		String uName = "hazarij";
+//		String pWord = "jordan";
 		
 		user = new User(uName, pWord);
-		
-		RequestResultSet rrs = ChatManager.addRoom(room);
-		if (!rrs.fSucceeded) {
-			rrs = ChatManager.joinRoom(user, room);
-			if (!rrs.fSucceeded) {
-				throw new RuntimeException("server error");
-			}
-		}
-		
+		new RoomCreator(room).execute();
 		new MessageLoader(this, room).execute();
 	}
 
@@ -66,7 +57,7 @@ public class ChatRoomActivity extends Activity {
 		String value = text.getText().toString();
 		
 		MessageInfo message = new MessageInfo
-				(value, uName, new Timestamp(System.currentTimeMillis()));
+				(value, user.getUsername(), new Timestamp(System.currentTimeMillis()));
 		
 		new MessageSender(message, room).execute();
 		text.setText("");
@@ -121,6 +112,43 @@ public class ChatRoomActivity extends Activity {
 			return result;
 		}
 		
+	}
+	
+	
+	class RoomCreator extends AsyncTask<String, String, RequestResultSet> {
+		private ChatRoomInfo room;
+		
+		public RoomCreator(ChatRoomInfo room) {
+			this.room = room;
+		}
+		
+	    @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ChatRoomActivity.this);
+            pDialog.setMessage("Creating room. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+		@Override
+		protected RequestResultSet doInBackground(String... params) {
+			RequestResultSet rrs = ChatManager.addRoom(room, user);
+			if (!rrs.fSucceeded) {
+				rrs = ChatManager.joinRoom(user, room);
+				if (!rrs.fSucceeded) {
+					throw new RuntimeException("server error");
+				}
+			}
+			
+			return rrs;
+		}
+		
+		@Override
+        protected void onPostExecute(RequestResultSet requestresultset) {
+            pDialog.dismiss();
+		}
 	}
 
 }

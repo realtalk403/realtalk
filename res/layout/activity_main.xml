@@ -1,3 +1,4 @@
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,22 +8,6 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/intro_message"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Button
-        android:id="@+id/Button01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/Button02"
-        android:layout_centerVertical="true"
-        android:onClick="removeUser"
-        android:text="@string/remove_user_string" />
 
     <EditText
         android:id="@+id/editPword"
@@ -55,32 +40,50 @@
         android:text="@string/authenticate_user_string" />
 
     <TextView
-        android:id="@+id/query_results_textView"
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button1"
+        android:layout_centerHorizontal="true"
+        android:text="@string/sign_up"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/Button01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
+        android:layout_alignRight="@+id/Button02"
+        android:layout_marginBottom="15dp"
+        android:onClick="removeUser"
+        android:text="@string/remove_user_string" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/editQuery"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/realtalk" />
+
+    <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:text="@string/query_results"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:layout_marginBottom="25dp"
+        android:text="@string/ad"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/query_results_textView"
+        android:layout_above="@+id/textView1"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="15dp"
         android:onClick="addUser"
         android:text="@string/create_account" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/button1"
-        android:layout_alignRight="@+id/query_results_textView"
-        android:text="@string/sign_up"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>
