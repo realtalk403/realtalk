@@ -25,16 +25,14 @@ import android.widget.ListView;
 public class ChatRoomActivity extends Activity {
 	String uName;
 	String pWord;
-	List<MessageInfo> messages;
 	ChatRoomInfo room;
+	User user;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_room);
 		
-		
-		messages = new ArrayList<MessageInfo>();
 		room = new ChatRoomInfo("Room001", "001", "everywhere", 
 				"hazarij", 1, new Timestamp(System.currentTimeMillis()));
 		Bundle extras = getIntent().getExtras();
@@ -43,21 +41,17 @@ public class ChatRoomActivity extends Activity {
 //		uName = "hazarij";
 //		pWord = "jordan";
 		
-		new MessageLoader().execute();
-//		List<MessageInfo> messages = new ArrayList<MessageInfo>();
-//		MessageInfo a = new MessageInfo("hello", "hazarij", new Timestamp(System.currentTimeMillis()));
-//		messages.add(a);
+		user = new User(uName, pWord);
 		
-		String[] messageArray = new String[messages.size()];
-		for (int i = 0; i < messages.size(); i++) {
-			String displayedMessage = messages.get(i).getSender() + ": " + 
-					messages.get(i).getBody();
-			messageArray[i] = displayedMessage;
+		RequestResultSet rrs = ChatManager.addRoom(room);
+		if (!rrs.fSucceeded) {
+			rrs = ChatManager.joinRoom(user, room);
+			if (!rrs.fSucceeded) {
+				throw new RuntimeException("server error");
+			}
 		}
-		ListView listView = (ListView) findViewById(R.id.list);
-		// Binding resources Array to ListAdapter
-        listView.setAdapter(new ArrayAdapter<String>
-        	(this, R.layout.list_item, R.id.label, messageArray));
+		
+		new MessageLoader(this, room).execute();
 	}
 
 	@Override
@@ -74,33 +68,56 @@ public class ChatRoomActivity extends Activity {
 		MessageInfo message = new MessageInfo
 				(value, uName, new Timestamp(System.currentTimeMillis()));
 		
-		new MessageSender(message).execute();
+		new MessageSender(message, room).execute();
 		text.setText("");
 	}
 	
 	class MessageSender extends AsyncTask<String, String, RequestResultSet> {
-		private User user;
 		private MessageInfo message;
+		private ChatRoomInfo chatroominfo;
 		
-		public MessageSender(MessageInfo message) {
-			this.user = new User(uName, pWord);
+		public MessageSender(MessageInfo message, ChatRoomInfo chatroominfo) {
 			this.message = message;
+			this.chatroominfo = chatroominfo;
 		}
 
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
-			return ChatManager.postMessage(user, room, message);
+			return ChatManager.postMessage(user, chatroominfo, message);
 		}
 		
 	}
 	
 	class MessageLoader extends AsyncTask<String, String, PullMessageResultSet> {
+		private ChatRoomActivity chatroomactivity;
+		private ChatRoomInfo chatroominfo;
+		
+		public MessageLoader(ChatRoomActivity chatroomactivity, ChatRoomInfo chatroominfo) {
+			this.chatroomactivity = chatroomactivity;
+			this.chatroominfo = chatroominfo;
+		}
 
 		@Override
 		protected PullMessageResultSet doInBackground(String... params) {
+			List<MessageInfo> messages = new ArrayList<MessageInfo>();
+			
 			PullMessageResultSet result = ChatManager.pullmessageresultsetChatRecentChat
-					(room, new Timestamp(System.currentTimeMillis()-1000000000));
+					(chatroominfo, new Timestamp(System.currentTimeMillis()-10000000));
+			
 			messages = result.rgmessage;
+//			MessageInfo a = new MessageInfo("hello", "hazarij", new Timestamp(System.currentTimeMillis()));
+//			messages.add(a);
+
+			String[] messageArray = new String[messages.size()];
+			for (int i = 0; i < messages.size(); i++) {
+				String displayedMessage = messages.get(i).getSender() + ": " + 
+						messages.get(i).getBody();
+				messageArray[i] = displayedMessage;
+			}
+			ListView listView = (ListView) findViewById(R.id.list);
+			// Binding resources Array to ListAdapter
+	        listView.setAdapter(new ArrayAdapter<String>
+	        	(chatroomactivity, R.layout.list_item, R.id.label, messageArray));
 			return result;
 		}
 		

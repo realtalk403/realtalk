@@ -1,10 +1,7 @@
 
 package realtalk.activities;
 
-import java.sql.Timestamp;
-
 import realtalk.util.ChatManager;
-import realtalk.util.ChatRoomInfo;
 import realtalk.util.RequestResultSet;
 import realtalk.util.User;
 import android.app.Activity;
@@ -29,10 +26,6 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-//		ChatRoomInfo room = new ChatRoomInfo("Room001", "001", "everywhere", 
-//				"hazarij", 1, new Timestamp(System.currentTimeMillis()));
-//		new RoomCreator(room).execute();
 	}
 
 	@Override
@@ -195,23 +188,5 @@ public class MainActivity extends Activity {
             viewRs.putExtra("PASSWORD", pWord);
     		activity.startActivity(viewRs);
         }
-	}
-	
-	class RoomCreator extends AsyncTask<String, String, RequestResultSet> {
-		private ChatRoomInfo room;
-		
-		public RoomCreator(ChatRoomInfo room) {
-			this.room = room;
-		}
-		
-	    @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-		@Override
-		protected RequestResultSet doInBackground(String... params) {
-			return ChatManager.addRoom(room);
-		}
 	}
 }
