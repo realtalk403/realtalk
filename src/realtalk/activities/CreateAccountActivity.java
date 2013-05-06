@@ -26,7 +26,7 @@ import com.example.realtalk.R;
 public class CreateAccountActivity extends Activity {
 	
 	private static final String DEFAULT_ID = "someID";
-	private ProgressDialog pDialog;
+	private ProgressDialog progressdialog;
 	
 	/**
 	 * Sets up the activity
@@ -49,9 +49,9 @@ public class CreateAccountActivity extends Activity {
 	 * This method is called when user clicks "Create Account" button.  It reads
 	 * the information that the user has provided and attempts to create an account.
 	 * 
-	 * @param v
+	 * @param view
 	 */
-	public void addUser(View v) {
+	public void addUser(View view) {
 		EditText edittextUser = (EditText) findViewById(R.id.user);
 		EditText edittextPword = (EditText) findViewById(R.id.pword);
 		EditText edittextConfPword = (EditText) findViewById(R.id.conf_pword);
@@ -61,12 +61,12 @@ public class CreateAccountActivity extends Activity {
 		
 		//if any fields are blank, dialog box pops up
 		if(stPword.equals("") || stUsername.equals("") || stConf.equals("")) {
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
-			alertDialogBuilder.setTitle("Invalid fields");
+			alertdialogbuilder.setTitle("Invalid fields");
 			
 			//set dialog message
-			alertDialogBuilder
+			alertdialogbuilder
 				.setMessage("Please fill in all of the fields.")
 				.setCancelable(false)
 				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
@@ -77,7 +77,7 @@ public class CreateAccountActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertdialogEmptyField = alertDialogBuilder.create();
+			AlertDialog alertdialogEmptyField = alertdialogbuilder.create();
 			
 			//show alert dialog
 			alertdialogEmptyField.show();
@@ -114,7 +114,7 @@ public class CreateAccountActivity extends Activity {
 	 *
 	 */
 	class UserAdder extends AsyncTask<String, String, RequestResultSet> {
-		private UserInfo user;
+		private UserInfo userinfo;
 		private Activity activity;
 		
 		/**
@@ -124,7 +124,7 @@ public class CreateAccountActivity extends Activity {
 		 * @param activity	the activity context
 		 */
 		public UserAdder(UserInfo user, Activity activity) {
-			this.user = user;
+			this.userinfo = user;
 			this.activity = activity;
 		}
 		
@@ -134,11 +134,11 @@ public class CreateAccountActivity extends Activity {
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(CreateAccountActivity.this);
-            pDialog.setMessage("Loading user details. Please wait...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
+            progressdialog = new ProgressDialog(CreateAccountActivity.this);
+            progressdialog.setMessage("Loading user details. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
         }
 	    
 	    /**
@@ -146,7 +146,7 @@ public class CreateAccountActivity extends Activity {
 	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.rrsAddUser(user);
+        	return ChatManager.rrsAddUser(userinfo);
         }
         
         /**
@@ -155,15 +155,15 @@ public class CreateAccountActivity extends Activity {
          */
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
-            pDialog.dismiss();
+            progressdialog.dismiss();
             if(requestresultset.fSucceeded == false) {
             	//user already exists pop up
-            	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
-				alertDialogBuilder.setTitle("Invalid fields");
+				alertdialogbuilder.setTitle("Invalid fields");
 				
 				//set dialog message
-				alertDialogBuilder
+				alertdialogbuilder
 					.setMessage("Username already exists.  Please choose another username.")
 					.setCancelable(false)
 					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
@@ -174,7 +174,7 @@ public class CreateAccountActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertdialogBadUname = alertDialogBuilder.create();
+				AlertDialog alertdialogBadUname = alertdialogbuilder.create();
 				
 				//show alert dialog
 				alertdialogBadUname.show();	
