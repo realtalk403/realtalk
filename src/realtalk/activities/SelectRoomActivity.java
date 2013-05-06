@@ -29,23 +29,23 @@ public class SelectRoomActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_select_room);
 		
-		ListView listView = (ListView) findViewById(R.id.list);
-		listView.setClickable(false);
+		ListView listview = (ListView) findViewById(R.id.list);
+		listview.setClickable(false);
 		
 		// when a room is clicked, starts a new ChatRoomActivity
-        listView.setOnItemClickListener(new OnItemClickListener() {
+        listview.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        		Intent startChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
-        		Bundle extras = getIntent().getExtras();
-        		startChat.putExtras(extras);
-        		SelectRoomActivity.this.startActivity(startChat);
+        		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
+        		Bundle bundleExtras = getIntent().getExtras();
+        		itStartChat.putExtras(bundleExtras);
+        		SelectRoomActivity.this.startActivity(itStartChat);
             }
         });
 		
-		String[] list1 = {"Room 001"};
+		String[] rgstRoom = {"Room 001"};
 		// Binding resources Array to ListAdapter
-        listView.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, R.id.label, list1));
+        listview.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, R.id.label, rgstRoom));
 	}
 
 	@Override

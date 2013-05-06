@@ -34,11 +34,11 @@ import android.widget.ListView;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChatRoomActivity extends Activity {
 	private static final String DEFAULT_ID = "someID";
-	ChatRoomInfo room;
-	UserInfo user;
-	private ProgressDialog pDialog;
-	List<MessageInfo> messages = new ArrayList<MessageInfo>();
-	List<String> messageArray;
+	ChatRoomInfo chatroominfo;
+	UserInfo userinfo;
+	private ProgressDialog progressdialog;
+	List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
+	List<String> rgstDisplayMessage;
 	ArrayAdapter<String> adapter;
 	
 	/**
@@ -50,22 +50,22 @@ public class ChatRoomActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_room);
 		
-		room = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
+		chatroominfo = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
 		Bundle extras = getIntent().getExtras();
-		String uName = extras.getString("USER_NAME");
-		String pWord = extras.getString("PASSWORD");
+		String stUsername = extras.getString("USER_NAME");
+		String stPword = extras.getString("PASSWORD");
 		
-		user = new UserInfo(uName, pWord, DEFAULT_ID);
-		new RoomCreator(room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		userinfo = new UserInfo(stUsername, stPword, DEFAULT_ID);
+		new RoomCreator(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
-		messageArray = new ArrayList<String>();
+		rgstDisplayMessage = new ArrayList<String>();
 
-		ListView listView = (ListView) findViewById(R.id.list);
+		ListView listview = (ListView) findViewById(R.id.list);
 		// Binding resources Array to ListAdapter
-		adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.label, messageArray);
-		listView.setAdapter(adapter);
+		adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.label, rgstDisplayMessage);
+		listview.setAdapter(adapter);
 		
-		new MessageLoader(this, room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new MessageLoader(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	@Override
@@ -81,14 +81,14 @@ public class ChatRoomActivity extends Activity {
 	 * @param view
 	 */
 	public void createMessage(View view) {
-		EditText text = (EditText)findViewById(R.id.message);
-		String value = text.getText().toString();
+		EditText edittext = (EditText)findViewById(R.id.message);
+		String stValue = edittext.getText().toString();
 		
 		MessageInfo message = new MessageInfo
-				(value, user.stUserName(), new Timestamp(System.currentTimeMillis()));
+				(stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
 		
-		new MessageSender(message, room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		text.setText("");
+		new MessageSender(message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		edittext.setText("");
 	}
 	
 	/**
@@ -98,7 +98,7 @@ public class ChatRoomActivity extends Activity {
 	 *
 	 */
 	class MessageSender extends AsyncTask<String, String, RequestResultSet> {
-		private MessageInfo message;
+		private MessageInfo messageinfo;
 		private ChatRoomInfo chatroominfo;
 		
 		/**
@@ -108,7 +108,7 @@ public class ChatRoomActivity extends Activity {
 		 * @param chatroominfo the room to post the message to
 		 */
 		public MessageSender(MessageInfo message, ChatRoomInfo chatroominfo) {
-			this.message = message;
+			this.messageinfo = message;
 			this.chatroominfo = chatroominfo;
 		}
 
@@ -117,7 +117,7 @@ public class ChatRoomActivity extends Activity {
 		 */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
-			return ChatManager.rrsPostMessage(user, chatroominfo, message);
+			return ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
 		}
 		
 	}
@@ -149,20 +149,20 @@ public class ChatRoomActivity extends Activity {
 		@Override
 		protected PullMessageResultSet doInBackground(String... params) {
 			while (true) {
-				PullMessageResultSet result = ChatManager.pmrsChatRecentChat
+				PullMessageResultSet pmrsRecent = ChatManager.pmrsChatRecentChat
 						(chatroominfo, new Timestamp(System.currentTimeMillis()-10000000));
 				
-				messages = result.rgmessage;
+				rgmessageinfo = pmrsRecent.rgmessage;
 				
 				chatroomactivity.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						adapter.clear();
 						
-						for (int i = 0; i < messages.size(); i++) {
-							String displayedMessage = messages.get(i).stSender() + ": " + 
-									messages.get(i).stBody();
-							adapter.add(displayedMessage);
+						for (int i = 0; i < rgmessageinfo.size(); i++) {
+							String stMessage = rgmessageinfo.get(i).stSender() + ": " + 
+									rgmessageinfo.get(i).stBody();
+							adapter.add(stMessage);
 						}
 					}
 				});
@@ -178,15 +178,15 @@ public class ChatRoomActivity extends Activity {
 	 *
 	 */
 	class RoomCreator extends AsyncTask<String, String, RequestResultSet> {
-		private ChatRoomInfo room;
+		private ChatRoomInfo chatroominfo;
 		
 		/**
 		 * Constructs a RoomCreator object
 		 * 
-		 * @param room the room to create/join
+		 * @param chatroominfo the room to create/join
 		 */
-		public RoomCreator(ChatRoomInfo room) {
-			this.room = room;
+		public RoomCreator(ChatRoomInfo chatroominfo) {
+			this.chatroominfo = chatroominfo;
 		}
 		
 		/**
@@ -195,11 +195,11 @@ public class ChatRoomActivity extends Activity {
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(ChatRoomActivity.this);
-            pDialog.setMessage("Joining room. Please wait...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
+            progressdialog = new ProgressDialog(ChatRoomActivity.this);
+            progressdialog.setMessage("Joining room. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
         }
 
 	    /**
@@ -207,9 +207,9 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
-			RequestResultSet rrs = ChatManager.rrsAddRoom(room, user);
+			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
 			if (!rrs.fSucceeded) {
-				rrs = ChatManager.rrsJoinRoom(user, room);
+				rrs = ChatManager.rrsJoinRoom(userinfo, chatroominfo);
 				if (!rrs.fSucceeded) {
 					throw new RuntimeException("server error");
 				}
@@ -222,7 +222,7 @@ public class ChatRoomActivity extends Activity {
 		 */
 		@Override
         protected void onPostExecute(RequestResultSet requestresultset) {
-            pDialog.dismiss();
+            progressdialog.dismiss();
 		}
 	}
 }
