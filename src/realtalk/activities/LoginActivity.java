@@ -306,6 +306,11 @@ public class LoginActivity extends Activity {
                 viewRs.putExtra("USER_NAME", uName);
                 viewRs.putExtra("PASSWORD", pWord);
         		activity.startActivity(viewRs);
+        		
+        		//for when we have a logout button, so that pressing back on the rooms page 
+        		//doesn't take you back to the login screen, but rather exits the app.
+        		
+        		//activity.finish();  
             }
         }
 	}
