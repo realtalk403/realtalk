@@ -17,11 +17,20 @@ import android.widget.EditText;
 
 import com.example.realtalk.R;
 
+/**
+ * Activity for creating an account
+ * 
+ * @author Brandon Lee
+ *
+ */
 public class CreateAccountActivity extends Activity {
 	
 	private static final String DEFAULT_ID = "someID";
 	private ProgressDialog pDialog;
 	
+	/**
+	 * Sets up the activity
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,17 +107,30 @@ public class CreateAccountActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Adds a user to the database
+	 * 
+	 * @author Brandon Lee
+	 *
+	 */
 	class UserAdder extends AsyncTask<String, String, RequestResultSet> {
-		//This class is called when a user is trying to be added to the database.
-		//If it fails, it updates a string on the 
 		private UserInfo user;
 		private Activity activity;
 		
+		/**
+		 * Constructs a UserAdder object
+		 * 
+		 * @param user	the user to add
+		 * @param activity	the activity context
+		 */
 		public UserAdder(UserInfo user, Activity activity) {
 			this.user = user;
 			this.activity = activity;
 		}
 		
+		/**
+		 * Displays a popup dialogue while adding the user
+		 */
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -119,11 +141,18 @@ public class CreateAccountActivity extends Activity {
             pDialog.show();
         }
 	    
+	    /**
+	     * Adds a user to the database
+	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
         	return ChatManager.rrsAddUser(user);
         }
         
+        /**
+         * Closes the dialogue, and lets the user know if they have input
+         * invalid fields, or if their desired username already exists
+         */
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             pDialog.dismiss();
@@ -153,11 +182,7 @@ public class CreateAccountActivity extends Activity {
             	//redirect back to LoginActivity if successful
             	Intent createAcc = new Intent(activity, MainActivity.class);
 				activity.startActivity(createAcc);
-            }
-            
+            } 
         }
 	}
-	
-	
-
 }

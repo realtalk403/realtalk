@@ -13,8 +13,17 @@ import android.widget.ListView;
 
 import com.example.realtalk.R;
 
+/**
+ * Activity for selecting a chat room to join
+ * 
+ * @author Jordan Hazari
+ *
+ */
 public class SelectRoomActivity extends Activity {
 
+	/**
+	 * Sets up the activity, and diplays a list of available rooms
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -23,17 +32,13 @@ public class SelectRoomActivity extends Activity {
 		ListView listView = (ListView) findViewById(R.id.list);
 		listView.setClickable(false);
 		
+		// when a room is clicked, starts a new ChatRoomActivity
         listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                    long id) {
-                
-            	
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         		Intent startChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		Bundle extras = getIntent().getExtras();
         		startChat.putExtras(extras);
-//        		startChat.putExtra("USER_NAME", extras.getString("USER_NAME"));
-//        		startChat.putExtra("PASSWORD", extras.getString("PASSWORD"));
         		SelectRoomActivity.this.startActivity(startChat);
             }
         });
