@@ -25,6 +25,12 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+/**
+ * Activity for a chat room, where the user can send/recieve messages.
+ * 
+ * @author Jordan Hazari
+ *
+ */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChatRoomActivity extends Activity {
 	private static final String DEFAULT_ID = "someID";
@@ -35,6 +41,10 @@ public class ChatRoomActivity extends Activity {
 	List<String> messageArray;
 	ArrayAdapter<String> adapter;
 	
+	/**
+	 * Sets up the chat room activity and loads the previous
+	 * messages from the chat room
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,7 +58,6 @@ public class ChatRoomActivity extends Activity {
 		user = new UserInfo(uName, pWord, DEFAULT_ID);
 		new RoomCreator(room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
-
 		messageArray = new ArrayList<String>();
 
 		ListView listView = (ListView) findViewById(R.id.list);
@@ -57,7 +66,6 @@ public class ChatRoomActivity extends Activity {
 		listView.setAdapter(adapter);
 		
 		new MessageLoader(this, room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        
 	}
 
 	@Override
@@ -67,6 +75,11 @@ public class ChatRoomActivity extends Activity {
 		return true;
 	}
 	
+	/**
+	 * Creates and sends a message typed by the user.
+	 * 
+	 * @param view
+	 */
 	public void createMessage(View view) {
 		EditText text = (EditText)findViewById(R.id.message);
 		String value = text.getText().toString();
@@ -78,15 +91,30 @@ public class ChatRoomActivity extends Activity {
 		text.setText("");
 	}
 	
+	/**
+	 * Posts a message to the room's database
+	 * 
+	 * @author Jordan Hazari
+	 *
+	 */
 	class MessageSender extends AsyncTask<String, String, RequestResultSet> {
 		private MessageInfo message;
 		private ChatRoomInfo chatroominfo;
 		
+		/**
+		 * Constructs a MessageSender object
+		 * 
+		 * @param message the message to be sent
+		 * @param chatroominfo the room to post the message to
+		 */
 		public MessageSender(MessageInfo message, ChatRoomInfo chatroominfo) {
 			this.message = message;
 			this.chatroominfo = chatroominfo;
 		}
 
+		/**
+		 * Posts the message to the room
+		 */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
 			return ChatManager.postMessage(user, chatroominfo, message);
@@ -94,15 +122,30 @@ public class ChatRoomActivity extends Activity {
 		
 	}
 	
+	/**
+	 * Retrieves the message log of a chat room
+	 * 
+	 * @author Jordan Hazari
+	 *
+	 */
 	class MessageLoader extends AsyncTask<String, String, PullMessageResultSet> {
 		private ChatRoomActivity chatroomactivity;
 		private ChatRoomInfo chatroominfo;
 		
+		/**
+		 * Constructs a MessageLoader object
+		 * 
+		 * @param chatroomactivity the activity context
+		 * @param chatroominfo the chat room to retrieve the chat log from
+		 */
 		public MessageLoader(ChatRoomActivity chatroomactivity, ChatRoomInfo chatroominfo) {
 			this.chatroomactivity = chatroomactivity;
 			this.chatroominfo = chatroominfo;
 		}
 
+		/**
+		 * Retrieves and displays the chat log, constantly updating
+		 */
 		@Override
 		protected PullMessageResultSet doInBackground(String... params) {
 			while (true) {
@@ -112,7 +155,6 @@ public class ChatRoomActivity extends Activity {
 				messages = result.rgmessage;
 				
 				chatroomactivity.runOnUiThread(new Runnable() {
-					
 					@Override
 					public void run() {
 						adapter.clear();
@@ -122,7 +164,6 @@ public class ChatRoomActivity extends Activity {
 									messages.get(i).getBody();
 							adapter.add(displayedMessage);
 						}
-						
 					}
 				});
 			}
@@ -130,24 +171,40 @@ public class ChatRoomActivity extends Activity {
 		
 	}
 	
-	
+	/**
+	 * Creates and joins a chat room
+	 * 
+	 * @author Jordan Hazari
+	 *
+	 */
 	class RoomCreator extends AsyncTask<String, String, RequestResultSet> {
 		private ChatRoomInfo room;
 		
+		/**
+		 * Constructs a RoomCreator object
+		 * 
+		 * @param room the room to create/join
+		 */
 		public RoomCreator(ChatRoomInfo room) {
 			this.room = room;
 		}
 		
+		/**
+		 * Displays a popup dialogue while joining the room
+		 */
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(ChatRoomActivity.this);
-            pDialog.setMessage("Creating room. Please wait...");
+            pDialog.setMessage("Joining room. Please wait...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
         }
 
+	    /**
+	     * Adds the room, or joins it if it already exists
+	     */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
 			RequestResultSet rrs = ChatManager.addRoom(room, user);
@@ -157,14 +214,15 @@ public class ChatRoomActivity extends Activity {
 					throw new RuntimeException("server error");
 				}
 			}
-			
 			return rrs;
 		}
 		
+		/**
+		 * Closes the popup dialogue
+		 */
 		@Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             pDialog.dismiss();
 		}
 	}
-
 }
