@@ -10,8 +10,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
+/**
+ * ChatManager is a helper class that allows the Android side of RealTalk to cleanly
+ * communicate with the server while keeping it abstracted.
+ * 
+ * @author Taylor Williams
+ *
+ */
 public class ChatManager {
+	
+	//HUNGARIAN TAGS:
+	//	rrs		RequestResultSet
+	//	pmrs	PullMessageResultSet
 	
 	public static final String url_qualifier = "http://realtalkserver.herokuapp.com/";
 	
@@ -30,34 +40,51 @@ public class ChatManager {
     public static final String url_get_all_messages = url_qualifier + "pullChat";
     
     
-    private static List<NameValuePair> rgparamsMessageInfo(MessageInfo message) {
+    /**
+     * @param messageinfo         Message info object
+     * @return the list of parameters as basic name value pairs
+     */
+    private static List<NameValuePair> rgparamsMessageInfo(MessageInfo messageinfo) {
         List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_TIMESTAMP, Long.valueOf(message.getTimeStamp().getTime()).toString()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_BODY, message.getBody()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_SENDER, message.getSender()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_TIMESTAMP, Long.valueOf(messageinfo.timestampGet().getTime()).toString()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_BODY, messageinfo.stBody()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_SENDER, messageinfo.stSender()));
         return rgparams;
     }
     
+    /**
+     * @param userinfo         User info object
+     * @return the list of parameters as basic name value pairs
+     */
     private static List<NameValuePair> rgparamsUserBasicInfo(UserInfo userinfo) {
         List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, userinfo.getRegistrationId()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, userinfo.getUserName()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, userinfo.getPassword()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, userinfo.stRegistrationId()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, userinfo.stUserName()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, userinfo.stPassword()));
         return rgparams;
     }
     
+    /**
+     * @param chatroominfo         Chat room info object
+     * @return the list of parameters as basic name value pairs
+     */
     private static List<NameValuePair> rgparamsChatRoomBasicInfo(ChatRoomInfo chatroominfo) {
         List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_NAME, chatroominfo.getName()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_ID, chatroominfo.getId()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_DESCRIPTION, chatroominfo.getDescription()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_NAME, chatroominfo.stName()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_ID, chatroominfo.stId()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_DESCRIPTION, chatroominfo.stDescription()));
         return rgparams;
     }
     
-    private static RequestResultSet makePostRequest(List<NameValuePair> rgparams, String url) {
+    /**
+     * @param rgparam         List of parameters to embed in the request
+     * @param stUrl			The url to send the request to
+     * @return A resultset containing the result of the request
+     */
+    private static RequestResultSet rrsMakePostRequest(List<NameValuePair> rgparam, String stUrl) {
     	JSONObject json = null;
     	JSONParser jsonParser = new JSONParser();
-		json = jsonParser.makeHttpRequest(url, "POST", rgparams);
+		json = jsonParser.makeHttpRequest(stUrl, "POST", rgparam);
         try {
         	boolean fSucceeded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
         	String stErrorCode = fSucceeded ? "NO ERROR MESSAGE" : json.getString(ResponseParameters.PARAMETER_ERROR_CODE);
@@ -69,10 +96,15 @@ public class ChatManager {
     	return null;
     }
     
-    private static PullMessageResultSet rgmessagePostRequest(List<NameValuePair> rgparams, String url) {
+    /** Sends a message/chatroom specific request.
+     * @param rgparam         List of parameters to embed in the request
+     * @param stUrl			The url to send the request to
+     * @return A resultset containing the result of the request
+     */
+    private static PullMessageResultSet pmrsPostRequest(List<NameValuePair> rgparam, String stUrl) {
     	JSONObject json = null;
     	JSONParser jsonParser = new JSONParser();
-		json = jsonParser.makeHttpRequest(url, "POST", rgparams);
+		json = jsonParser.makeHttpRequest(stUrl, "POST", rgparam);
         try {
         	boolean fSucceeded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
         	if (fSucceeded) {
@@ -96,61 +128,107 @@ public class ChatManager {
     	return null;
     }
 	
-	public static RequestResultSet authenticateUser(UserInfo userinfo) {
+    /** Authenticates a user
+     * @param userinfo		The user to authenticate
+     * @return A resultset containing the result of the authentication
+     */
+	public static RequestResultSet rrsAuthenticateUser(UserInfo userinfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
-        return makePostRequest(rgparams, url_authenticate);
+        return rrsMakePostRequest(rgparams, url_authenticate);
 	}
 	
-	public static RequestResultSet addUser(UserInfo userinfo) {
+    /** Adds a user
+     * @param userinfo		The user to add
+     * @return A resultset containing the result of the addition
+     */
+	public static RequestResultSet rrsAddUser(UserInfo userinfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
-        return makePostRequest(rgparams, url_add_user);
+        return rrsMakePostRequest(rgparams, url_add_user);
 	}
 	
-	public static RequestResultSet removeUser(UserInfo userinfo) {
+    /** Remove a user
+     * @param userinfo		The user to remove
+     * @return A resultset containing the result of the removal
+     */
+	public static RequestResultSet rrsRemoveUser(UserInfo userinfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
-        return makePostRequest(rgparams, url_remove_user);
+        return rrsMakePostRequest(rgparams, url_remove_user);
 	}
 	
-	public static RequestResultSet changePassword(UserInfo userinfo, String stPasswordNew) {
+    /** Changes a user's password
+     * @param userinfo		The user to change
+     * @param stPasswordNew		The new password
+     * @return A resultset containing the result of the change
+     */
+	public static RequestResultSet rrsChangePassword(UserInfo userinfo, String stPasswordNew) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_PWORD, stPasswordNew));
-        return makePostRequest(rgparams, url_change_password);
+        return rrsMakePostRequest(rgparams, url_change_password);
 	}
 	
-	public static RequestResultSet changeID(UserInfo userinfo, String stIdNew) {
+    /** Changes a user's ID
+     * @param userinfo		The user to change
+     * @param stIdNew		The new ID
+     * @return A resultset containing the result of the change
+     */
+	public static RequestResultSet rrsChangeID(UserInfo userinfo, String stIdNew) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_REG_ID, stIdNew));
-        return makePostRequest(rgparams, url_change_id);
+        return rrsMakePostRequest(rgparams, url_change_id);
 	}
 	
-	public static RequestResultSet addRoom(ChatRoomInfo chatroominfo, UserInfo userinfo) {
+    /** Adds a new chatroom
+     * @param chatroominfo		The chatroom to add
+     * @param userinfo		The user to associate with the new room
+     * @return A resultset containing the result of the addition
+     */
+	public static RequestResultSet rrsAddRoom(ChatRoomInfo chatroominfo, UserInfo userinfo) {
         List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
         rgparams.addAll(rgparamsUserBasicInfo(userinfo));
-		return makePostRequest(rgparams, url_add_room);
+		return rrsMakePostRequest(rgparams, url_add_room);
 	}
 	
-	public static RequestResultSet joinRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
+    /** Joins a user to a chatroom
+     * @param chatroominfo		The chatroom to join
+     * @param userinfo		The user to join into the room
+     * @return A resultset containing the result of the join
+     */
+	public static RequestResultSet rrsJoinRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
-		return makePostRequest(rgparams, url_join_room);
+		return rrsMakePostRequest(rgparams, url_join_room);
 	}
 	
-	public static RequestResultSet leaveRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
+    /** Leaves a chatroom
+     * @param chatroominfo		The chatroom to leave
+     * @param userinfo		The user leaving the room
+     * @return A resultset containing the result of the leave
+     */
+	public static RequestResultSet rrsLeaveRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
-		return makePostRequest(rgparams, url_leave_room);
+		return rrsMakePostRequest(rgparams, url_leave_room);
 	}
 	
-	public static RequestResultSet postMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo message) {
+    /** Posts a message to a chatroom
+     * @param chatroominfo		The chatroom to post a message to
+     * @param userinfo		The user posting the message
+     * @return A resultset containing the result of the post
+     */
+	public static RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo message) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
         rgparams.addAll(rgparamsMessageInfo(message));
-		return makePostRequest(rgparams, url_post_message);
+		return rrsMakePostRequest(rgparams, url_post_message);
 	}
 	
-	public static PullMessageResultSet rgstChatLogGet(ChatRoomInfo chatroominfo) {
+    /** Returns the chatlog for a certain chatroom
+     * @param chatroominfo		The chatroom to pull the log from
+     * @return A resultset containing the result of the pull
+     */
+	public static PullMessageResultSet pmrsChatLogGet(ChatRoomInfo chatroominfo) {
         List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
-		return rgmessagePostRequest(rgparams, url_get_all_messages);
+		return pmrsPostRequest(rgparams, url_get_all_messages);
 	}
 	
 	/**
@@ -164,7 +242,7 @@ public class ChatManager {
 	 *                     it returns a list of MessageInfo that have a timestamp later than the given
 	 *                     timestamp
 	 */
-	public static PullMessageResultSet pullmessageresultsetChatRecentChat(ChatRoomInfo chatroominfo, Timestamp timestamp) {
+	public static PullMessageResultSet pmrsChatRecentChat(ChatRoomInfo chatroominfo, Timestamp timestamp) {
 		long rawtimestamp = timestamp.getTime();
 		String stTimestamp = "";
 		try {
@@ -175,11 +253,7 @@ public class ChatManager {
 		}
 		List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
 		rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_TIMESTAMP, stTimestamp));
-		return rgmessagePostRequest(rgparams, url_get_recent_messages);
-	}
-	
-	public static RequestResultSet unregisterDevice() {
-		return null;
+		return pmrsPostRequest(rgparams, url_get_recent_messages);
 	}
 	
 }

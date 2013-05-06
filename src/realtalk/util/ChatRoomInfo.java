@@ -13,33 +13,33 @@ import java.util.Date;
  *
  */
 public class ChatRoomInfo {
-    private String name;
-    private String id;
-    private String description;
+    private String stName;
+    private String stId;
+    private String stDescription;
     private double latitude;
     private double longitude;
-    private String creator;
+    private String stCreator;
     private int numUsers;
     private Timestamp timestampCreated;
     
     /**
-     * @param name         Chat Room Name
-     * @param id           Chat Room ID
-     * @param description  Chat Room description
+     * @param stName         Chat Room Name
+     * @param stId           Chat Room ID
+     * @param stDescription  Chat Room description
      * @param latitude     Chat Room latitude
      * @param longitude    Chat Room longitude
-     * @param creator      Chat Room Creator
+     * @param stCreator      Chat Room Creator
      * @param numUsers     Number of users in chat room
      * @param timestampCreated    Timestamp of when room was created.
      */
-    public ChatRoomInfo(String name, String id, String description, double latitude,
-            double longitude, String creator, int numUsers, Timestamp timestampCreated) {
-        this.name = name;
-        this.id = id;
-        this.description = description;
+    public ChatRoomInfo(String stName, String stId, String stDescription, double latitude,
+            double longitude, String stCreator, int numUsers, Timestamp timestampCreated) {
+        this.stName = stName;
+        this.stId = stId;
+        this.stDescription = stDescription;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.creator = creator;
+        this.stCreator = stCreator;
         this.numUsers = numUsers;
         if (timestampCreated == null) {
         	// Stamp it here
@@ -50,25 +50,25 @@ public class ChatRoomInfo {
     }
     
     /**
-     * @param name         Chat Room Name
-     * @param id           Chat Room Id
-     * @param description  Chat Room description
+     * @param stName         Chat Room Name
+     * @param stId           Chat Room Id
+     * @param stDescription  Chat Room description
      * @param latitude     Chat Room latitude
      * @param longitude    Chat Room longitude
-     * @param creator      Chat Room Creator
+     * @param stCreator      Chat Room Creator
      * @param numUsers     Number of users in chat room
      * @param timestampCreated    Timestamp of when room was created in the
      *                     form of a long where it is the milliseconds 
      *                     since January 1, 1970, 00:00:00 GMT
      */
-    public ChatRoomInfo(String name, String id, String description, double latitude,
-            double longitude, String creator, int numUsers, long timestampCreated) {
-        this.name = name;
-        this.id = id;
-        this.description = description;
+    public ChatRoomInfo(String stName, String stId, String stDescription, double latitude,
+            double longitude, String stCreator, int numUsers, long timestampCreated) {
+        this.stName = stName;
+        this.stId = stId;
+        this.stDescription = stDescription;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.creator = creator;
+        this.stCreator = stCreator;
         this.numUsers = numUsers;
         this.timestampCreated = new Timestamp(timestampCreated);
     }
@@ -76,22 +76,22 @@ public class ChatRoomInfo {
     /**
      * @return the name
      */
-    public String getName() {
-        return name;
+    public String stName() {
+        return stName;
     }
 
     /**
      * @return the id
      */
-    public String getId() {
-        return id;
+    public String stId() {
+        return stId;
     }
 
     /**
      * @return the description
      */
-    public String getDescription() {
-    	return description;
+    public String stDescription() {
+    	return stDescription;
     }
 
     /**
@@ -111,21 +111,21 @@ public class ChatRoomInfo {
     /**
      * @return the creator
      */
-    public String getCreator() {
-        return creator;
+    public String stCreator() {
+        return stCreator;
     }
 
     /**
      * @return the numUsers
      */
-    public int getNumUsers() {
+    public int numUsersGet() {
         return numUsers;
     }
 
 	/**
 	 * @return the timeStampCreated
 	 */
-	public Timestamp getTimeStampCreated() {
+	public Timestamp timestampCreated() {
 		return new Timestamp(timestampCreated.getTime());
 	}
 

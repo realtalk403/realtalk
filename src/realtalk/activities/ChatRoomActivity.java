@@ -85,7 +85,7 @@ public class ChatRoomActivity extends Activity {
 		String value = text.getText().toString();
 		
 		MessageInfo message = new MessageInfo
-				(value, user.getUserName(), new Timestamp(System.currentTimeMillis()));
+				(value, user.stUserName(), new Timestamp(System.currentTimeMillis()));
 		
 		new MessageSender(message, room).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		text.setText("");
@@ -117,7 +117,7 @@ public class ChatRoomActivity extends Activity {
 		 */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
-			return ChatManager.postMessage(user, chatroominfo, message);
+			return ChatManager.rrsPostMessage(user, chatroominfo, message);
 		}
 		
 	}
@@ -149,7 +149,7 @@ public class ChatRoomActivity extends Activity {
 		@Override
 		protected PullMessageResultSet doInBackground(String... params) {
 			while (true) {
-				PullMessageResultSet result = ChatManager.pullmessageresultsetChatRecentChat
+				PullMessageResultSet result = ChatManager.pmrsChatRecentChat
 						(chatroominfo, new Timestamp(System.currentTimeMillis()-10000000));
 				
 				messages = result.rgmessage;
@@ -160,8 +160,8 @@ public class ChatRoomActivity extends Activity {
 						adapter.clear();
 						
 						for (int i = 0; i < messages.size(); i++) {
-							String displayedMessage = messages.get(i).getSender() + ": " + 
-									messages.get(i).getBody();
+							String displayedMessage = messages.get(i).stSender() + ": " + 
+									messages.get(i).stBody();
 							adapter.add(displayedMessage);
 						}
 					}
@@ -207,9 +207,9 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
-			RequestResultSet rrs = ChatManager.addRoom(room, user);
+			RequestResultSet rrs = ChatManager.rrsAddRoom(room, user);
 			if (!rrs.fSucceeded) {
-				rrs = ChatManager.joinRoom(user, room);
+				rrs = ChatManager.rrsJoinRoom(user, room);
 				if (!rrs.fSucceeded) {
 					throw new RuntimeException("server error");
 				}

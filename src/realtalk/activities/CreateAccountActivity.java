@@ -121,7 +121,7 @@ public class CreateAccountActivity extends Activity {
 	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.addUser(user);
+        	return ChatManager.rrsAddUser(user);
         }
         
         @Override

@@ -49,21 +49,21 @@ public class MessageInfo implements Comparable<MessageInfo> {
     /**
      * @return the body
      */
-    public String getBody() {
+    public String stBody() {
         return body;
     }
 
     /**
      * @return the sender
      */
-    public String getSender() {
+    public String stSender() {
         return sender;
     }
     
     /**
      * @return the timestamp
      */
-	public Timestamp getTimeStamp() {
+	public Timestamp timestampGet() {
 		return new Timestamp(timeStamp.getTime());
 	}
 	

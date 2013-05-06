@@ -21,38 +21,51 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+/**
+ * JSONParser is a helper class that makes a generic POST/GET request to a given url,
+ * with embedded params.
+ * 
+ * @author Taylor Williams / Colin Kho
+ *
+ */
 public class JSONParser {
 
-    static InputStream is = null;
-    static JSONObject jObj= null;
-    static String json = "";
+    static InputStream inputstream = null;
+    static JSONObject jsonobject = null;
+    static String stJson = "";
 
     public JSONParser() {}
     
-    public JSONObject makeHttpRequest(String url, String method, List<NameValuePair> params) {
+    /** Sends a request to a url with given params
+     * @param stUrl		The url to send the request to
+     * @param stMethod	POST or GET
+     * @param rgparams	a list of parameters to embed in the request
+     *	@return a JSONObject with the result of the request
+     */
+    public JSONObject makeHttpRequest(String stUrl, String stMethod, List<NameValuePair> rgparams) {
         try {
             // check for request method
-            if(method == "POST"){
+            if(stMethod == "POST"){
                 // request method is POST
                 // defaultHttpClient
-                DefaultHttpClient httpClient = new DefaultHttpClient();
-                HttpPost httpPost = new HttpPost(url);
-                httpPost.setEntity(new UrlEncodedFormEntity(params));
+                DefaultHttpClient httpclient = new DefaultHttpClient();
+                HttpPost httppost = new HttpPost(stUrl);
+                httppost.setEntity(new UrlEncodedFormEntity(rgparams));
  
-                HttpResponse httpResponse = httpClient.execute(httpPost);
-                HttpEntity httpEntity = httpResponse.getEntity();
-                is = httpEntity.getContent();
+                HttpResponse httpresponse = httpclient.execute(httppost);
+                HttpEntity httpentity = httpresponse.getEntity();
+                inputstream = httpentity.getContent();
  
-            }else if(method == "GET"){
+            }else if(stMethod == "GET"){
                 // request method is GET
-                DefaultHttpClient httpClient = new DefaultHttpClient();
-                String paramString = URLEncodedUtils.format(params, "utf-8");
-                url += "?" + paramString;
-                HttpGet httpGet = new HttpGet(url);
+                DefaultHttpClient httpclient = new DefaultHttpClient();
+                String stParam = URLEncodedUtils.format(rgparams, "utf-8");
+                stUrl += "?" + stParam;
+                HttpGet httpget = new HttpGet(stUrl);
  
-                HttpResponse httpResponse = httpClient.execute(httpGet);
-                HttpEntity httpEntity = httpResponse.getEntity();
-                is = httpEntity.getContent();
+                HttpResponse httpresponse = httpclient.execute(httpget);
+                HttpEntity httpentity = httpresponse.getEntity();
+                inputstream = httpentity.getContent();
             } 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -64,26 +77,26 @@ public class JSONParser {
         
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    is, "iso-8859-1"), 8);
-            StringBuilder sb = new StringBuilder();
+                    inputstream, "iso-8859-1"), 8);
+            StringBuilder stringbuilder = new StringBuilder();
             String line = null;
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                stringbuilder.append(line + "\n");
             }
-            is.close();
-            json = sb.toString();
+            inputstream.close();
+            stJson = stringbuilder.toString();
         } catch (Exception e) {
             Log.e("Buffer Error", "Error converting result " + e.toString());
         }
  
         // try parse the string to a JSON object
         try {
-            jObj = new JSONObject(json);
+            jsonobject = new JSONObject(stJson);
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
         }
  
         // return JSON String
-        return jObj;
+        return jsonobject;
     }
 }
