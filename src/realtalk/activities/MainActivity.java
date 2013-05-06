@@ -178,7 +178,7 @@ public class MainActivity extends Activity {
 	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.removeUser(user);
+        	return ChatManager.rrsRemoveUser(user);
         }
         
         @Override
@@ -259,7 +259,7 @@ public class MainActivity extends Activity {
 	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.authenticateUser(user);
+        	return ChatManager.rrsAuthenticateUser(user);
         }
         
         @Override

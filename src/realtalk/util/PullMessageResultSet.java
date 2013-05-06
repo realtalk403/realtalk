@@ -3,6 +3,13 @@ package realtalk.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is used as a container containing a succession flag and error codes/messages.
+ * Used for indicating the result of a post request.
+ * 
+ * @author Taylor Williams
+ *
+ */
 public class PullMessageResultSet {
 	//shows if pull message request succeeded
 	boolean fSucceeded;

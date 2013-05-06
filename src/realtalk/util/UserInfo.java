@@ -10,39 +10,39 @@ package realtalk.util;
  *
  */
 public class UserInfo {
-    private String name;
-    private String password;
-    private String registrationId;
+    private String stName;
+    private String stPassword;
+    private String stRegistrationId;
     
     /**
-     * @param name           User's Name
-     * @param password       User's Password
-     * @param registrationId User's Google Cloud Messaging Registration ID
+     * @param stName           User's Name
+     * @param stPassword       User's Password
+     * @param stRegistrationId User's Google Cloud Messaging Registration ID
      */
-    public UserInfo(String userName, String password, String registrationId) {
-        this.name = userName;
-        this.password = password;
-        this.registrationId = registrationId;
+    public UserInfo(String stName, String stPassword, String stRegistrationId) {
+        this.stName = stName;
+        this.stPassword = stPassword;
+        this.stRegistrationId = stRegistrationId;
     }
 
     /**
      * @return the userName
      */
-    public String getUserName() {
-        return name;
+    public String stUserName() {
+        return stName;
     }
 
     /**
      * @return the password
      */
-    public String getPassword() {
-        return password;
+    public String stPassword() {
+        return stPassword;
     }
 
     /**
      * @return the registrationId
      */
-    public String getRegistrationId() {
-        return registrationId;
+    public String stRegistrationId() {
+        return stRegistrationId;
     }
 }
