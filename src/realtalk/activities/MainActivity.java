@@ -18,11 +18,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.realtalk.R;
-
+/**
+ * 
+ * @author blee92
+ *
+ */
 public class MainActivity extends Activity {
     
 	private static final String DEFAULT_ID = "someID";
-    private ProgressDialog pDialog;
+    private ProgressDialog progressdialog;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,16 +64,16 @@ public class MainActivity extends Activity {
 	    String stPword = edittextPword.getText().toString();
 	    
 	    if(stUsername.equals("") || stPword.equals("")) {	    	
-	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+	    	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
-			alertDialogBuilder.setTitle("Invalid input");
+			alertdialogbuilder.setTitle("Invalid input");
 			
 			//set dialog message
-			alertDialogBuilder
+			alertdialogbuilder
 				.setMessage("Please enter a username & password.")
 				.setCancelable(false);
 			
-			alertDialogBuilder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+			alertdialogbuilder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					// User cancelled the dialog
 					dialog.cancel();
@@ -77,7 +81,7 @@ public class MainActivity extends Activity {
 			});
 			
 			//create alert dialog
-			AlertDialog alertdialogEmptyFields = alertDialogBuilder.create();
+			AlertDialog alertdialogEmptyFields = alertdialogbuilder.create();
 			
 			//show alert dialog
 			alertdialogEmptyFields.show();	
@@ -159,40 +163,40 @@ public class MainActivity extends Activity {
 
 
 	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
-		private UserInfo user;
+		private UserInfo userinfo;
 		private Activity activity;
-		public UserRemover(UserInfo user, Activity activity) {
-			this.user = user;
+		public UserRemover(UserInfo userinfo, Activity activity) {
+			this.userinfo = userinfo;
 			this.activity = activity;
 		}
 		
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Loading user details. Please wait...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
+            progressdialog = new ProgressDialog(MainActivity.this);
+            progressdialog.setMessage("Loading user details. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
         }
 	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.rrsRemoveUser(user);
+        	return ChatManager.rrsRemoveUser(userinfo);
         }
         
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
-            pDialog.dismiss();
+            progressdialog.dismiss();
             if(requestresultset.fSucceeded == false) {
             	//invalid username or password
             	
-            	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
-				alertDialogBuilder.setTitle("Invalid fields");
+				alertdialogbuilder.setTitle("Invalid fields");
 				
 				//set dialog message
-				alertDialogBuilder
+				alertdialogbuilder
 					.setMessage("Invalid username/password. Please try again.")
 					.setCancelable(false)
 					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
@@ -203,7 +207,7 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertdialogBadPword = alertDialogBuilder.create();
+				AlertDialog alertdialogBadPword = alertdialogbuilder.create();
 				
 				//show alert dialog
 				alertdialogBadPword.show();	
@@ -239,41 +243,41 @@ public class MainActivity extends Activity {
 	}
 	
 	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
-		private UserInfo user;
+		private UserInfo userinfo;
 		private Activity activity;
 		
-		public Authenticator(UserInfo user, Activity activity) {
-			this.user = user;
+		public Authenticator(UserInfo userinfo, Activity activity) {
+			this.userinfo = userinfo;
 			this.activity = activity;
 		}
 		
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Loading user details. Please wait...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
+            progressdialog = new ProgressDialog(MainActivity.this);
+            progressdialog.setMessage("Loading user details. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
         }
 	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.rrsAuthenticateUser(user);
+        	return ChatManager.rrsAuthenticateUser(userinfo);
         }
         
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
 
-            pDialog.dismiss();       
+            progressdialog.dismiss();
             //invalid username/password
             if(requestresultset.fSucceeded == false) {
-            	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
-				alertDialogBuilder.setTitle("Invalid fields");
+				alertdialogbuilder.setTitle("Invalid fields");
 				
 				//set dialog message
-				alertDialogBuilder
+				alertdialogbuilder
 					.setMessage("Invalid username/password. Please try again.")
 					.setCancelable(false)
 					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
@@ -284,7 +288,7 @@ public class MainActivity extends Activity {
 				});
 				
 				//create alert dialog
-				AlertDialog alertdialogBadPword = alertDialogBuilder.create();
+				AlertDialog alertdialogBadPword = alertdialogbuilder.create();
 				
 				//show alert dialog
 				alertdialogBadPword.show();	
@@ -303,7 +307,6 @@ public class MainActivity extends Activity {
                 viewRs.putExtra("PASSWORD", pWord);
         		activity.startActivity(viewRs);
             }
-
         }
 	}
 }
