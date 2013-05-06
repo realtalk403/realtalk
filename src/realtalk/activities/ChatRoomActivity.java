@@ -33,7 +33,6 @@ import android.widget.ListView;
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChatRoomActivity extends Activity {
-	private static final String DEFAULT_ID = "someID";
 	ChatRoomInfo chatroominfo;
 	UserInfo userinfo;
 	private ProgressDialog progressdialog;
@@ -52,10 +51,8 @@ public class ChatRoomActivity extends Activity {
 		
 		chatroominfo = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
 		Bundle extras = getIntent().getExtras();
-		String stUsername = extras.getString("USER_NAME");
-		String stPword = extras.getString("PASSWORD");
+		userinfo = extras.getParcelable("USER");
 		
-		userinfo = new UserInfo(stUsername, stPword, DEFAULT_ID);
 		new RoomCreator(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		rgstDisplayMessage = new ArrayList<String>();

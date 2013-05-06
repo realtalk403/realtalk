@@ -303,8 +303,8 @@ public class LoginActivity extends Activity {
         		String pWord = pWordText.getText().toString();
         		
                 Intent viewRs = new Intent(activity, SelectRoomActivity.class);
-                viewRs.putExtra("USER_NAME", uName);
-                viewRs.putExtra("PASSWORD", pWord);
+                UserInfo userinfo = new UserInfo(uName, pWord, DEFAULT_ID);
+                viewRs.putExtra("USER", userinfo);
         		activity.startActivity(viewRs);
             }
         }
