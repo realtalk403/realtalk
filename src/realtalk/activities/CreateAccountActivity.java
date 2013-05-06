@@ -180,7 +180,7 @@ public class CreateAccountActivity extends Activity {
 				alertdialogBadUname.show();	
             } else {
             	//redirect back to LoginActivity if successful
-            	Intent createAcc = new Intent(activity, MainActivity.class);
+            	Intent createAcc = new Intent(activity, LoginActivity.class);
 				activity.startActivity(createAcc);
             } 
         }

@@ -23,7 +23,7 @@ import com.example.realtalk.R;
  * @author blee92
  *
  */
-public class MainActivity extends Activity {
+public class LoginActivity extends Activity {
     
 	private static final String DEFAULT_ID = "someID";
     private ProgressDialog progressdialog;
@@ -142,7 +142,7 @@ public class MainActivity extends Activity {
 				    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 				    String stUsername = edittextUser.getText().toString();
 				    String stPword = edittextPword.getText().toString();
-				    new UserRemover(new UserInfo(stUsername, stPword, DEFAULT_ID), MainActivity.this).execute();
+				    new UserRemover(new UserInfo(stUsername, stPword, DEFAULT_ID), LoginActivity.this).execute();
 				}	
 			});
 			
@@ -173,7 +173,7 @@ public class MainActivity extends Activity {
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressdialog = new ProgressDialog(MainActivity.this);
+            progressdialog = new ProgressDialog(LoginActivity.this);
             progressdialog.setMessage("Loading user details. Please wait...");
             progressdialog.setIndeterminate(false);
             progressdialog.setCancelable(true);
@@ -254,7 +254,7 @@ public class MainActivity extends Activity {
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressdialog = new ProgressDialog(MainActivity.this);
+            progressdialog = new ProgressDialog(LoginActivity.this);
             progressdialog.setMessage("Loading user details. Please wait...");
             progressdialog.setIndeterminate(false);
             progressdialog.setCancelable(true);
