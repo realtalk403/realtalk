@@ -64,7 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/editQuery"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/realtalk" />
+        android:src="@drawable/realtalklogo" />
 
     <TextView
         android:id="@+id/textView1"
