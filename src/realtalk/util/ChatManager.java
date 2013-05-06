@@ -23,7 +23,7 @@ public class ChatManager {
 	//	rrs		RequestResultSet
 	//	pmrs	PullMessageResultSet
 	
-	public static final String url_qualifier = "http://realtalkserver.herokuapp.com/";
+	public static final String url_qualifier = "http://realtalkserveralpha.herokuapp.com/";
 	
 	//User servlets
     public static final String url_add_user = url_qualifier+"register";
