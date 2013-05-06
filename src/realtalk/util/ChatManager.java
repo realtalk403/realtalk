@@ -38,11 +38,11 @@ public class ChatManager {
         return rgparams;
     }
     
-    private static List<NameValuePair> rgparamsUserBasicInfo(User user) {
+    private static List<NameValuePair> rgparamsUserBasicInfo(UserInfo userinfo) {
         List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, user.getId()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, user.getUsername()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, user.getPassword()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, userinfo.getRegistrationId()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, userinfo.getUserName()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, userinfo.getPassword()));
         return rgparams;
     }
     
@@ -96,53 +96,53 @@ public class ChatManager {
     	return null;
     }
 	
-	public static RequestResultSet authenticateUser(User user) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+	public static RequestResultSet authenticateUser(UserInfo userinfo) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         return makePostRequest(rgparams, url_authenticate);
 	}
 	
-	public static RequestResultSet addUser(User user) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+	public static RequestResultSet addUser(UserInfo userinfo) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         return makePostRequest(rgparams, url_add_user);
 	}
 	
-	public static RequestResultSet removeUser(User user) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+	public static RequestResultSet removeUser(UserInfo userinfo) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         return makePostRequest(rgparams, url_remove_user);
 	}
 	
-	public static RequestResultSet changePassword(User user, String stPasswordNew) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+	public static RequestResultSet changePassword(UserInfo userinfo, String stPasswordNew) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_PWORD, stPasswordNew));
         return makePostRequest(rgparams, url_change_password);
 	}
 	
-	public static RequestResultSet changeID(User user, String stIdNew) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+	public static RequestResultSet changeID(UserInfo userinfo, String stIdNew) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_REG_ID, stIdNew));
         return makePostRequest(rgparams, url_change_id);
 	}
 	
-	public static RequestResultSet addRoom(ChatRoomInfo chatroominfo, User user) {
+	public static RequestResultSet addRoom(ChatRoomInfo chatroominfo, UserInfo userinfo) {
         List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
-        rgparams.addAll(rgparamsUserBasicInfo(user));
+        rgparams.addAll(rgparamsUserBasicInfo(userinfo));
 		return makePostRequest(rgparams, url_add_room);
 	}
 	
-	public static RequestResultSet joinRoom(User user, ChatRoomInfo chatroominfo) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+	public static RequestResultSet joinRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
 		return makePostRequest(rgparams, url_join_room);
 	}
 	
-	public static RequestResultSet leaveRoom(User user, ChatRoomInfo chatroominfo) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+	public static RequestResultSet leaveRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
 		return makePostRequest(rgparams, url_leave_room);
 	}
 	
-	public static RequestResultSet postMessage(User user, ChatRoomInfo chatroominfo, MessageInfo message) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(user);
+	public static RequestResultSet postMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo message) {
+        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
         rgparams.addAll(rgparamsMessageInfo(message));
 		return makePostRequest(rgparams, url_post_message);

@@ -21,6 +21,7 @@ public class SelectRoomActivity extends Activity {
 		setContentView(R.layout.activity_select_room);
 		
 		ListView listView = (ListView) findViewById(R.id.list);
+		listView.setClickable(false);
 		
         listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
