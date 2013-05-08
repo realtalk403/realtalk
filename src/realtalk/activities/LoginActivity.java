@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.example.realtalk.R;
 /**
+ * Activity for login page
  * 
  * @author Brandon
  *
@@ -38,13 +39,16 @@ public class LoginActivity extends Activity {
     private EditText edittextPword;
     
     
-    
+    /**
+     * Sets up activity
+     */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
 		
+		// For remembering username/password 
 		edittextUser = (EditText) findViewById(R.id.editQuery);
 		edittextPword = (EditText) findViewById(R.id.editPword);
 		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme);
@@ -53,13 +57,14 @@ public class LoginActivity extends Activity {
 		
 		fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
 		
-		if(fRememberMe) {
+		if(fRememberMe) {	
+			//loading saved username/password if setting is on
 			edittextUser.setText(sharedpreferencesLoginPrefs.getString("username", null));
 			edittextPword.setText(sharedpreferencesLoginPrefs.getString("password", null));
 			checkboxRememberMe.setChecked(true);
 		}
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -110,11 +115,13 @@ public class LoginActivity extends Activity {
 			alertdialogEmptyFields.show();	
 	    } else {
 	    	if(checkboxRememberMe.isChecked()) {
+	    		//stores login info if "Remember Me" checkbox is checked
 	    		editorLoginPrefs.putBoolean("saveLogin", true);
 	    		editorLoginPrefs.putString("username", stUsername);
 	    		editorLoginPrefs.putString("password", stPword);
 	    		editorLoginPrefs.commit();
 	    	} else {
+	    		//clears existing login info if "Remember Me" checkbox is not checked
 	    		editorLoginPrefs.clear();
 	    		editorLoginPrefs.commit();
 	    	}
@@ -193,7 +200,7 @@ public class LoginActivity extends Activity {
 		}
 	}
 
-
+	
 	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
 		private UserInfo userinfo;
 		private Activity activity;
@@ -274,15 +281,31 @@ public class LoginActivity extends Activity {
         }
 	}
 	
+	/**
+	 * Authenticates a user in the database 
+	 * 
+	 * @author Brandon
+	 *
+	 */
 	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
 		private UserInfo userinfo;
 		private Activity activity;
 		
+		/**
+		 * Constructs an Authenticator object
+		 * 
+		 * @param userinfo user to be authenticated
+		 * @param activity the activity context
+		 */
 		public Authenticator(UserInfo userinfo, Activity activity) {
 			this.userinfo = userinfo;
 			this.activity = activity;
 		}
 		
+		/**
+		 * Pop up dialog while user is being authenticated 
+		 * 
+		 */
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -293,11 +316,18 @@ public class LoginActivity extends Activity {
             progressdialog.show();
         }
 	    
+	    /**
+	     * Authenticates user in the database
+	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
         	return ChatManager.rrsAuthenticateUser(userinfo);
         }
         
+        /**
+         * Prompts user if their username/password were incorrect.  Otherwise, redirects
+         * to the Select Rooms activity.
+         */
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
 

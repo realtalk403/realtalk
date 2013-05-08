@@ -17,11 +17,19 @@ import android.widget.EditText;
 
 import com.example.realtalk.R;
 
+/**
+ * Activity for Account Settings
+ * 
+ * @author Brandon
+ *
+ */
 public class AccountSettingsActivity extends Activity {
 	private static final String DEFAULT_ID = "someID";
 	private ProgressDialog progressdialog;
 
-
+	/**
+	 * Sets up activity
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,6 +44,11 @@ public class AccountSettingsActivity extends Activity {
 		return true;
 	}
 	
+	/**
+	 * Method called when user submits to change his/her password
+	 * 
+	 * @param view
+	 */
 	public void changePword(View view) {
 		EditText edittextOldPword = (EditText) findViewById(R.id.oldpword);
 		EditText edittextNewPword = (EditText) findViewById(R.id.newpword);
@@ -74,6 +87,11 @@ public class AccountSettingsActivity extends Activity {
 	}
 	
 	
+	/**
+	 * Method called when user wants to delete account
+	 * 
+	 * @param view
+	 */
 	public void deleteAccount(View view) {
 		//confirmation pop up
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -108,6 +126,12 @@ public class AccountSettingsActivity extends Activity {
 	}
 
 	
+	/**
+	 * Changes a user's password
+	 * 
+	 * @author Brandon
+	 *
+	 */
 	class PwordChanger extends AsyncTask<String, String, RequestResultSet> {
 		private UserInfo userinfo;
 		private Activity activity;
@@ -126,7 +150,7 @@ public class AccountSettingsActivity extends Activity {
 		}
 		
 		/**
-		 * Displays a popup dialogue while adding the user
+		 * Displays a popup dialogue while changing the user's password
 		 */
 	    @Override
         protected void onPreExecute() {
@@ -139,7 +163,7 @@ public class AccountSettingsActivity extends Activity {
         }
 	    
 	    /**
-	     * Adds a user to the database
+	     * Changes the user's password in database
 	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
@@ -148,7 +172,7 @@ public class AccountSettingsActivity extends Activity {
         
         /**
          * Closes the dialogue, and lets the user know if they have input
-         * invalid fields, or if their desired username already exists
+         * invalid fields
          */
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
@@ -179,14 +203,31 @@ public class AccountSettingsActivity extends Activity {
         }
 	}
 	
+	
+	/**
+	 * Removes a user from the database 
+	 * 
+	 * @author Brandon
+	 *
+	 */
 	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
 		private UserInfo userinfo;
 		private Activity activity;
+		
+		/**
+		 * Constructs a UserRemover object
+		 * 
+		 * @param userinfo the user to remove
+		 * @param activity the activity context
+		 */
 		public UserRemover(UserInfo userinfo, Activity activity) {
 			this.userinfo = userinfo;
 			this.activity = activity;
 		}
 		
+		/**
+		 * Displays a popup dialog while account is being removed
+		 */
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -197,11 +238,17 @@ public class AccountSettingsActivity extends Activity {
             progressdialog.show();
         }
 	    
+	    /**
+	     * Removes account from the database
+	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
         	return ChatManager.rrsRemoveUser(userinfo);
         }
         
+        /**
+         * Prompts the user that their account has been deleted and redirects them to login page
+         */
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
@@ -217,6 +264,9 @@ public class AccountSettingsActivity extends Activity {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();
+						
+						Intent itCreateAcc = new Intent(activity, LoginActivity.class);
+						activity.startActivity(itCreateAcc);
 					}	
 			});
 				
@@ -225,6 +275,7 @@ public class AccountSettingsActivity extends Activity {
 				
 			//show alert dialog
 			alertdialogAccDeleted.show();	
+			
         }
 	}
 }

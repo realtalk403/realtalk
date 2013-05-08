@@ -32,5 +32,6 @@
     <string name="delete_account">Delete Account</string>
     <string name="delete_acc_button">Click Here to Delete Account</string>
     <string name="remember_me">Remember Me</string>
+    <string name="logo">Logo</string>
 
 </resources>
