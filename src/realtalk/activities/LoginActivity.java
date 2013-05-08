@@ -9,30 +9,55 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.realtalk.R;
 /**
  * 
- * @author blee92
+ * @author Brandon
  *
  */
 public class LoginActivity extends Activity {
     
 	private static final String DEFAULT_ID = "someID";
     private ProgressDialog progressdialog;
+    private CheckBox checkboxRememberMe;
+    private SharedPreferences sharedpreferencesLoginPrefs;
+    private Editor editorLoginPrefs;
+    private Boolean fRememberMe;
+    private EditText edittextUser;
+    private EditText edittextPword;
+    
+    
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
+		
+		edittextUser = (EditText) findViewById(R.id.editQuery);
+		edittextPword = (EditText) findViewById(R.id.editPword);
+		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme);
+		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
+		
+		fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
+		
+		if(fRememberMe) {
+			edittextUser.setText(sharedpreferencesLoginPrefs.getString("username", null));
+			edittextPword.setText(sharedpreferencesLoginPrefs.getString("password", null));
+			checkboxRememberMe.setChecked(true);
+		}
 	}
 
 	@Override
@@ -58,8 +83,6 @@ public class LoginActivity extends Activity {
 	 * @param view
 	 */
 	public void authenticateUser(View view) {
-	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
-	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
 	    
@@ -86,6 +109,15 @@ public class LoginActivity extends Activity {
 			//show alert dialog
 			alertdialogEmptyFields.show();	
 	    } else {
+	    	if(checkboxRememberMe.isChecked()) {
+	    		editorLoginPrefs.putBoolean("saveLogin", true);
+	    		editorLoginPrefs.putString("username", stUsername);
+	    		editorLoginPrefs.putString("password", stPword);
+	    		editorLoginPrefs.commit();
+	    	} else {
+	    		editorLoginPrefs.clear();
+	    		editorLoginPrefs.commit();
+	    	}
 	    	new Authenticator(new UserInfo(stUsername, stPword, DEFAULT_ID), this).execute();
 	    }
 	    
@@ -295,7 +327,7 @@ public class LoginActivity extends Activity {
 				
 				TextView textviewPword = (TextView) findViewById(R.id.editPword);
 	            textviewPword.setText("");
-            } else {
+            } else {           	
                 EditText uNameText = (EditText)findViewById(R.id.editQuery);
         		String uName = uNameText.getText().toString();
         		

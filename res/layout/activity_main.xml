@@ -86,4 +86,13 @@
         android:onClick="addUser"
         android:text="@string/create_account" />
 
+    <CheckBox
+        android:id="@+id/rememberme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imageView1"
+        android:layout_alignTop="@+id/Button02"
+        android:layout_marginLeft="16dp"
+        android:text="@string/remember_me" />
+
 </RelativeLayout>

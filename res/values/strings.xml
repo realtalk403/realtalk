@@ -22,5 +22,15 @@
     <string name="send">Send</string>
     <string name="title_activity_select_room">SelectRoomActivity</string>
     <string name="title_activity_chat_room">ChatRoomActivity</string>
+    <string name="title_activity_account_settings">AccountSettingsActivity</string>
+    <string name="account_settings">Account Settings</string>
+    <string name="change_pword">Change Password</string>
+    <string name="old_pword">Old Password</string>
+    <string name="new_pword">New Password</string>
+    <string name="conf_new_pword">Confirm New Password</string>
+    <string name="submit">Submit</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_acc_button">Click Here to Delete Account</string>
+    <string name="remember_me">Remember Me</string>
 
 </resources>
