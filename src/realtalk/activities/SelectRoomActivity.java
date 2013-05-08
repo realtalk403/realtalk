@@ -45,7 +45,7 @@ public class SelectRoomActivity extends Activity {
 		
 		String[] rgstRoom = {"Room 001"};
 		// Binding resources Array to ListAdapter
-        listview.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, R.id.label, rgstRoom));
+        listview.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, R.id.toptext, rgstRoom));
 	}
 
 	@Override
