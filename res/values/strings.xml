@@ -33,5 +33,10 @@
     <string name="delete_acc_button">Click Here to Delete Account</string>
     <string name="remember_me">Remember Me</string>
     <string name="logo">Logo</string>
+    <string name="create_room">Create Room</string>
+    <string name="title_activity_create_room">CreateRoomActivity</string>
+    <string name="room_name_hint">Enter Room Name</string>
+    <string name="room_description_hint">Enter Room Description</string>
+    <string name="available_rooms">Available Rooms</string>
 
 </resources>

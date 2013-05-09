@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="realtalk.activities.LoginActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,6 +40,10 @@
         <activity
             android:name="realtalk.activities.AccountSettingsActivity"
             android:label="@string/title_activity_account_settings" >
+        </activity>
+        <activity
+            android:name="realtalk.activities.CreateRoomActivity"
+            android:label="@string/title_activity_create_room" >
         </activity>
     </application>
 

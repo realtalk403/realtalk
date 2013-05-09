@@ -1,8 +1,11 @@
 package realtalk.activities;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.MessageInfo;
@@ -19,11 +22,16 @@ import android.os.Bundle;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * Activity for a chat room, where the user can send/recieve messages.
@@ -33,13 +41,12 @@ import android.widget.ListView;
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChatRoomActivity extends Activity {
-	private static final String DEFAULT_ID = "someID";
 	ChatRoomInfo chatroominfo;
 	UserInfo userinfo;
 	private ProgressDialog progressdialog;
 	List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
 	List<String> rgstDisplayMessage;
-	ArrayAdapter<String> adapter;
+	MessageAdapter adapter;
 	
 	/**
 	 * Sets up the chat room activity and loads the previous
@@ -48,21 +55,20 @@ public class ChatRoomActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_chat_room);
 		
-		chatroominfo = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
+		//chatroominfo = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
 		Bundle extras = getIntent().getExtras();
-		String stUsername = extras.getString("USER_NAME");
-		String stPword = extras.getString("PASSWORD");
+		userinfo = extras.getParcelable("USER");
+		chatroominfo = extras.getParcelable("ROOM");
 		
-		userinfo = new UserInfo(stUsername, stPword, DEFAULT_ID);
 		new RoomCreator(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		rgstDisplayMessage = new ArrayList<String>();
 
 		ListView listview = (ListView) findViewById(R.id.list);
-		// Binding resources Array to ListAdapter
-		adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.label, rgstDisplayMessage);
+		adapter = new MessageAdapter(this, R.layout.list_item, rgmessageinfo);
 		listview.setAdapter(adapter);
 		
 		new MessageLoader(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -119,7 +125,6 @@ public class ChatRoomActivity extends Activity {
 		protected RequestResultSet doInBackground(String... params) {
 			return ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
 		}
-		
 	}
 	
 	/**
@@ -150,7 +155,7 @@ public class ChatRoomActivity extends Activity {
 		protected PullMessageResultSet doInBackground(String... params) {
 			while (true) {
 				PullMessageResultSet pmrsRecent = ChatManager.pmrsChatRecentChat
-						(chatroominfo, new Timestamp(System.currentTimeMillis()-10000000));
+						(chatroominfo, new Timestamp(System.currentTimeMillis()-1000000000));
 				
 				rgmessageinfo = pmrsRecent.rgmessage;
 				
@@ -159,11 +164,8 @@ public class ChatRoomActivity extends Activity {
 					public void run() {
 						adapter.clear();
 						
-						for (int i = 0; i < rgmessageinfo.size(); i++) {
-							String stMessage = rgmessageinfo.get(i).stSender() + ": " + 
-									rgmessageinfo.get(i).stBody();
-							adapter.add(stMessage);
-						}
+						for (int i = 0; i < rgmessageinfo.size(); i++)
+							adapter.add(rgmessageinfo.get(i));
 					}
 				});
 			}
@@ -224,5 +226,38 @@ public class ChatRoomActivity extends Activity {
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
 		}
+	}
+	
+	private class MessageAdapter extends ArrayAdapter<MessageInfo> {
+
+        private List<MessageInfo> rgmessageinfo;
+
+        public MessageAdapter(Context context, int textViewResourceId, List<MessageInfo> rgmessageinfo) {
+            super(context, textViewResourceId, rgmessageinfo);
+            this.rgmessageinfo = rgmessageinfo;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null) {
+                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = vi.inflate(R.layout.list_item, null);
+            }
+            MessageInfo messageinfo = rgmessageinfo.get(position);
+            if (messageinfo != null) {
+                TextView textviewTop = (TextView) view.findViewById(R.id.toptext);
+                TextView textviewBottom = (TextView) view.findViewById(R.id.bottomtext);
+                if (textviewTop != null) {
+                    textviewTop.setText(messageinfo.stSender() + ": " + messageinfo.stBody());
+                }
+                if(textviewBottom != null) {
+                	SimpleDateFormat simpledateformat = new SimpleDateFormat("hh:mm a, M/dd/yyyy", Locale.US);
+                	simpledateformat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
+                    textviewBottom.setText("\t" + simpledateformat.format(messageinfo.timestampGet()));
+                }
+            }
+            return view;
+        }
 	}
 }
