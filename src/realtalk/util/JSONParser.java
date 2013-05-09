@@ -29,11 +29,6 @@ import android.util.Log;
  *
  */
 public class JSONParser {
-
-    static InputStream inputstream = null;
-    static JSONObject jsonobject = null;
-    static String stJson = "";
-
     public JSONParser() {}
     
     /** Sends a request to a url with given params
@@ -43,6 +38,9 @@ public class JSONParser {
      *	@return a JSONObject with the result of the request
      */
     public JSONObject makeHttpRequest(String stUrl, String stMethod, List<NameValuePair> rgparams) {
+        InputStream inputstream = null;
+        JSONObject jsonobject = null;
+        String stJson = "";
         try {
             // check for request method
             if(stMethod == "POST"){
