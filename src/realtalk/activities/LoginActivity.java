@@ -1,33 +1,52 @@
-
 package realtalk.activities;
 import com.google.android.gcm.GCMRegistrar;
 import realtalk.util.ChatManager;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
+import realtalk.util.gcm.GCMUtilities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.realtalk.R;
 /**
+ * Activity for login page. This page also sets up the device for GCM.
  * 
- * @author blee92
+ * @author Brandon Lee & Colin Kho
  *
  */
 public class LoginActivity extends Activity {
     
-	private static final String DEFAULT_ID = "someID";
+	private String REG_ID = "";
     private ProgressDialog progressdialog;
+    private CheckBox checkboxRememberMe;
+    private SharedPreferences sharedpreferencesLoginPrefs;
+    private Editor editorLoginPrefs;
+    private Boolean fRememberMe;
+    private EditText edittextUser;
+    private EditText edittextPword;
     
+    
+    /**
+     * Sets up activity
+     */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,8 +56,44 @@ public class LoginActivity extends Activity {
 		GCMRegistrar.checkDevice(this);
 		GCMRegistrar.checkManifest(this);
 		setContentView(R.layout.activity_main);
+		
+		// Get the Registration ID
+		final String stRegId = GCMRegistrar.getRegistrationId(this);
+		registerReceiver(handleRegisterReceiver,
+		        new IntentFilter(GCMUtilities.GCM_REGISTER_RESULT_ACTION));
+		if (stRegId.equals("")) {
+		    // Register device for the first time.
+		    // Wait for registration result to complete.
+		    progressdialog = new ProgressDialog(LoginActivity.this);
+            progressdialog.setMessage("Initializing RealTalk resources for the first time. Please wait.....");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
+            
+            // Register Device
+            GCMRegistrar.register(this, GCMUtilities.SENDER_ID);
+		} else {
+		    // Already registered on GCM server
+		    REG_ID = stRegId;
+		}
+		
+		// For remembering username/password 
+		edittextUser = (EditText) findViewById(R.id.editQuery);
+		edittextPword = (EditText) findViewById(R.id.editPword);
+		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme);
+		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
+		
+		fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
+		
+		if(fRememberMe) {	
+			//loading saved username/password if setting is on
+			edittextUser.setText(sharedpreferencesLoginPrefs.getString("username", null));
+			edittextPword.setText(sharedpreferencesLoginPrefs.getString("password", null));
+			checkboxRememberMe.setChecked(true);
+		}
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -62,8 +117,6 @@ public class LoginActivity extends Activity {
 	 * @param view
 	 */
 	public void authenticateUser(View view) {
-	    EditText edittextUser = (EditText) findViewById(R.id.editQuery);
-	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
 	    
@@ -90,7 +143,18 @@ public class LoginActivity extends Activity {
 			//show alert dialog
 			alertdialogEmptyFields.show();	
 	    } else {
-	    	new Authenticator(new UserInfo(stUsername, stPword, DEFAULT_ID), this).execute();
+	    	if(checkboxRememberMe.isChecked()) {
+	    		//stores login info if "Remember Me" checkbox is checked
+	    		editorLoginPrefs.putBoolean("saveLogin", true);
+	    		editorLoginPrefs.putString("username", stUsername);
+	    		editorLoginPrefs.putString("password", stPword);
+	    		editorLoginPrefs.commit();
+	    	} else {
+	    		//clears existing login info if "Remember Me" checkbox is not checked
+	    		editorLoginPrefs.clear();
+	    		editorLoginPrefs.commit();
+	    	}
+	    	new Authenticator(new UserInfo(stUsername, stPword, REG_ID), this).execute();
 	    }
 	    
 	}
@@ -146,7 +210,7 @@ public class LoginActivity extends Activity {
 				    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 				    String stUsername = edittextUser.getText().toString();
 				    String stPword = edittextPword.getText().toString();
-				    new UserRemover(new UserInfo(stUsername, stPword, DEFAULT_ID), LoginActivity.this).execute();
+				    new UserRemover(new UserInfo(stUsername, stPword, REG_ID), LoginActivity.this).execute();
 				}	
 			});
 			
@@ -164,7 +228,90 @@ public class LoginActivity extends Activity {
 			alertdialogDeleteAcc.show();	
 		}
 	}
-
+	
+	public void updateRegId(UserInfo userinfo) {
+	    new UpdateRegId(userinfo, LoginActivity.this).execute();
+	}
+	
+	/**
+	 * Receiver that handles a registration intent from GCM.
+	 */
+	private final BroadcastReceiver handleRegisterReceiver =
+	        new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String stResultCode = intent.getExtras().getString(GCMUtilities.RESULT_MESSAGE);
+                    CharSequence charsequenceText = "";
+                    if (stResultCode.equals(GCMUtilities.SUCCESS)) {
+                        REG_ID = intent.getExtras().getString(GCMUtilities.GCM_REG_ID);
+                        charsequenceText = "Initialization Complete";
+                    } else {
+                        // Registration failed. Alert user and lock app asking them to try again later.
+                        Button btnLogin = (Button) findViewById(R.id.loginButton);
+                        btnLogin.setEnabled(false);
+                        Button btnRemove = (Button) findViewById(R.id.removeButton);
+                        btnRemove.setEnabled(false);
+                        Button btnCreate = (Button) findViewById(R.id.create_account_button);
+                        btnCreate.setEnabled(false);
+                        charsequenceText = "Server is down. Please try again later";
+                    }
+                    Toast toastRegistration = Toast.makeText(context, charsequenceText, Toast.LENGTH_SHORT);
+                    toastRegistration.show();
+                    progressdialog.dismiss();
+                }	    
+	};
+	
+	/**
+	 * Updates the user to have the correct registration ID each time he/she logs in
+	 * 
+	 * @author Colin Kho
+	 *
+	 */
+	class UpdateRegId extends AsyncTask<String, String, RequestResultSet> {
+	    private UserInfo userinfo;
+	    private Activity activity;
+	    
+	    public UpdateRegId(UserInfo userinfo, Activity activity) {
+	        this.userinfo = userinfo;
+	        this.activity = activity;
+	    }
+	    
+	    @Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        progressdialog = new ProgressDialog(LoginActivity.this);
+            progressdialog.setMessage("Updating Server. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
+	    }
+	    
+        @Override
+        protected RequestResultSet doInBackground(String... params) {
+            return ChatManager.rrsChangeID(userinfo, REG_ID);
+        }
+	    
+        @Override
+        protected void onPostExecute(RequestResultSet requestresultset) {
+            progressdialog.dismiss();
+            if (requestresultset.fSucceeded) {
+                Intent viewRs = new Intent(activity, SelectRoomActivity.class);
+                viewRs.putExtra("USER_NAME", userinfo.stUserName());
+                viewRs.putExtra("PASSWORD", userinfo.stPassword());
+                activity.startActivity(viewRs);
+            } else {
+                Toast serverToast = Toast.makeText(activity, "Server is down. Please try again later.", Toast.LENGTH_LONG);
+                serverToast.show();
+            }
+        }
+	}
+	
+	/**
+	 * Async task to remove user from server.
+	 * 
+	 * @author Brandon
+	 *
+	 */
 	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
 		private UserInfo userinfo;
 		private Activity activity;
@@ -191,7 +338,7 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
-            if(requestresultset.fSucceeded == false) {
+            if(!requestresultset.fSucceeded) {
             	//invalid username or password
             	
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
@@ -245,15 +392,31 @@ public class LoginActivity extends Activity {
         }
 	}
 	
+	/**
+	 * Authenticates a user in the database 
+	 * 
+	 * @author Brandon
+	 *
+	 */
 	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
 		private UserInfo userinfo;
 		private Activity activity;
 		
+		/**
+		 * Constructs an Authenticator object
+		 * 
+		 * @param userinfo user to be authenticated
+		 * @param activity the activity context
+		 */
 		public Authenticator(UserInfo userinfo, Activity activity) {
 			this.userinfo = userinfo;
 			this.activity = activity;
 		}
 		
+		/**
+		 * Pop up dialog while user is being authenticated 
+		 * 
+		 */
 	    @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -264,17 +427,24 @@ public class LoginActivity extends Activity {
             progressdialog.show();
         }
 	    
+	    /**
+	     * Authenticates user in the database
+	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
         	return ChatManager.rrsAuthenticateUser(userinfo);
         }
         
+        /**
+         * Prompts user if their username/password were incorrect.  Otherwise, redirects
+         * to the Select Rooms activity.
+         */
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
 
             progressdialog.dismiss();
             //invalid username/password
-            if(requestresultset.fSucceeded == false) {
+            if(!requestresultset.fSucceeded) {
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
 				alertdialogbuilder.setTitle("Invalid fields");
@@ -298,17 +468,19 @@ public class LoginActivity extends Activity {
 				
 				TextView textviewPword = (TextView) findViewById(R.id.editPword);
 	            textviewPword.setText("");
-            } else {
+            } else {           	
                 EditText uNameText = (EditText)findViewById(R.id.editQuery);
         		String uName = uNameText.getText().toString();
         		
         		EditText pWordText = (EditText)findViewById(R.id.editPword);
         		String pWord = pWordText.getText().toString();
         		
-                Intent viewRs = new Intent(activity, SelectRoomActivity.class);
-                viewRs.putExtra("USER_NAME", uName);
-                viewRs.putExtra("PASSWORD", pWord);
-        		activity.startActivity(viewRs);
+                LoginActivity.this.updateRegId(new UserInfo(uName, pWord, REG_ID));
+        		
+        		//for when we have a logout button, so that pressing back on the rooms page 
+        		//doesn't take you back to the login screen, but rather exits the app.
+        		
+        		//activity.finish();  
             }
         }
 	}

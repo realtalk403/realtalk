@@ -55,7 +55,7 @@ public class CreateAccountActivity extends Activity {
 		EditText edittextUser = (EditText) findViewById(R.id.user);
 		EditText edittextPword = (EditText) findViewById(R.id.pword);
 		EditText edittextConfPword = (EditText) findViewById(R.id.conf_pword);
-		String stUsername = edittextUser.getText().toString();
+		String stUsername = edittextUser.getText().toString().trim();;
 		String stPword = edittextPword.getText().toString();
 		String stConf = edittextConfPword.getText().toString();
 		
@@ -102,6 +102,48 @@ public class CreateAccountActivity extends Activity {
 			
 			//show alert dialog
 			alertdialogBadPword.show();	
+		} else if(stUsername.indexOf(" ") != -1) { //username has a space in it
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid username");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Username may not contain spaces.  Please try again.")
+				.setCancelable(false)
+				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						//close the dialog box if this button is clicked
+						dialog.cancel();
+					}	
+			});
+			
+			//create alert dialog
+			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogBadPword.show();		
+		} else if(stUsername.length() > 20) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid Username");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Username must not exceed 20 characters.  Please try again.")
+				.setCancelable(false)
+				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						//close the dialog box if this button is clicked
+						dialog.cancel();
+					}	
+			});
+			
+			//create alert dialog
+			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogBadPword.show();
 		} else {
 			new UserAdder(new UserInfo(stUsername, stPword, DEFAULT_ID), this).execute();
 		}

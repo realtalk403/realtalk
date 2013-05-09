@@ -11,4 +11,5 @@ public class CommonUtilities {
      * Base URL of the RealTalk Server
      */
     public static final String SERVER_URL = "http://realtalkserver.herokuapp.com";
+    
 }
