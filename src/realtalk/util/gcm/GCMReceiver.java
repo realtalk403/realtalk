@@ -8,6 +8,8 @@ import android.content.Context;
 import com.google.android.gcm.GCMBroadcastReceiver;
 
 /**
+ * Custom receiver so that GCMBroadCastReceiver can be placed in another package.
+ * 
  * @author Colin Kho
  *
  */

@@ -40,6 +40,13 @@ public class GCMUtilities {
      */
     public static final String GCM_REG_ID = "gcm_reg_id";
     
+    /**
+     * Method that sends a broad cast notifying the result of the registration with GCM
+     * 
+     * @param context   context it is used in
+     * @param stRegId   Registration Id obtained from GCM Server
+     * @param stRegCode Result Code
+     */
     public static void sendRegistrationResult(Context context, String stRegId, String stRegCode) {
         Intent intent = new Intent(GCM_REGISTER_RESULT_ACTION);
         if (stRegCode == SUCCESS) {

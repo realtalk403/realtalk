@@ -101,6 +101,11 @@ public class LoginActivity extends Activity {
 		return true;
 	}
 	
+	@Override
+	public void onDestroy() {
+	    unregisterReceiver(handleRegisterReceiver);
+	}
+	
 	/**
 	 * Called when user clicks "Create Account".  Redirects to Create Account page.
 	 * 
