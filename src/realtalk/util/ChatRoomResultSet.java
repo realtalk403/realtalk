@@ -12,10 +12,10 @@ import java.util.List;
  */
 public class ChatRoomResultSet {
 	//shows if pull message request succeeded
-	boolean fSucceeded;
+	private boolean fSucceeded;
 	//stError is only populated if the request failed
-	public String stErrorMessage;
-	public String stErrorCode;
+	private String stErrorMessage;
+	private String stErrorCode;
 	//rgmessage is only populated if request succeeded
 	public List<ChatRoomInfo> rgcri;
 	public ChatRoomResultSet(boolean fSucceeded, List<ChatRoomInfo> rgcri, String stErrorCode, String stErrorMessage) {
@@ -39,5 +39,18 @@ public class ChatRoomResultSet {
 		this.stErrorCode = stErrorCode;
 	}
 	
+	public boolean fSucceeded()
+	{
+		return fSucceeded;
+	}
 	
+	public String stErrorMessage()
+	{
+		return stErrorMessage;
+	}
+	
+	public String stErrorCode()
+	{
+		return stErrorCode;
+	}
 }
