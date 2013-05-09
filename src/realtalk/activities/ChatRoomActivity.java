@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -54,11 +55,13 @@ public class ChatRoomActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_chat_room);
 		
-		chatroominfo = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
+		//chatroominfo = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
 		Bundle extras = getIntent().getExtras();
 		userinfo = extras.getParcelable("USER");
+		chatroominfo = extras.getParcelable("ROOM");
 		
 		new RoomCreator(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		

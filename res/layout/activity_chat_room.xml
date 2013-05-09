@@ -14,7 +14,8 @@
     	android:layout_height="wrap_content"
     	android:layout_above="@+id/message"
     	android:stackFromBottom="true"
-    	android:transcriptMode="normal">
+    	android:transcriptMode="normal"
+    	android:layout_below="@+id/chatRoomTitle">
     </ListView>
     
     <Button
