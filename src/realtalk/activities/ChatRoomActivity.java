@@ -11,7 +11,7 @@ import realtalk.util.PullMessageResultSet;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 
-import com.example.realtalk.R;
+import com.realtalk.R;
 
 import android.os.AsyncTask;
 import android.os.Build;

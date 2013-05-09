@@ -1,6 +1,6 @@
 
 package realtalk.activities;
-
+import com.google.android.gcm.GCMRegistrar;
 import realtalk.util.ChatManager;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
@@ -17,7 +17,7 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.realtalk.R;
+import com.realtalk.R;
 /**
  * 
  * @author blee92
@@ -32,6 +32,10 @@ public class LoginActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		// Make sure the device has the proper dependencies and manifest is properly set
+		GCMRegistrar.checkDevice(this);
+		GCMRegistrar.checkManifest(this);
 		setContentView(R.layout.activity_main);
 	}
 
@@ -160,7 +164,6 @@ public class LoginActivity extends Activity {
 			alertdialogDeleteAcc.show();	
 		}
 	}
-
 
 	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
 		private UserInfo userinfo;

@@ -11,7 +11,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.realtalk.R;
+import com.realtalk.R;
 
 /**
  * Activity for selecting a chat room to join
