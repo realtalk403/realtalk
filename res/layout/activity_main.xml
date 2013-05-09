@@ -60,11 +60,12 @@
 
     <ImageView
         android:id="@+id/imageView1"
+        android:contentDescription="@string/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/editQuery"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/realtalk" />
+        android:src="@drawable/realtalklogo" />
 
     <TextView
         android:id="@+id/textView1"
@@ -85,5 +86,14 @@
         android:layout_marginBottom="15dp"
         android:onClick="addUser"
         android:text="@string/create_account" />
+
+    <CheckBox
+        android:id="@+id/rememberme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imageView1"
+        android:layout_alignTop="@+id/Button02"
+        android:layout_marginLeft="16dp"
+        android:text="@string/remember_me" />
 
 </RelativeLayout>
