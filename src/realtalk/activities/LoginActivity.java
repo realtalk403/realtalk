@@ -480,7 +480,9 @@ public class LoginActivity extends Activity {
         		EditText pWordText = (EditText)findViewById(R.id.editPword);
         		String pWord = pWordText.getText().toString();
         		
+
                 LoginActivity.this.updateRegId(new UserInfo(uName, pWord, REG_ID));
+
         		
         		//for when we have a logout button, so that pressing back on the rooms page 
         		//doesn't take you back to the login screen, but rather exits the app.

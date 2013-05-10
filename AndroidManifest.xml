@@ -46,6 +46,10 @@
             android:name="realtalk.activities.AccountSettingsActivity"
             android:label="@string/title_activity_account_settings" >
         </activity>
+        <activity
+            android:name="realtalk.activities.CreateRoomActivity"
+            android:label="@string/title_activity_create_room" >
+        </activity>
         <!--  Broadcast Receiver for GCM -->
         <receiver 
             android:name="realtalk.util.gcm.GCMReceiver" 
@@ -59,5 +63,4 @@
         
         <service android:name="realtalk.util.gcm.GCMIntentService" />
     </application>
-
 </manifest>
