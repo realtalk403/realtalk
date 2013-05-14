@@ -156,7 +156,9 @@ public class AccountSettingsActivity extends Activity {
 		
 		alertDialogBuilder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-			    new UserRemover(new UserInfo("username", "password", DEFAULT_ID), AccountSettingsActivity.this).execute();
+				String stUsername = sharedpreferencesLoginPrefs.getString("loggedin_username", null);
+				String stPassword = sharedpreferencesLoginPrefs.getString("loggedin_password", null);
+			    new UserRemover(new UserInfo(stUsername, stPassword, DEFAULT_ID), AccountSettingsActivity.this).execute();
 			}	
 		});
 		
@@ -250,9 +252,6 @@ public class AccountSettingsActivity extends Activity {
 				alertdialogBadUname.show();	
             } else {
             	editorLoginPrefs.putString("loggedin_password", stNewPword);
-            	editorLoginPrefs.putString("password", "");
-            	editorLoginPrefs.putString("username", "");
-            	editorLoginPrefs.putBoolean("saveLogin", false);
             	editorLoginPrefs.commit();
             	
             	//password change successful pop up
