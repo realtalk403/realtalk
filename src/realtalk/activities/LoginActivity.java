@@ -37,6 +37,7 @@ public class LoginActivity extends Activity {
     private Boolean fRememberMe;
     private EditText edittextUser;
     private EditText edittextPword;
+    private boolean fLoggedIn;
     
     
     /**
@@ -47,21 +48,37 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
-		
-		// For remembering username/password 
+		// For remembering username/password and if user is already logged in
 		edittextUser = (EditText) findViewById(R.id.editQuery);
 		edittextPword = (EditText) findViewById(R.id.editPword);
 		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme);
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 		
-		fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
+//		editorLoginPrefs.clear();
+//		editorLoginPrefs.commit();
 		
-		if(fRememberMe) {	
-			//loading saved username/password if setting is on
-			edittextUser.setText(sharedpreferencesLoginPrefs.getString("username", null));
-			edittextPword.setText(sharedpreferencesLoginPrefs.getString("password", null));
-			checkboxRememberMe.setChecked(true);
+		fLoggedIn = sharedpreferencesLoginPrefs.getBoolean("loggedIn", false);
+		
+		String stUsername = sharedpreferencesLoginPrefs.getString("loggedin_username", null);
+		String stPassword = sharedpreferencesLoginPrefs.getString("loggedin_password", null);
+		
+		//if user is already logged in, redirect to select room page
+		if(fLoggedIn) {
+			Intent itRoomSelect = new Intent(this, SelectRoomActivity.class);
+			UserInfo userinfo = new UserInfo(stUsername, stPassword, DEFAULT_ID);
+            itRoomSelect.putExtra("USER", userinfo);
+			this.startActivity(itRoomSelect);
+			finish();
+		} else {			
+			fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
+			
+			if(fRememberMe) {	
+				//loading saved username/password if setting is on
+				edittextUser.setText(sharedpreferencesLoginPrefs.getString("username", null));
+				edittextPword.setText(sharedpreferencesLoginPrefs.getString("password", null));
+				checkboxRememberMe.setChecked(true);
+			}
 		}
 	}
 	
@@ -358,21 +375,19 @@ public class LoginActivity extends Activity {
 				TextView textviewPword = (TextView) findViewById(R.id.editPword);
 	            textviewPword.setText("");
             } else {           	
-                EditText uNameText = (EditText)findViewById(R.id.editQuery);
-        		String uName = uNameText.getText().toString();
+                String username = userinfo.stUserName();
+                String password = userinfo.stPassword();
         		
-        		EditText pWordText = (EditText)findViewById(R.id.editPword);
-        		String pWord = pWordText.getText().toString();
+        		editorLoginPrefs.putBoolean("loggedIn", true);
+	    		editorLoginPrefs.putString("loggedin_username", username);
+	    		editorLoginPrefs.putString("loggedin_password", password);
+	    		editorLoginPrefs.commit();
         		
-                Intent viewRs = new Intent(activity, SelectRoomActivity.class);
-                UserInfo userinfo = new UserInfo(uName, pWord, DEFAULT_ID);
-                viewRs.putExtra("USER", userinfo);
-        		activity.startActivity(viewRs);
-        		
-        		//for when we have a logout button, so that pressing back on the rooms page 
-        		//doesn't take you back to the login screen, but rather exits the app.
-        		
-        		//activity.finish();  
+                Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
+                UserInfo userinfo = new UserInfo(username, password, DEFAULT_ID);
+                itRoomSelect.putExtra("USER", userinfo);
+        		activity.startActivity(itRoomSelect);
+        		activity.finish();  
             }
         }
 	}

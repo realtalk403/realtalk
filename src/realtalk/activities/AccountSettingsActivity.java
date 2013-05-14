@@ -8,12 +8,15 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.realtalk.R;
 
@@ -26,6 +29,8 @@ import com.example.realtalk.R;
 public class AccountSettingsActivity extends Activity {
 	private static final String DEFAULT_ID = "someID";
 	private ProgressDialog progressdialog;
+    private SharedPreferences sharedpreferencesLoginPrefs;
+    private Editor editorLoginPrefs;
 
 	/**
 	 * Sets up activity
@@ -35,6 +40,8 @@ public class AccountSettingsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_account_settings);
+		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 	}
 
 	@Override
@@ -56,34 +63,78 @@ public class AccountSettingsActivity extends Activity {
 		String stOldPword = edittextOldPword.getText().toString();
 		String stNewPword = edittextNewPword.getText().toString();
 		String stConfPword = edittextConfPword.getText().toString();
-		
+
 		//check to see if the old password is correct
-		
-		if(!stNewPword.equals(stConfPword)) {
+
+		//if any fields are blank, dialog box pops up
+		if(stNewPword.equals("") || stOldPword.equals("") || stConfPword.equals("")) {
+			AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
+			//set title
+			alertdialogbuilder.setTitle("Invalid fields");
+
+			//set dialog message
+			alertdialogbuilder
+			.setMessage("Please fill in all of the fields.")
+			.setCancelable(false)
+			.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					//close the dialog box if this button is clicked
+					dialog.cancel();
+				}	
+			});
+
+			//create alert dialog
+			AlertDialog alertdialogEmptyField = alertdialogbuilder.create();
+
+			//show alert dialog
+			alertdialogEmptyField.show();
+		} else if(!stNewPword.equals(stConfPword)) {
 			AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
 			alertdialogbuilder.setTitle("Invalid input");
-			
+
 			//set dialog message
 			alertdialogbuilder
-				.setMessage("New Password and Confirmation Password do not match.  Please try again.")
-				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						//close the dialog box if this button is clicked
-						dialog.cancel();
-					}	
+			.setMessage("New Password and Confirmation Password do not match.  Please try again.")
+			.setCancelable(false)
+			.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					//close the dialog box if this button is clicked
+					dialog.cancel();
+				}	
 			});
-			
+
 			//create alert dialog
 			AlertDialog alertdialogEmptyField = alertdialogbuilder.create();
-			
+
 			//show alert dialog
 			alertdialogEmptyField.show();
+		} else if(stNewPword.length() > 20) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid Password");
+
+			//set dialog message
+			alertDialogBuilder
+			.setMessage("Password must not exceed 20 characters.  Please try again.")
+			.setCancelable(false)
+			.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					//close the dialog box if this button is clicked
+					dialog.cancel();
+				}	
+			});
+
+			//create alert dialog
+			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
+
+			//show alert dialog
+			alertdialogBadPword.show();
 		} else {
-			new PwordChanger(new UserInfo("username", stOldPword, DEFAULT_ID), this, stNewPword).execute();
+			String stUsername = sharedpreferencesLoginPrefs.getString("loggedin_username", null);
+			new PwordChanger(new UserInfo(stUsername, stOldPword, DEFAULT_ID), this, stNewPword).execute();
 		}
-		
+
 	}
 	
 	
@@ -106,8 +157,6 @@ public class AccountSettingsActivity extends Activity {
 		alertDialogBuilder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 			    new UserRemover(new UserInfo("username", "password", DEFAULT_ID), AccountSettingsActivity.this).execute();
-			    Intent itCreateAcc = new Intent(AccountSettingsActivity.this, LoginActivity.class);
-				AccountSettingsActivity.this.startActivity(itCreateAcc);
 			}	
 		});
 		
@@ -178,18 +227,52 @@ public class AccountSettingsActivity extends Activity {
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
             if(requestresultset.fSucceeded == false) {
-            	//user already exists pop up
+            	//invalid password pop up
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
 				alertdialogbuilder.setTitle("Invalid fields");
 				
 				//set dialog message
 				alertdialogbuilder
-					.setMessage("Username/Old Password do not match.  Please try again.")
+					.setMessage("Old password incorrect.  Please try again.")
 					.setCancelable(false)
 					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							//close the dialog box if this button is clicked
+							dialog.cancel();
+						}	
+				});
+				
+				//create alert dialog
+				AlertDialog alertdialogBadUname = alertdialogbuilder.create();
+				
+				//show alert dialog
+				alertdialogBadUname.show();	
+            } else {
+            	editorLoginPrefs.putString("loggedin_password", stNewPword);
+            	editorLoginPrefs.putString("password", "");
+            	editorLoginPrefs.putString("username", "");
+            	editorLoginPrefs.putBoolean("saveLogin", false);
+            	editorLoginPrefs.commit();
+            	
+            	//password change successful pop up
+            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
+				//set title
+				alertdialogbuilder.setTitle("Password Changed");
+				
+				//set dialog message
+				alertdialogbuilder
+					.setMessage("Password changed.")
+					.setCancelable(false)
+					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							//close the dialog box if this button is clicked
+							TextView textviewNewPword = (TextView) findViewById(R.id.newpword);
+				            textviewNewPword.setText("");
+				            TextView textviewConfPword = (TextView) findViewById(R.id.confpword);
+				            textviewConfPword.setText("");
+				            TextView textviewOldPword = (TextView) findViewById(R.id.oldpword);
+				            textviewOldPword.setText("");
 							dialog.cancel();
 						}	
 				});
@@ -251,30 +334,57 @@ public class AccountSettingsActivity extends Activity {
          */
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
-            progressdialog.dismiss();
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-			//set title
-			alertDialogBuilder.setTitle("Account deleted");
-			
-			//set dialog message
-			alertDialogBuilder
-				.setMessage("Your account has been deleted.")
-				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						//close the dialog box if this button is clicked
-						dialog.cancel();
-						
-						Intent itCreateAcc = new Intent(activity, LoginActivity.class);
-						activity.startActivity(itCreateAcc);
-					}	
-			});
+        	progressdialog.dismiss();
+        	if(requestresultset.fSucceeded) {
+	        	editorLoginPrefs.clear();
+	        	editorLoginPrefs.commit();
+	        	
+	            progressdialog.dismiss();
+	            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+				//set title
+				alertDialogBuilder.setTitle("Account deleted");
 				
-			//create alert dialog
-			AlertDialog alertdialogAccDeleted = alertDialogBuilder.create();
+				//set dialog message
+				alertDialogBuilder
+					.setMessage("Your account has been deleted.")
+					.setCancelable(false)
+					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							//close the dialog box if this button is clicked
+							dialog.cancel();
+							
+							Intent itCreateAcc = new Intent(activity, LoginActivity.class);
+							activity.startActivity(itCreateAcc);
+						}	
+				});
+					
+				//create alert dialog
+				AlertDialog alertdialogAccDeleted = alertDialogBuilder.create();
+					
+				//show alert dialog
+				alertdialogAccDeleted.show();	
+        	} else {
+        		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+				//set title
+				alertDialogBuilder.setTitle("Account not deleted");
 				
-			//show alert dialog
-			alertdialogAccDeleted.show();	
+				//set dialog message
+				alertDialogBuilder
+					.setMessage("Error.  Your account has not been deleted.")
+					.setCancelable(false)
+					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							//close the dialog box if this button is clicked
+							dialog.cancel();
+						}	
+				});
+					
+				//create alert dialog
+				AlertDialog alertdialogAccNotDeleted = alertDialogBuilder.create();
+					
+				//show alert dialog
+				alertdialogAccNotDeleted.show();
+        	}
 			
         }
 	}
