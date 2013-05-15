@@ -28,7 +28,6 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onMessage(Context context, Intent intent) {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
@@ -39,8 +38,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onUnregistered(Context context, String stRegId) {
-        // TODO Auto-generated method stub
-        
+        // TODO Auto-generated method stub        
     }
 
 }
