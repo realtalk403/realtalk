@@ -23,6 +23,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -58,7 +59,6 @@ public class ChatRoomActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_chat_room);
 		
-		//chatroominfo = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
 		Bundle extras = getIntent().getExtras();
 		userinfo = extras.getParcelable("USER");
 		chatroominfo = extras.getParcelable("ROOM");
@@ -79,6 +79,19 @@ public class ChatRoomActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.chat_room, menu);
 		return true;
+	}
+	
+	@Override
+    public void onBackPressed() {
+        //super.onBackPressed();   
+        Intent itViewRooms = new Intent(this, SelectRoomActivity.class);
+        itViewRooms.putExtra("USER", userinfo);
+		this.startActivity(itViewRooms);
+
+    }
+	
+	public void leaveRoom(View view) {
+		new RoomLeaver(userinfo, chatroominfo, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
 	/**
@@ -259,5 +272,66 @@ public class ChatRoomActivity extends Activity {
             }
             return view;
         }
+	}
+	
+	/**
+	 * Creates and joins a chat room
+	 * 
+	 * @author Jordan Hazari
+	 *
+	 */
+	class RoomLeaver extends AsyncTask<String, String, RequestResultSet> {
+		private UserInfo userinfo;
+		private ChatRoomInfo chatroominfo;
+		private ChatRoomActivity activity;
+		
+		/**
+		 * Constructs a RoomCreator object
+		 * 
+		 * @param chatroominfo the room to create/join
+		 */
+		public RoomLeaver(UserInfo userinfo, ChatRoomInfo chatroominfo, ChatRoomActivity activity) {
+			this.userinfo = userinfo;
+			this.chatroominfo = chatroominfo;
+			this.activity = activity;
+		}
+		
+		/**
+		 * Displays a popup dialogue while joining the room
+		 */
+	    @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressdialog = new ProgressDialog(ChatRoomActivity.this);
+            progressdialog.setMessage("Leaving room. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
+        }
+
+	    /**
+	     * Adds the room, or joins it if it already exists
+	     */
+		@Override
+		protected RequestResultSet doInBackground(String... params) {
+			
+			RequestResultSet rrs = ChatManager.rrsLeaveRoom(userinfo, chatroominfo);
+			if (!rrs.fSucceeded) {
+				throw new RuntimeException("server error");
+			}
+			return rrs;
+		}
+		
+		/**
+		 * Closes the popup dialogue
+		 */
+		@Override
+        protected void onPostExecute(RequestResultSet requestresultset) {
+            progressdialog.dismiss();
+            
+            Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
+            itViewRooms.putExtra("USER", userinfo);
+    		activity.startActivity(itViewRooms);
+		}
 	}
 }
