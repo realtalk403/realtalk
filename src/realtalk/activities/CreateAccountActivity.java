@@ -140,6 +140,27 @@ public class CreateAccountActivity extends Activity {
 			});
 			
 			//create alert dialog
+			AlertDialog alertdialogBadUsername = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogBadUsername.show();
+		} else if(stPword.length() > 20) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid Password");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Password must not exceed 20 characters.  Please try again.")
+				.setCancelable(false)
+				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						//close the dialog box if this button is clicked
+						dialog.cancel();
+					}	
+			});
+			
+			//create alert dialog
 			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
 			
 			//show alert dialog

@@ -7,15 +7,17 @@ import java.util.List;
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.ChatRoomResultSet;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -39,6 +41,8 @@ public class SelectRoomActivity extends Activity {
 	List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
 	ChatRoomAdapter adapter;
 	Bundle bundleExtras;
+	private SharedPreferences sharedpreferencesLoginPrefs;
+    private Editor editorLoginPrefs;
 	
 	/**
 	 * Sets up the activity, and diplays a list of available rooms
@@ -49,6 +53,8 @@ public class SelectRoomActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_select_room);
 		bundleExtras = getIntent().getExtras();
+		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 		
 		rgstDisplayRoom = new ArrayList<String>();
 		
@@ -81,11 +87,36 @@ public class SelectRoomActivity extends Activity {
 		return true;
 	}
 	
+	/**
+	 * Menu options
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    //respond to menu item selection
+		switch (item.getItemId()){
+			case R.id.logout:
+				editorLoginPrefs.putBoolean("loggedIn", false);
+				editorLoginPrefs.putString("loggedin_username", null);
+				editorLoginPrefs.putString("loggedin_password", null);
+				editorLoginPrefs.commit();
+				Intent itLogin = new Intent(this, LoginActivity.class);
+				startActivity(itLogin);
+				finish();
+				return true;
+		    case R.id.settings:
+		    	startActivity(new Intent(this, AccountSettingsActivity.class));
+		    	return true;
+		    default:
+		    return super.onOptionsItemSelected(item);
+		}
+	}
+	
 	public void createRoom(View view) {
 		Intent itCreateRoom = new Intent(this, CreateRoomActivity.class);
 		itCreateRoom.putExtra("USER", bundleExtras.getParcelable("USER"));
 		this.startActivity(itCreateRoom);
 	}
+	
 	
 	
 	/**

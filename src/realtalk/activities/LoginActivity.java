@@ -42,6 +42,7 @@ public class LoginActivity extends Activity {
     private Boolean fRememberMe;
     private EditText edittextUser;
     private EditText edittextPword;
+    private boolean fLoggedIn;
     
     
     /**
@@ -77,20 +78,36 @@ public class LoginActivity extends Activity {
 		    REG_ID = stRegId;
 		}
 		
-		// For remembering username/password 
+		// For remembering username/password and if user is already logged in
 		edittextUser = (EditText) findViewById(R.id.editQuery);
 		edittextPword = (EditText) findViewById(R.id.editPword);
 		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme);
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 		
-		fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
+//		editorLoginPrefs.clear();
+//		editorLoginPrefs.commit();
 		
-		if(fRememberMe) {	
-			//loading saved username/password if setting is on
-			edittextUser.setText(sharedpreferencesLoginPrefs.getString("username", null));
-			edittextPword.setText(sharedpreferencesLoginPrefs.getString("password", null));
-			checkboxRememberMe.setChecked(true);
+		fLoggedIn = sharedpreferencesLoginPrefs.getBoolean("loggedIn", false);
+		String stUsername = sharedpreferencesLoginPrefs.getString("loggedin_username", null);
+		String stPassword = sharedpreferencesLoginPrefs.getString("loggedin_password", null);
+		
+		//if user is already logged in, redirect to select room page
+		if(fLoggedIn) {
+			Intent itRoomSelect = new Intent(this, SelectRoomActivity.class);
+			UserInfo userinfo = new UserInfo(stUsername, stPassword, REG_ID);
+            itRoomSelect.putExtra("USER", userinfo);
+			this.startActivity(itRoomSelect);
+			finish();
+		} else {			
+			fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
+			
+			if(fRememberMe) {	
+				//loading saved username/password if setting is on
+				edittextUser.setText(sharedpreferencesLoginPrefs.getString("savedUsername", null));
+				edittextPword.setText(sharedpreferencesLoginPrefs.getString("savedPassword", null));
+				checkboxRememberMe.setChecked(true);
+			}
 		}
 	}
 	
@@ -151,12 +168,14 @@ public class LoginActivity extends Activity {
 	    	if(checkboxRememberMe.isChecked()) {
 	    		//stores login info if "Remember Me" checkbox is checked
 	    		editorLoginPrefs.putBoolean("saveLogin", true);
-	    		editorLoginPrefs.putString("username", stUsername);
-	    		editorLoginPrefs.putString("password", stPword);
+	    		editorLoginPrefs.putString("savedUsername", stUsername);
+	    		editorLoginPrefs.putString("savedPassword", stPword);
 	    		editorLoginPrefs.commit();
 	    	} else {
 	    		//clears existing login info if "Remember Me" checkbox is not checked
-	    		editorLoginPrefs.clear();
+	    		editorLoginPrefs.putBoolean("saveLogin", false);
+	    		editorLoginPrefs.putString("savedUsername", null);
+	    		editorLoginPrefs.putString("savedPassword", null);
 	    		editorLoginPrefs.commit();
 	    	}
 	    	new Authenticator(new UserInfo(stUsername, stPword, REG_ID), this).execute();
@@ -234,6 +253,11 @@ public class LoginActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Method that starts an async task used to update the registration Id.
+	 * 
+	 * @param userinfo
+	 */
 	public void updateRegId(UserInfo userinfo) {
 	    new UpdateRegId(userinfo, LoginActivity.this).execute();
 	}
@@ -254,9 +278,7 @@ public class LoginActivity extends Activity {
                         // Registration failed. Alert user and lock app asking them to try again later.
                         Button btnLogin = (Button) findViewById(R.id.loginButton);
                         btnLogin.setEnabled(false);
-                        Button btnRemove = (Button) findViewById(R.id.removeButton);
-                        btnRemove.setEnabled(false);
-                        Button btnCreate = (Button) findViewById(R.id.create_account_button);
+                        Button btnCreate = (Button) findViewById(R.id.createAccountBtn);
                         btnCreate.setEnabled(false);
                         charsequenceText = "Server is down. Please try again later";
                     }
@@ -299,11 +321,12 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
-            if (requestresultset.fSucceeded) {
-                Intent viewRs = new Intent(activity, SelectRoomActivity.class);
-                viewRs.putExtra("USER_NAME", userinfo.stUserName());
-                viewRs.putExtra("PASSWORD", userinfo.stPassword());
-                activity.startActivity(viewRs);
+            if (requestresultset.fSucceeded) {                
+                Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
+                UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), REG_ID);
+                itRoomSelect.putExtra("USER", loginUserinfo);
+                activity.startActivity(itRoomSelect);
+                activity.finish();
             } else {
                 Toast serverToast = Toast.makeText(activity, "Server is down. Please try again later.", Toast.LENGTH_LONG);
                 serverToast.show();
@@ -474,20 +497,17 @@ public class LoginActivity extends Activity {
 				TextView textviewPword = (TextView) findViewById(R.id.editPword);
 	            textviewPword.setText("");
             } else {           	
-                EditText uNameText = (EditText)findViewById(R.id.editQuery);
-        		String uName = uNameText.getText().toString();
-        		
-        		EditText pWordText = (EditText)findViewById(R.id.editPword);
-        		String pWord = pWordText.getText().toString();
-        		
-
-                LoginActivity.this.updateRegId(new UserInfo(uName, pWord, REG_ID));
-
+                String username = userinfo.stUserName();
+                String password = userinfo.stPassword();
         		
         		//for when we have a logout button, so that pressing back on the rooms page 
         		//doesn't take you back to the login screen, but rather exits the app.
-        		
-        		//activity.finish();  
+        		editorLoginPrefs.putBoolean("loggedIn", true);
+	    		editorLoginPrefs.putString("loggedin_username", username);
+	    		editorLoginPrefs.putString("loggedin_password", password);
+	    		editorLoginPrefs.commit();
+	    		
+	    		LoginActivity.this.updateRegId(new UserInfo(username, password, REG_ID));  
             }
         }
 	}
