@@ -1,14 +1,19 @@
-
 package realtalk.activities;
+import com.google.android.gcm.GCMRegistrar;
 
+import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
+import realtalk.util.gcm.GCMUtilities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
@@ -16,20 +21,22 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.realtalk.R;
+import com.realtalk.R;
 /**
- * Activity for login page
+ * Activity for login page. This page also sets up the device for GCM.
  * 
- * @author Brandon
+ * @author Brandon Lee & Colin Kho
  *
  */
 public class LoginActivity extends Activity {
     
-	private static final String DEFAULT_ID = "someID";
+	private String REG_ID = "";
     private ProgressDialog progressdialog;
     private CheckBox checkboxRememberMe;
     private SharedPreferences sharedpreferencesLoginPrefs;
@@ -38,6 +45,7 @@ public class LoginActivity extends Activity {
     private EditText edittextUser;
     private EditText edittextPword;
     private boolean fLoggedIn;
+    private ChatController chatController;
     
     
     /**
@@ -47,11 +55,39 @@ public class LoginActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		// Initialize Controller by getting its instance
+		chatController = ChatController.getInstance();
+		
+		// Make sure the device has the proper dependencies and manifest is properly set
+		GCMRegistrar.checkDevice(this);
+		GCMRegistrar.checkManifest(this);
 		setContentView(R.layout.activity_main);
+		
+		// Get the Registration ID
+		final String stRegId = GCMRegistrar.getRegistrationId(this);
+		registerReceiver(handleRegisterReceiver,
+		        new IntentFilter(GCMUtilities.GCM_REGISTER_RESULT_ACTION));
+		if (stRegId.equals("")) {
+		    // Register device for the first time.
+		    // Wait for registration result to complete.
+		    progressdialog = new ProgressDialog(LoginActivity.this);
+            progressdialog.setMessage("Initializing RealTalk resources for the first time. Please wait.....");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
+            
+            // Register Device
+            GCMRegistrar.register(this, GCMUtilities.SENDER_ID);
+		} else {
+		    // Already registered on GCM server
+		    REG_ID = stRegId;
+		}
+		
 		// For remembering username/password and if user is already logged in
 		edittextUser = (EditText) findViewById(R.id.editQuery);
 		edittextPword = (EditText) findViewById(R.id.editPword);
-		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme);
+		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme );
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 		
@@ -64,11 +100,8 @@ public class LoginActivity extends Activity {
 		
 		//if user is already logged in, redirect to select room page
 		if(fLoggedIn) {
-			Intent itRoomSelect = new Intent(this, SelectRoomActivity.class);
-			UserInfo userinfo = new UserInfo(stUsername, stPassword, DEFAULT_ID);
-            itRoomSelect.putExtra("USER", userinfo);
-			this.startActivity(itRoomSelect);
-			finish();
+			UserInfo userinfo = new UserInfo(stUsername, stPassword, REG_ID);
+			updateRegId(userinfo);
 		} else {			
 			fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
 			
@@ -86,6 +119,12 @@ public class LoginActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	public void onDestroy() {
+	    super.onDestroy();
+	    unregisterReceiver(handleRegisterReceiver);
 	}
 	
 	/**
@@ -143,12 +182,248 @@ public class LoginActivity extends Activity {
 	    		editorLoginPrefs.putString("savedPassword", null);
 	    		editorLoginPrefs.commit();
 	    	}
-	    	new Authenticator(new UserInfo(stUsername, stPword, DEFAULT_ID), this).execute();
+	    	new Authenticator(new UserInfo(stUsername, stPword, REG_ID), this).execute();
 	    }
 	    
 	}
 	
-
+	/**
+	 * Called when user attempts to delete their account.
+	 * 
+	 * @param view
+	 */
+	public void removeUser(View view) {
+		EditText edittextUser = (EditText) findViewById(R.id.editQuery);
+	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
+	    String stUsername = edittextUser.getText().toString();
+	    String stPword = edittextPword.getText().toString();
+		if(stUsername.equals("") || stPword.equals("")) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid input");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Please enter a username & password.")
+				.setCancelable(false);
+			
+			
+			alertDialogBuilder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					// User cancelled the dialog
+					dialog.cancel();
+				}
+			});
+			
+			//create alert dialog
+			AlertDialog alertdialogEmptyFields = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogEmptyFields.show();
+		} else {
+			//confirmation pop up
+	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Delete account");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Are you sure you want to delete this account?")
+				.setCancelable(false);
+			
+			alertDialogBuilder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					//close the dialog box if this button is clicked
+					EditText edittextUser = (EditText) findViewById(R.id.editQuery);
+				    EditText edittextPword = (EditText) findViewById(R.id.editPword);
+				    String stUsername = edittextUser.getText().toString();
+				    String stPword = edittextPword.getText().toString();
+				    new UserRemover(new UserInfo(stUsername, stPword, REG_ID), LoginActivity.this).execute();
+				}	
+			});
+			
+			alertDialogBuilder.setPositiveButton("No", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					// User cancelled the dialog
+					dialog.cancel();
+				}
+			});
+			
+			//create alert dialog
+			AlertDialog alertdialogDeleteAcc = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogDeleteAcc.show();	
+		}
+	}
+	
+	/**
+	 * Method that starts an async task used to update the registration Id.
+	 * 
+	 * @param userinfo
+	 */
+	public void updateRegId(UserInfo userinfo) {
+	    new UpdateRegId(userinfo, LoginActivity.this).execute();
+	}
+	
+	/**
+	 * Receiver that handles a registration intent from GCM.
+	 */
+	private final BroadcastReceiver handleRegisterReceiver =
+	        new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String stResultCode = intent.getExtras().getString(GCMUtilities.RESULT_MESSAGE);
+                    CharSequence charsequenceText = "";
+                    if (stResultCode.equals(GCMUtilities.SUCCESS)) {
+                        REG_ID = intent.getExtras().getString(GCMUtilities.GCM_REG_ID);
+                        charsequenceText = "Initialization Complete";
+                    } else {
+                        // Registration failed. Alert user and lock app asking them to try again later.
+                        Button btnLogin = (Button) findViewById(R.id.loginButton);
+                        btnLogin.setEnabled(false);
+                        Button btnCreate = (Button) findViewById(R.id.createAccountBtn);
+                        btnCreate.setEnabled(false);
+                        charsequenceText = "Server is down. Please try again later";
+                    }
+                    Toast toastRegistration = Toast.makeText(context, charsequenceText, Toast.LENGTH_SHORT);
+                    toastRegistration.show();
+                    progressdialog.dismiss();
+                }	    
+	};
+	
+	/**
+	 * Updates the user to have the correct registration ID each time he/she logs in
+	 * 
+	 * @author Colin Kho
+	 *
+	 */
+	class UpdateRegId extends AsyncTask<String, String, RequestResultSet> {
+	    private UserInfo userinfo;
+	    private Activity activity;
+	    
+	    public UpdateRegId(UserInfo userinfo, Activity activity) {
+	        this.userinfo = userinfo;
+	        this.activity = activity;
+	    }
+	    
+	    @Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        progressdialog = new ProgressDialog(LoginActivity.this);
+            progressdialog.setMessage("Updating Server. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
+	    }
+	    
+        @Override
+        protected RequestResultSet doInBackground(String... params) {
+            return ChatManager.rrsChangeID(userinfo, REG_ID);
+        }
+	    
+        @Override
+        protected void onPostExecute(RequestResultSet requestresultset) {
+            progressdialog.dismiss();
+            if (requestresultset.fSucceeded) {                
+                Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
+                UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), REG_ID);
+                itRoomSelect.putExtra("USER", loginUserinfo);
+                chatController.initialize(loginUserinfo);
+                activity.startActivity(itRoomSelect);
+                activity.finish();
+            } else {
+                Toast serverToast = Toast.makeText(activity, "Server is down. Please try again later.", Toast.LENGTH_LONG);
+                serverToast.show();
+            }
+        }
+	}
+	
+	/**
+	 * Async task to remove user from server.
+	 * 
+	 * @author Brandon
+	 *
+	 */
+	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
+		private UserInfo userinfo;
+		private Activity activity;
+		public UserRemover(UserInfo userinfo, Activity activity) {
+			this.userinfo = userinfo;
+			this.activity = activity;
+		}
+		
+	    @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressdialog = new ProgressDialog(LoginActivity.this);
+            progressdialog.setMessage("Loading user details. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
+        }
+	    
+        @Override
+        protected RequestResultSet doInBackground(String... params) {
+        	return ChatManager.rrsRemoveUser(userinfo);
+        }
+        
+        @Override
+        protected void onPostExecute(RequestResultSet requestresultset) {
+            progressdialog.dismiss();
+            if(!requestresultset.fSucceeded) {
+            	//invalid username or password
+            	
+            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
+				//set title
+				alertdialogbuilder.setTitle("Invalid fields");
+				
+				//set dialog message
+				alertdialogbuilder
+					.setMessage("Invalid username/password. Please try again.")
+					.setCancelable(false)
+					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							//close the dialog box if this button is clicked
+							dialog.cancel();
+						}	
+				});
+				
+				//create alert dialog
+				AlertDialog alertdialogBadPword = alertdialogbuilder.create();
+				
+				//show alert dialog
+				alertdialogBadPword.show();	
+            } else {
+            	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+				//set title
+				alertDialogBuilder.setTitle("Account deleted");
+				
+				//set dialog message
+				alertDialogBuilder
+					.setMessage("Your account has been deleted.")
+					.setCancelable(false)
+					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							//close the dialog box if this button is clicked
+							dialog.cancel();
+						}	
+				});
+				
+				//create alert dialog
+				AlertDialog alertdialogAccDeleted = alertDialogBuilder.create();
+				
+				//show alert dialog
+				alertdialogAccDeleted.show();	
+				
+				TextView textviewUname = (TextView) findViewById(R.id.editQuery);
+	            textviewUname.setText("");
+            }
+            
+            TextView textviewPword = (TextView) findViewById(R.id.editPword);
+            textviewPword.setText("");
+        }
+	}
 	
 	/**
 	 * Authenticates a user in the database 
@@ -202,7 +477,7 @@ public class LoginActivity extends Activity {
 
             progressdialog.dismiss();
             //invalid username/password
-            if(requestresultset.fSucceeded == false) {
+            if(!requestresultset.fSucceeded) {
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
 				alertdialogbuilder.setTitle("Invalid fields");
@@ -230,16 +505,14 @@ public class LoginActivity extends Activity {
                 String username = userinfo.stUserName();
                 String password = userinfo.stPassword();
         		
+        		//for when we have a logout button, so that pressing back on the rooms page 
+        		//doesn't take you back to the login screen, but rather exits the app.
         		editorLoginPrefs.putBoolean("loggedIn", true);
 	    		editorLoginPrefs.putString("loggedin_username", username);
 	    		editorLoginPrefs.putString("loggedin_password", password);
 	    		editorLoginPrefs.commit();
-        		
-                Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
-                UserInfo userinfo = new UserInfo(username, password, DEFAULT_ID);
-                itRoomSelect.putExtra("USER", userinfo);
-        		activity.startActivity(itRoomSelect);
-        		activity.finish();  
+	    		
+	    		LoginActivity.this.updateRegId(new UserInfo(username, password, REG_ID));  
             }
         }
 	}

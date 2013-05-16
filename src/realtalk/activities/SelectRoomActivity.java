@@ -4,6 +4,7 @@ package realtalk.activities;
 import java.util.ArrayList;
 import java.util.List;
 
+import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.ChatRoomResultSet;
@@ -19,7 +20,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,8 +31,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.realtalk.R;
+import com.realtalk.R;
 
 /**
  * Activity for selecting a chat room to join
@@ -81,51 +82,56 @@ public class SelectRoomActivity extends Activity {
 		// Binding resources Array to ListAdapter
 		adapter = new ChatRoomAdapter(this, R.layout.list_item, rgchatroominfo);
 		listview.setAdapter(adapter);
+		
+		// REASON for commenting out location code: chatController will get updated indefinitely if location continously changes.
+		// Should meet up to agree on a convention or protocol regarding this.
+		// TODO
+		
 
 		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
 		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
-		//new RoomLoader(this, 0, 0, 500.0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new RoomLoader(this, 0, 0, 500.0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		//todo put a message on screen that is NON BLOCKING!!! that says "loading rooms..."
 		//allowing the user to back out if gps is never found.
 		
 		//location code:
-		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		final double radiusMeters = 500.0;
-		Criteria criteria = new Criteria();
-		String stBestProvider = locationmanager.getBestProvider(criteria, true);
-		if (stBestProvider == null) {
-			//no location providers, must ask user to enable a provider
-			//TODO set loading text equal to "fail...enable a location provider (wifi/network/gps)"
-			throw new RuntimeException("NO LOCATION PROVIDER");
-		}
-		else {
-			// Define a listener that responds to location updates
-			LocationListener locationListener = new LocationListener() {
-				Location locationUser;
-				public void onLocationChanged(Location location) {
-					// Called when a new location is found by the network location provider.
-					//if new location data is not usable...
-					if (locationUser == null)
-					{
-						locationUser = location;
-						LoadRooms(locationUser, radiusMeters);
-					}
-					else if (location.getAccuracy() <= locationUser.getAccuracy()) {
-						locationUser = location;
-						LoadRooms(locationUser, radiusMeters);
-					}
-					//TODO stop always listening and updating?
-				}
-
-				public void onStatusChanged(String provider, int status, Bundle extras) {}
-				public void onProviderEnabled(String provider) {}
-				public void onProviderDisabled(String provider) {}
-			};
-
-			// Register the listener with the Location Manager to receive location updates
-			locationmanager.requestLocationUpdates(stBestProvider, 0, 0, locationListener);
-		}
+//		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
+//		final double radiusMeters = 500.0;
+//		Criteria criteria = new Criteria();
+//		String stBestProvider = locationmanager.getBestProvider(criteria, true);
+//		if (stBestProvider == null) {
+//			//no location providers, must ask user to enable a provider
+//			//TODO set loading text equal to "fail...enable a location provider (wifi/network/gps)"
+//			throw new RuntimeException("NO LOCATION PROVIDER");
+//		}
+//		else {
+//			// Define a listener that responds to location updates
+//			LocationListener locationListener = new LocationListener() {
+//				Location locationUser;
+//				public void onLocationChanged(Location location) {
+//					// Called when a new location is found by the network location provider.
+//					//if new location data is not usable...
+//					if (locationUser == null)
+//					{
+//						locationUser = location;
+//						LoadRooms(locationUser, radiusMeters);
+//					}
+//					else if (location.getAccuracy() <= locationUser.getAccuracy()) {
+//						locationUser = location;
+//						LoadRooms(locationUser, radiusMeters);
+//					}
+//					//TODO stop always listening and updating?
+//				}
+//
+//				public void onStatusChanged(String provider, int status, Bundle extras) {}
+//				public void onProviderEnabled(String provider) {}
+//				public void onProviderDisabled(String provider) {}
+//			};
+//
+//			// Register the listener with the Location Manager to receive location updates
+//			locationmanager.requestLocationUpdates(stBestProvider, 0, 0, locationListener);
+//		}
 	}
 
 	private void LoadRooms(Location locationUser, double radiusMeters) {
@@ -168,8 +174,6 @@ public class SelectRoomActivity extends Activity {
 		itCreateRoom.putExtra("USER", bundleExtras.getParcelable("USER"));
 		this.startActivity(itCreateRoom);
 	}
-
-
 
 	/**
 	 * Retrieves the user's available chatrooms

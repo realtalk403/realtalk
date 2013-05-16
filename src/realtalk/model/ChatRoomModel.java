@@ -33,6 +33,7 @@ public class ChatRoomModel {
     private double latitude;
     private double longitude;
     private String stCreator;
+    private int iUsers;
     private Timestamp timestampCreated;
 	
     /**
@@ -47,13 +48,14 @@ public class ChatRoomModel {
      * @param timestampCreated timestamp of when the room was created
      */
 	public ChatRoomModel(String stName, String stId, String stDescription, double latitude,
-            double longitude, String stCreator, Timestamp timestampCreated) {
+            double longitude, String stCreator, int iUsers, Timestamp timestampCreated) {
         this.stName = stName;
         this.stId = stId;
         this.stDescription = stDescription;
         this.latitude = latitude;
         this.longitude = longitude;
         this.stCreator = stCreator;
+        this.setNumUsers(iUsers);
         this.timestampCreated = timestampCreated;
 				
 		rgmi = new ArrayList<MessageInfo>();
@@ -169,7 +171,77 @@ public class ChatRoomModel {
 		return new Timestamp(timestampCreated.getTime());
 	}
 
-	/**
+    /**
+     * @param rgu the rgu to set
+     */
+    public void setUsers(Set<UserInfo> rgu) {
+        this.rgu = new HashSet<UserInfo>(rgu);
+    }
+
+    /**
+     * @param stName the stName to set
+     */
+    public void setName(String stName) {
+        this.stName = stName;
+    }
+
+    /**
+     * @param stId the stId to set
+     */
+    public void setId(String stId) {
+        this.stId = stId;
+    }
+
+    /**
+     * @param stDescription the stDescription to set
+     */
+    public void setDescription(String stDescription) {
+        this.stDescription = stDescription;
+    }
+
+    /**
+     * @param latitude the latitude to set
+     */
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    /**
+     * @param longitude the longitude to set
+     */
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    /**
+     * @param stCreator the stCreator to set
+     */
+    public void setCreator(String stCreator) {
+        this.stCreator = stCreator;
+    }
+
+    /**
+     * @param timestampCreated the timestampCreated to set
+     */
+    public void setTimestampCreated(Timestamp timestampCreated) {
+        this.timestampCreated = new Timestamp(timestampCreated.getTime());
+    }
+
+    /**
+     * @return the iUsers
+     */
+    public int getNumUsers() {
+        return iUsers;
+    }
+
+    /**
+     * @param iUsers the iUsers to set
+     */
+    public void setNumUsers(int iUsers) {
+        this.iUsers = iUsers;
+    }
+
+    /**
 	 * This is a test method to ensure that the data is being stored properly.
 	 * Will throw an IllegalStateException if something is wrong.
 	 */

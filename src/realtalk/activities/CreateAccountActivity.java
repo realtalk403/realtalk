@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 
-import com.example.realtalk.R;
+import com.realtalk.R;
 
 /**
  * Activity for creating an account

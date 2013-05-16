@@ -7,7 +7,7 @@ import realtalk.util.ChatRoomInfo;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 
-import com.example.realtalk.R;
+import com.realtalk.R;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -95,6 +95,7 @@ public class CreateRoomActivity extends Activity {
 			
 			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
 			if (!rrs.fSucceeded) {
+			    // TODO shouldnt through this exception. Just alert user server is down
 				throw new RuntimeException("server error");
 			}
 			return rrs;
