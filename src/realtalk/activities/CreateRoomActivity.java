@@ -110,6 +110,7 @@ public class CreateRoomActivity extends Activity {
             Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
             itViewRooms.putExtra("USER", userinfo);
     		activity.startActivity(itViewRooms);
+    		activity.finish();
 		}
 	}
 

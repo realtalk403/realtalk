@@ -24,15 +24,18 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Activity for a chat room, where the user can send/recieve messages.
@@ -58,10 +61,19 @@ public class ChatRoomActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_chat_room);
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		Bundle extras = getIntent().getExtras();
 		userinfo = extras.getParcelable("USER");
 		chatroominfo = extras.getParcelable("ROOM");
+		
+		String stUser = userinfo.stUserName();
+		String stRoom = chatroominfo.stName();
+		
+		TextView textviewRoomTitle = (TextView) findViewById(R.id.chatRoomTitle);
+		textviewRoomTitle.setText(stRoom);
+		TextView textviewUserTitle = (TextView) findViewById(R.id.userTitle);
+		textviewUserTitle.setText(stUser);
 		
 		new RoomCreator(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
@@ -82,11 +94,11 @@ public class ChatRoomActivity extends Activity {
 	}
 	
 	@Override
-    public void onBackPressed() {
-        //super.onBackPressed();   
+    public void onBackPressed() { 
         Intent itViewRooms = new Intent(this, SelectRoomActivity.class);
         itViewRooms.putExtra("USER", userinfo);
 		this.startActivity(itViewRooms);
+		this.finish();
 
     }
 	
@@ -103,11 +115,12 @@ public class ChatRoomActivity extends Activity {
 		EditText edittext = (EditText)findViewById(R.id.message);
 		String stValue = edittext.getText().toString();
 		
-		MessageInfo message = new MessageInfo
-				(stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
-		
-		new MessageSender(message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		edittext.setText("");
+		if (!stValue.equals("")) {
+			MessageInfo message = new MessageInfo (stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
+			
+			new MessageSender(message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			edittext.setText("");
+		}
 	}
 	
 	/**
@@ -222,12 +235,9 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
-			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
+			RequestResultSet rrs = ChatManager.rrsJoinRoom(userinfo, chatroominfo);
 			if (!rrs.fSucceeded) {
-				rrs = ChatManager.rrsJoinRoom(userinfo, chatroominfo);
-				if (!rrs.fSucceeded) {
-					throw new RuntimeException("server error");
-				}
+				Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
 			}
 			return rrs;
 		}
@@ -262,7 +272,8 @@ public class ChatRoomActivity extends Activity {
                 TextView textviewTop = (TextView) view.findViewById(R.id.toptext);
                 TextView textviewBottom = (TextView) view.findViewById(R.id.bottomtext);
                 if (textviewTop != null) {
-                    textviewTop.setText(messageinfo.stSender() + ": " + messageinfo.stBody());
+                	textviewTop.setTextAppearance(ChatRoomActivity.this, android.R.style.TextAppearance_Medium);
+                	textviewTop.setText(Html.fromHtml("<b>" + messageinfo.stSender() + ": " + "</b>" +  messageinfo.stBody()));
                 }
                 if(textviewBottom != null) {
                 	SimpleDateFormat simpledateformat = new SimpleDateFormat("hh:mm a, M/dd/yyyy", Locale.US);
@@ -317,7 +328,7 @@ public class ChatRoomActivity extends Activity {
 			
 			RequestResultSet rrs = ChatManager.rrsLeaveRoom(userinfo, chatroominfo);
 			if (!rrs.fSucceeded) {
-				throw new RuntimeException("server error");
+				Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
 			}
 			return rrs;
 		}
@@ -332,6 +343,7 @@ public class ChatRoomActivity extends Activity {
             Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
             itViewRooms.putExtra("USER", userinfo);
     		activity.startActivity(itViewRooms);
+    		activity.finish();
 		}
 	}
 }

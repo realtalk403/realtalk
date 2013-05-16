@@ -70,6 +70,7 @@ public class SelectRoomActivity extends Activity {
         		itStartChat.putExtras(bundleExtras);
         		itStartChat.putExtra("ROOM", criSelected);
         		SelectRoomActivity.this.startActivity(itStartChat);
+        		SelectRoomActivity.this.finish();
             }
         });
 		
