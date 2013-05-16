@@ -117,6 +117,10 @@ public class ChatRoomActivity extends Activity {
     public void onBackPressed() {
 	    // TODO: warn user that we are leaving room? Also is this how we want to leave rooms.
 	    new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	    if (progressdialog != null) {
+	        progressdialog.dismiss();
+	    }
+	    progressdialog = null;
 	    super.onBackPressed();
 	}
 	
@@ -173,7 +177,9 @@ public class ChatRoomActivity extends Activity {
         
         @Override
         protected void onPostExecute(Boolean success) {
-            progressdialog.dismiss();
+            if (progressdialog != null) {
+                progressdialog.dismiss();
+            }
         }    
 	}
 	
@@ -312,6 +318,7 @@ public class ChatRoomActivity extends Activity {
             progressdialog.setMessage("Joining room. Please wait...");
             progressdialog.setIndeterminate(false);
             progressdialog.setCancelable(true);
+            progressdialog.setCanceledOnTouchOutside(false);
             progressdialog.show();
         }
 
