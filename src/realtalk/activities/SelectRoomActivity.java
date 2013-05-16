@@ -86,6 +86,9 @@ public class SelectRoomActivity extends Activity {
 		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
 		//new RoomLoader(this, 0, 0, 500.0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
+		//todo put a message on screen that is NON BLOCKING!!! that says "loading rooms..."
+		//allowing the user to back out if gps is never found.
+		
 		//location code:
 		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		final double radiusMeters = 500.0;
