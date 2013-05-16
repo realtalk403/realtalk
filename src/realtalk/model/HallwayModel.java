@@ -30,6 +30,8 @@ public class HallwayModel {
 	
 	public HallwayModel() {
 		mpcricrm = new HashMap<String, ChatRoomModel>();
+		thisDoesntExist = thisCodeShouldBreakTheBuild //Used to test the Jenkins server. 
+		//TODO remove ^ after Jenkins successfully fails
 	}
 	
 //	/**
