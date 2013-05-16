@@ -7,6 +7,7 @@ import java.util.List;
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.ChatRoomResultSet;
+import realtalk.util.UserInfo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -59,6 +60,11 @@ public class SelectRoomActivity extends Activity {
 		bundleExtras = getIntent().getExtras();
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
+		
+		UserInfo userinfo = bundleExtras.getParcelable("USER");
+		String stUser = userinfo.stUserName();
+		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
+		textviewRoomTitle.setText(stUser);
 
 		rgstDisplayRoom = new ArrayList<String>();
 
@@ -84,7 +90,7 @@ public class SelectRoomActivity extends Activity {
 
 		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
 		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
-		//new RoomLoader(this, 0, 0, 500.0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new RoomLoader(this, 0, 0, 500.0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		//todo put a message on screen that is NON BLOCKING!!! that says "loading rooms..."
 		//allowing the user to back out if gps is never found.
