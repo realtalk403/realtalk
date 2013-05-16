@@ -1,11 +1,14 @@
 package realtalk.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import realtalk.util.ChatRoomInfo;
 import realtalk.util.MessageInfo;
 import realtalk.util.UserInfo;
 
@@ -31,15 +34,6 @@ public class HallwayModel {
 	public HallwayModel() {
 		mpcricrm = new HashMap<String, ChatRoomModel>();
 	}
-	
-//	/**
-//	 * Gets the ChatRoomModel associated with the ChatRoomInfo. 
-//	 * 
-//	 * @return crm associated with cri, or null if none exists.
-//	 */
-//	private ChatRoomModel crmGetFromCri(ChatRoomInfo cri) {
-//		return mpcricrm.get(cri.stId());
-//	}
 	
 	/**
 	 * Gets the ChatRoomModel associated with the id 
@@ -80,9 +74,26 @@ public class HallwayModel {
 											  stDescription, 
 											  latitude, 
 											  longitude, 
-											  stCreator, 
+											  stCreator,
+											  0,
 											  timestampCreated);
 		mpcricrm.put(stId, crm);
+	}
+	
+	/**
+	 * Removes an existing room from the model
+	 * 
+	 * @param stRoomId Chat Rooms Id
+	 * 
+	 * @return true if left room, false if room does not exist or an error has occurred leaving the room.
+	 */
+	public boolean removeRoom(String stRoomId) {
+	    if (mpcricrm.containsKey(stRoomId)) {
+	        mpcricrm.remove(stRoomId);
+	        return true;
+	    } else {
+	        return false;
+	    }
 	}
 	
 	/**
@@ -159,5 +170,52 @@ public class HallwayModel {
 				crm.addMi(mi);
 			}
 		}
+	}
+	
+	/**
+	 * Checks to see if a chatroom exists in the model.
+	 * 
+	 * @param stRoomId Chatrooms Id
+	 * @return         true if it exists, otherwise false.
+	 */
+	public boolean fChatRoomExists(String stRoomId) {
+	    return mpcricrm.containsKey(stRoomId);
+	}
+	
+	/**
+	 * Updates a chatroom in the model using the given chatroominfo. This updates all fields except messages.
+	 * If chatroom does not exist, it does nothing.
+	 * 
+	 * @param chatroominfo Information about chatroom to update.
+	 */
+	public void updateChatroom(ChatRoomInfo chatroominfo) {
+	    if (fChatRoomExists(chatroominfo.stId())) {
+	        ChatRoomModel room = crmGetFromId(chatroominfo.stId());
+	        room.setName(chatroominfo.stName());
+	        room.setCreator(chatroominfo.stCreator());
+	        room.setDescription(chatroominfo.stDescription());
+	        room.setLongitude(chatroominfo.getLongitude());
+	        room.setLatitude(chatroominfo.getLatitude());
+	        room.setNumUsers(chatroominfo.numUsersGet());
+	        room.setTimestampCreated(chatroominfo.timestampCreated());
+	    }
+	}
+	
+	/**
+	 * Gets a list of the rooms currently held in the ChatModel
+	 * 
+	 * @return List of ChatRoomInfo
+	 */
+	public List<ChatRoomInfo> getRoomInfo() {
+	    List<ChatRoomInfo> rgcri = new ArrayList<ChatRoomInfo>();
+	    for (Entry<String, ChatRoomModel> entry : mpcricrm.entrySet()) {
+	        ChatRoomModel room = entry.getValue();
+	        ChatRoomInfo roominfo = new ChatRoomInfo(room.stName(), 
+	                room.stId(), room.stDescription(), room.getLatitude(), 
+	                room.getLongitude(), room.stCreator(), room.getNumUsers(), 
+	                room.timestampCreated());
+	        rgcri.add(roominfo);
+	    }
+	    return rgcri;
 	}
 }

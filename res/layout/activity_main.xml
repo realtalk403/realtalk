@@ -1,4 +1,3 @@
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -17,13 +16,15 @@
         android:layout_alignLeft="@+id/editPword"
         android:ems="10"
         android:hint="@string/uname_hint"
-        android:inputType="text" />
-
+        android:inputType="text" >
+        <requestFocus /> 
+    </EditText>
+        
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button1"
+        android:layout_above="@+id/createAccountBtn"
         android:layout_centerHorizontal="true"
         android:text="@string/sign_up"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -47,7 +48,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/createAccountBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/textView1"
@@ -60,7 +61,7 @@
         android:id="@+id/editPword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/Button02"
+        android:layout_above="@+id/loginButton"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="35dp"
         android:ems="10"
@@ -74,12 +75,12 @@
         android:id="@+id/rememberme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/Button02"
+        android:layout_above="@+id/loginButton"
         android:layout_alignLeft="@+id/editPword"
         android:text="@string/remember_me" />
 
     <Button
-        android:id="@+id/Button02"
+        android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/textView2"
