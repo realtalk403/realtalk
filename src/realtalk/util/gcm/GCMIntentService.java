@@ -6,6 +6,10 @@ import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
 
+import realtalk.controller.ChatController;
+import realtalk.util.MessageInfo;
+import realtalk.util.RequestParameters;
+
 /**
  * IntentService responsible for handling GCM messages
  * 
@@ -27,7 +31,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onMessage(Context context, Intent intent) {
-        // TODO Auto-generated method stub
+        Log.v("GCMIntentService", "Received Message");
+        handleMessage(context, intent);
     }
 
     @Override
@@ -38,7 +43,24 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onUnregistered(Context context, String stRegId) {
-        // TODO Auto-generated method stub        
+        // TODO        
     }
-
+    
+    /**
+     * Helper method that handles the message received by GCM.
+     * 
+     * @param context Context it is received in.
+     * @param intent  Intent containing GCM message.
+     */
+    private void handleMessage(Context context, Intent intent) {
+        Log.v("GCMIntentService", "Handling Message");
+        String stSender = intent.getStringExtra(RequestParameters.PARAMETER_MESSAGE_SENDER);
+        String stTimestamp = intent.getStringExtra(RequestParameters.PARAMETER_MESSAGE_TIMESTAMP);
+        String stBody = intent.getStringExtra(RequestParameters.PARAMETER_MESSAGE_BODY);
+        //String stRoomName = intent.getStringExtra(RequestParameters.PARAMETER_ROOM_NAME);
+        String stRoomId = intent.getStringExtra(RequestParameters.PARAMETER_ROOM_ID);
+        long timestamp = Long.parseLong(stTimestamp);
+        MessageInfo msginfo = new MessageInfo(stBody, stSender, timestamp);
+        ChatController.getInstance().addMessageToRoom(msginfo, stRoomId, context);
+    }
 }

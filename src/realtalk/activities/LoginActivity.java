@@ -1,5 +1,7 @@
 package realtalk.activities;
 import com.google.android.gcm.GCMRegistrar;
+
+import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
@@ -43,6 +45,7 @@ public class LoginActivity extends Activity {
     private EditText edittextUser;
     private EditText edittextPword;
     private boolean fLoggedIn;
+    private ChatController chatController;
     
     
     /**
@@ -52,6 +55,9 @@ public class LoginActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		// Initialize Controller by getting its instance
+		chatController = ChatController.getInstance();
 		
 		// Make sure the device has the proper dependencies and manifest is properly set
 		GCMRegistrar.checkDevice(this);
@@ -81,7 +87,7 @@ public class LoginActivity extends Activity {
 		// For remembering username/password and if user is already logged in
 		edittextUser = (EditText) findViewById(R.id.editQuery);
 		edittextPword = (EditText) findViewById(R.id.editPword);
-		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme);
+		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme );
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 		
@@ -94,11 +100,8 @@ public class LoginActivity extends Activity {
 		
 		//if user is already logged in, redirect to select room page
 		if(fLoggedIn) {
-			Intent itRoomSelect = new Intent(this, SelectRoomActivity.class);
 			UserInfo userinfo = new UserInfo(stUsername, stPassword, REG_ID);
-            itRoomSelect.putExtra("USER", userinfo);
-			this.startActivity(itRoomSelect);
-			finish();
+			updateRegId(userinfo);
 		} else {			
 			fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
 			
@@ -120,6 +123,7 @@ public class LoginActivity extends Activity {
 	
 	@Override
 	public void onDestroy() {
+	    super.onDestroy();
 	    unregisterReceiver(handleRegisterReceiver);
 	}
 	
@@ -325,6 +329,7 @@ public class LoginActivity extends Activity {
                 Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
                 UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), REG_ID);
                 itRoomSelect.putExtra("USER", loginUserinfo);
+                chatController.initialize(loginUserinfo);
                 activity.startActivity(itRoomSelect);
                 activity.finish();
             } else {
