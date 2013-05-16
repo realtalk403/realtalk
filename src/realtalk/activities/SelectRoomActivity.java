@@ -37,7 +37,7 @@ import com.example.realtalk.R;
 /**
  * Activity for selecting a chat room to join
  * 
- * @author Jordan Hazari
+ * @author Jordan Hazari and Taylor Williams
  *
  */
 @SuppressLint("NewApi")
@@ -82,6 +82,10 @@ public class SelectRoomActivity extends Activity {
 		adapter = new ChatRoomAdapter(this, R.layout.list_item, rgchatroominfo);
 		listview.setAdapter(adapter);
 
+		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
+		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
+		//new RoomLoader(this, 0, 0, 500.0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		
 		//location code:
 		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		final double radiusMeters = 500.0;
@@ -122,7 +126,7 @@ public class SelectRoomActivity extends Activity {
 	}
 
 	private void LoadRooms(Location locationUser, double radiusMeters) {
-		new RoomLoader(this, locationUser, radiusMeters).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new RoomLoader(this, locationUser.getLatitude(), locationUser.getLongitude(), radiusMeters).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	@Override
@@ -172,17 +176,19 @@ public class SelectRoomActivity extends Activity {
 	 */
 	class RoomLoader extends AsyncTask<String, String, ChatRoomResultSet> {
 		private SelectRoomActivity selectroomactivity;
-		Location location;
 		double radiusMeters;
+		double latitude;
+		double longitude;
 
 		/**
 		 * Constructs a RoomLoader object
 		 * 
 		 * @param selectroomroomactivity the activity context
 		 */
-		public RoomLoader(SelectRoomActivity selectroomactivity, Location location, double radiusMeters) {
+		public RoomLoader(SelectRoomActivity selectroomactivity, double latitude, double longitude, double radiusMeters) {
 			this.selectroomactivity = selectroomactivity;
-			this.location = location;
+			this.longitude = longitude;
+			this.latitude = latitude;
 			this.radiusMeters = radiusMeters;
 		}
 
@@ -192,7 +198,7 @@ public class SelectRoomActivity extends Activity {
 		@Override
 		protected ChatRoomResultSet doInBackground(String... params) {
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
-					(location.getLatitude(), location.getLongitude(), radiusMeters);
+					(latitude, longitude, radiusMeters);
 
 			rgchatroominfo = crrsNear.rgcri;
 
