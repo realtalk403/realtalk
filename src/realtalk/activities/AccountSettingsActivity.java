@@ -28,6 +28,7 @@ import com.realtalk.R;
  */
 public class AccountSettingsActivity extends Activity {
 	private static final String DEFAULT_ID = "someID";
+	private static final int MAX_PASSWORD_LENGTH = 20;
 	private ProgressDialog progressdialog;
     private SharedPreferences sharedpreferencesLoginPrefs;
     private Editor editorLoginPrefs;
@@ -109,7 +110,7 @@ public class AccountSettingsActivity extends Activity {
 
 			//show alert dialog
 			alertdialogEmptyField.show();
-		} else if(stNewPword.length() > 20) {
+		} else if(stNewPword.length() > MAX_PASSWORD_LENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
 			alertDialogBuilder.setTitle("Invalid Password");
@@ -228,7 +229,7 @@ public class AccountSettingsActivity extends Activity {
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
-            if(requestresultset.fSucceeded == false) {
+            if(!requestresultset.getfSucceeded()) {
             	//invalid password pop up
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
@@ -334,7 +335,7 @@ public class AccountSettingsActivity extends Activity {
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
         	progressdialog.dismiss();
-        	if(requestresultset.fSucceeded) {
+        	if(requestresultset.getfSucceeded()) {
 	        	editorLoginPrefs.clear();
 	        	editorLoginPrefs.commit();
 	        	

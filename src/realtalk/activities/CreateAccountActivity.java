@@ -26,6 +26,8 @@ import com.realtalk.R;
 public class CreateAccountActivity extends Activity {
 	
 	private static final String DEFAULT_ID = "someID";
+	private static final int USERNAME_MAX_LENGTH = 20;
+	private static final int PASSWORD_MAX_LENGTH = 20;
 	private ProgressDialog progressdialog;
 	
 	/**
@@ -55,7 +57,7 @@ public class CreateAccountActivity extends Activity {
 		EditText edittextUser = (EditText) findViewById(R.id.user);
 		EditText edittextPword = (EditText) findViewById(R.id.pword);
 		EditText edittextConfPword = (EditText) findViewById(R.id.conf_pword);
-		String stUsername = edittextUser.getText().toString().trim();;
+		String stUsername = edittextUser.getText().toString().trim();
 		String stPword = edittextPword.getText().toString();
 		String stConf = edittextConfPword.getText().toString();
 		
@@ -123,7 +125,7 @@ public class CreateAccountActivity extends Activity {
 			
 			//show alert dialog
 			alertdialogBadPword.show();		
-		} else if(stUsername.length() > 20) {
+		} else if(stUsername.length() > USERNAME_MAX_LENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
 			alertDialogBuilder.setTitle("Invalid Username");
@@ -144,7 +146,7 @@ public class CreateAccountActivity extends Activity {
 			
 			//show alert dialog
 			alertdialogBadUsername.show();
-		} else if(stPword.length() > 20) {
+		} else if(stPword.length() > PASSWORD_MAX_LENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
 			alertDialogBuilder.setTitle("Invalid Password");
@@ -219,7 +221,7 @@ public class CreateAccountActivity extends Activity {
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
-            if(requestresultset.fSucceeded == false) {
+            if(!requestresultset.getfSucceeded()) {
             	//user already exists pop up
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title

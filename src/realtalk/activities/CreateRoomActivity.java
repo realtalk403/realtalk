@@ -94,7 +94,7 @@ public class CreateRoomActivity extends Activity {
 			ChatRoomInfo chatroominfo = new ChatRoomInfo(stRoomName, stRoomName, stDescription, 0.0, 0.0, stCreator, 0, new Timestamp(System.currentTimeMillis()));
 			
 			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
-			if (!rrs.fSucceeded) {
+			if (!rrs.getfSucceeded()) {
 			    // TODO shouldnt through this exception. Just alert user server is down
 				throw new RuntimeException("server error");
 			}

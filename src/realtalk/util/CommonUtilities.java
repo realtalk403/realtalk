@@ -9,7 +9,14 @@ import android.content.Intent;
  * @author Colin Kho
  *
  */
-public class CommonUtilities {
+public final class CommonUtilities {
+	
+	/**
+	 * Private contructor prevents this class from being instantiated.
+	 */
+	private CommonUtilities() {
+		throw new UnsupportedOperationException("CommonUtilities is a utility class that should not be instantiated.");
+	}
     /**
      * Base URL of the RealTalk Server
      */

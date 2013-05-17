@@ -30,6 +30,7 @@ import android.util.Log;
  */
 public class JSONParser {
     public JSONParser() {}
+    private static final int BUFFER_SIZE = 8;
     
     /** Sends a request to a url with given params
      * @param stUrl		The url to send the request to
@@ -75,14 +76,15 @@ public class JSONParser {
         
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    inputstream, "iso-8859-1"), 8);
+                    inputstream, "iso-8859-1"), BUFFER_SIZE);
             StringBuilder stringbuilder = new StringBuilder();
             String line = null;
             while ((line = reader.readLine()) != null) {
                 stringbuilder.append(line + "\n");
             }
-            if (inputstream != null)
+            if (inputstream != null) {
                 inputstream.close();
+            }
             stJson = stringbuilder.toString();
         } catch (Exception e) {
             Log.e("Buffer Error", "Error converting result " + e.toString());

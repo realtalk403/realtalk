@@ -4,7 +4,6 @@ package realtalk.activities;
 import java.util.ArrayList;
 import java.util.List;
 
-import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.ChatRoomResultSet;
@@ -14,10 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,7 +27,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.realtalk.R;
 
@@ -43,10 +38,12 @@ import com.realtalk.R;
  */
 @SuppressLint("NewApi")
 public class SelectRoomActivity extends Activity {
-	List<String> rgstDisplayRoom;
-	List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
-	ChatRoomAdapter adapter;
-	Bundle bundleExtras;
+//	private List<String> rgstDisplayRoom;
+	//Checkstyle doesn't like magic #s, even if they are hacks that we know we will change TODO
+	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  
+	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
+	private ChatRoomAdapter adapter;
+	private Bundle bundleExtras;
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
 
@@ -62,7 +59,7 @@ public class SelectRoomActivity extends Activity {
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 
-		rgstDisplayRoom = new ArrayList<String>();
+//		rgstDisplayRoom = new ArrayList<String>();
 
 		ListView listview = (ListView) findViewById(R.id.list);
 		listview.setClickable(false);
@@ -90,7 +87,7 @@ public class SelectRoomActivity extends Activity {
 
 		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
 		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
-		new RoomLoader(this, 0, 0, 500.0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		//todo put a message on screen that is NON BLOCKING!!! that says "loading rooms..."
 		//allowing the user to back out if gps is never found.
@@ -115,11 +112,11 @@ public class SelectRoomActivity extends Activity {
 //					if (locationUser == null)
 //					{
 //						locationUser = location;
-//						LoadRooms(locationUser, radiusMeters);
+//						loadRooms(locationUser, radiusMeters);
 //					}
 //					else if (location.getAccuracy() <= locationUser.getAccuracy()) {
 //						locationUser = location;
-//						LoadRooms(locationUser, radiusMeters);
+//						loadRooms(locationUser, radiusMeters);
 //					}
 //					//TODO stop always listening and updating?
 //				}
@@ -134,7 +131,7 @@ public class SelectRoomActivity extends Activity {
 //		}
 	}
 
-	private void LoadRooms(Location locationUser, double radiusMeters) {
+	private void loadRooms(Location locationUser, double radiusMeters) {
 		new RoomLoader(this, locationUser.getLatitude(), locationUser.getLongitude(), radiusMeters).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
@@ -183,9 +180,9 @@ public class SelectRoomActivity extends Activity {
 	 */
 	class RoomLoader extends AsyncTask<String, String, ChatRoomResultSet> {
 		private SelectRoomActivity selectroomactivity;
-		double radiusMeters;
-		double latitude;
-		double longitude;
+		private double radiusMeters;
+		private double latitude;
+		private double longitude;
 
 		/**
 		 * Constructs a RoomLoader object
@@ -207,15 +204,16 @@ public class SelectRoomActivity extends Activity {
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 
-			rgchatroominfo = crrsNear.rgcri;
+			rgchatroominfo = crrsNear.rgcriGet();
 
 			selectroomactivity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
 					adapter.clear();
 
-					for (int i = 0; i < rgchatroominfo.size(); i++)
+					for (int i = 0; i < rgchatroominfo.size(); i++) {
 						adapter.add(rgchatroominfo.get(i));
+					}
 				}
 			});
 

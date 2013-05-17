@@ -28,6 +28,18 @@
 
   Finally, it is worth reading the documentation.
 
+REALTALK REMOVED CHECKS:
+	JavadocPackage
+	FileTabsCharacter
+	RegexpSingleline
+	ParameterNumber
+	all whitespace rules
+	AvoidInlineConditionals
+	DoubleCheckedLocking <- don't reenable, it breaks checkstyle
+	HiddenField
+	DesignForExtension
+	FinalParameters
+
 -->
 
 <module name="Checker">
@@ -35,14 +47,16 @@
         If you set the basedir property below, then all reported file
         names will be relative to the specified directory. See
         http://checkstyle.sourceforge.net/5.x/config.html#Checker
-
+	-->
         <property name="basedir" value="${basedir}"/>
-    -->
+    
 
     <!-- Checks that a package-info.java file exists for each package.     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage -->
+    <!-- 
     <module name="JavadocPackage"/>
-
+    -->
+    
     <!-- Checks whether files end with a new line.                        -->
     <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
     <module name="NewlineAtEndOfFile"/>
@@ -57,16 +71,20 @@
     
     <!-- Checks for whitespace                               -->
     <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+    <!--  We are OK with tabs
     <module name="FileTabCharacter"/>
+	-->
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See http://checkstyle.sf.net/config_misc.html -->
+    
+    <!-- Don't care about trailing spaces.
     <module name="RegexpSingleline">
        <property name="format" value="\s+$"/>
        <property name="minimum" value="0"/>
        <property name="maximum" value="0"/>
        <property name="message" value="Line has trailing spaces."/>
-    </module>
+    </module> -->
 
     <!-- Checks for Headers                                -->
     <!-- See http://checkstyle.sf.net/config_header.html   -->
@@ -79,10 +97,12 @@
 
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
+        <!-- 
         <module name="JavadocMethod"/>
         <module name="JavadocType"/>
         <module name="JavadocVariable"/>
         <module name="JavadocStyle"/>
+        -->
 
 
         <!-- Checks for Naming Conventions.                  -->
@@ -108,13 +128,16 @@
 
         <!-- Checks for Size Violations.                    -->
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
-        <module name="LineLength"/>
+        <!--  <module name="LineLength"/> -->
         <module name="MethodLength"/>
+        <!--  Some of our classes require a large # of params
         <module name="ParameterNumber"/>
+        -->
 
 
         <!-- Checks for whitespace                               -->
         <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+        <!-- Don't care about whitespace
         <module name="EmptyForIteratorPad"/>
         <module name="GenericWhitespace"/>
         <module name="MethodParamPad"/>
@@ -124,7 +147,7 @@
         <module name="ParenPad"/>
         <module name="TypecastParenPad"/>
         <module name="WhitespaceAfter"/>
-        <module name="WhitespaceAround"/>
+        <module name="WhitespaceAround"/> -->
 
 
         <!-- Modifier Checks                                    -->
@@ -144,11 +167,16 @@
 
         <!-- Checks for common coding problems               -->
         <!-- See http://checkstyle.sf.net/config_coding.html -->
+        <!-- These are permissable
         <module name="AvoidInlineConditionals"/>
-        <module name="DoubleCheckedLocking"/>    <!-- MY FAVOURITE -->
+        -->
+        <!-- Apparently this check breaks this version of Checkstyle
+        <module name="DoubleCheckedLocking"/> --> 
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
+        <!-- Hungarian naming conventions conflict with this rule.
         <module name="HiddenField"/>
+        -->
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
         <module name="MagicNumber"/>
@@ -159,7 +187,9 @@
 
         <!-- Checks for class design                         -->
         <!-- See http://checkstyle.sf.net/config_design.html -->
+        <!-- This rule is superflous to needs
         <module name="DesignForExtension"/>
+        -->
         <module name="FinalClass"/>
         <module name="HideUtilityClassConstructor"/>
         <module name="InterfaceIsType"/>
@@ -169,8 +199,12 @@
         <!-- Miscellaneous other checks.                   -->
         <!-- See http://checkstyle.sf.net/config_misc.html -->
         <module name="ArrayTypeStyle"/>
+        <!-- unnecessary
         <module name="FinalParameters"/>
-        <module name="TodoComment"/>
+        -->
+        <module name="TodoComment">
+            <property name="format" value="WARNING"/>
+        </module>
         <module name="UpperEll"/>
 
     </module>
