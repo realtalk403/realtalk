@@ -56,7 +56,7 @@ public class ChatRoomModel {
         this.longitude = longitude;
         this.stCreator = stCreator;
         this.setNumUsers(iUsers);
-        this.timestampCreated = timestampCreated;
+        this.timestampCreated = new Timestamp(timestampCreated.getTime());
 				
 		rgmi = new ArrayList<MessageInfo>();
 		rgu = new HashSet<UserInfo>();
