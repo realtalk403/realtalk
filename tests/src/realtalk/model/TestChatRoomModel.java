@@ -1,4 +1,4 @@
-package com.realtalk.test;
+package realtalk.model;
 
 import java.sql.Timestamp;
 import java.util.List;
