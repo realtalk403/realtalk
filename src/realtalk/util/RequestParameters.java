@@ -10,7 +10,7 @@ package realtalk.util;
  * @author Colin Kho
  *
  */
-public class RequestParameters {
+public final class RequestParameters {
 	// Google Cloud Messaging Registration ID
     public static final String PARAMETER_REG_ID = "PARAMETER_REG_ID";
     // User Name
@@ -55,5 +55,12 @@ public class RequestParameters {
     public static final String PARAMETER_ROOM_CREATOR = "PARAMETER_ROOM_CREATOR";
     //num users in room
     public static final String PARAMETER_ROOM_NUM_USERS = "PARAMETER_ROOM_NUM_USERS";
+    
+	/**
+	 * Private contructor prevents this class from being instantiated.
+	 */
+    private RequestParameters() {
+    	throw new UnsupportedOperationException("RequestParameters is a utility class and should not be instantiated");
+    }
     
 }

@@ -22,7 +22,7 @@ import realtalk.util.UserInfo;
  * @author Colin Kho
  *
  */
-public class ChatController {
+public final class ChatController {
     private static ChatController instance = null;
     private HallwayModel chatModel;
     // Keeps track of the current user in the RealTalk application.
@@ -107,8 +107,9 @@ public class ChatController {
      */
     public boolean joinRoom(ChatRoomInfo chatroom) {
         RequestResultSet crrs = ChatManager.rrsJoinRoom(userinfo, chatroom);
-        if (!crrs.fSucceeded)
+        if (!crrs.getfSucceeded()) {
             return false;
+        }
         chatModel.addRoom(chatroom.stName(), 
                 chatroom.stId(), 
                 chatroom.stDescription(), 
@@ -137,8 +138,9 @@ public class ChatController {
      */
     public boolean leaveRoom(ChatRoomInfo chatroom) {
         RequestResultSet crrs = ChatManager.rrsLeaveRoom(userinfo, chatroom);
-        if (!crrs.fSucceeded)
+        if (!crrs.getfSucceeded()) {
             return false;
+        }
         return chatModel.removeRoom(chatroom.stId());
     }
     

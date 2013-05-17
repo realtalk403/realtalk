@@ -9,7 +9,7 @@ import android.content.Intent;
  * @author Colin Kho
  *
  */
-public class GCMUtilities {
+public final class GCMUtilities {
     /**
      *  Google API Project ID registered to use GCM
      */
@@ -57,4 +57,11 @@ public class GCMUtilities {
         }
         context.sendBroadcast(intent);
     }
+    
+	/**
+	 * Private contructor prevents this class from being instantiated.
+	 */
+	private GCMUtilities() {
+		throw new UnsupportedOperationException("CommonUtilities is a utility class that should not be instantiated.");
+	}
 }
