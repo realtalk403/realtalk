@@ -50,12 +50,12 @@ import android.widget.Toast;
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChatRoomActivity extends Activity {
-	ChatRoomInfo chatroominfo;
-	UserInfo userinfo;
+	private ChatRoomInfo chatroominfo;
+	private UserInfo userinfo;
 	private ProgressDialog progressdialog;
-	List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
-	List<String> rgstDisplayMessage;
-	MessageAdapter adapter;
+	private List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
+//	private List<String> rgstDisplayMessage;
+	private MessageAdapter adapter;
 	private ChatController chatController = ChatController.getInstance();
 	
 	/**
@@ -83,7 +83,7 @@ public class ChatRoomActivity extends Activity {
 		
 		new RoomCreator(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
-		rgstDisplayMessage = new ArrayList<String>();
+//		rgstDisplayMessage = new ArrayList<String>();
 
 		ListView listview = (ListView) findViewById(R.id.list);
 		adapter = new MessageAdapter(this, R.layout.message_item, rgmessageinfo);
@@ -151,7 +151,7 @@ public class ChatRoomActivity extends Activity {
 	/**
 	 * Method that loads messages to adapter. Prepares the chat view to use GCM thereafter.
 	 */
-	public void GCMMessageLoader() {
+	public void createGCMMessageLoader() {
 	    new GCMMessageLoader(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
@@ -252,6 +252,7 @@ public class ChatRoomActivity extends Activity {
 	class MessageLoader extends AsyncTask<String, String, PullMessageResultSet> {
 		private ChatRoomActivity chatroomactivity;
 		private ChatRoomInfo chatroominfo;
+		private static final int RECENT_MESSAGE_TIME_LIMIT = 1000000000;
 		
 		/**
 		 * Constructs a MessageLoader object
@@ -271,17 +272,18 @@ public class ChatRoomActivity extends Activity {
 		protected PullMessageResultSet doInBackground(String... params) {
 			while (true) {
 				PullMessageResultSet pmrsRecent = ChatManager.pmrsChatRecentChat
-						(chatroominfo, new Timestamp(System.currentTimeMillis()-1000000000));
+						(chatroominfo, new Timestamp(System.currentTimeMillis()-RECENT_MESSAGE_TIME_LIMIT));
 				
-				rgmessageinfo = pmrsRecent.rgmessage;
+				rgmessageinfo = pmrsRecent.getRgmessage();
 				
 				chatroomactivity.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						adapter.clear();
 						
-						for (int i = 0; i < rgmessageinfo.size(); i++)
+						for (int i = 0; i < rgmessageinfo.size(); i++) {
 							adapter.add(rgmessageinfo.get(i));
+						}
 					}
 				});
 			}
@@ -310,8 +312,9 @@ public class ChatRoomActivity extends Activity {
                 public void run() {
                     adapter.clear();
                     
-                    for (int i = 0; i < rgmessageinfo.size(); i++)
+                    for (int i = 0; i < rgmessageinfo.size(); i++) {
                         adapter.add(rgmessageinfo.get(i));
+                    }
                 }
             });
             return true;
@@ -371,7 +374,7 @@ public class ChatRoomActivity extends Activity {
                 Toast serverToast = Toast.makeText(activity, "Failed to join room. Please try again.", Toast.LENGTH_LONG);
                 serverToast.show();
             } else {
-                ChatRoomActivity.this.GCMMessageLoader();
+                ChatRoomActivity.this.createGCMMessageLoader();
             }
 		}
 	}
@@ -424,8 +427,9 @@ public class ChatRoomActivity extends Activity {
                     // Update adapter to have new messages.
                     adapter.clear();
                     
-                    for (int iMsgIndex = 0; iMsgIndex < rgmessageinfo.size(); iMsgIndex++)
+                    for (int iMsgIndex = 0; iMsgIndex < rgmessageinfo.size(); iMsgIndex++) {
                         adapter.add(rgmessageinfo.get(iMsgIndex));
+                    }
                 }    
 	};
 }

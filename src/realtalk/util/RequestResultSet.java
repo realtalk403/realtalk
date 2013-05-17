@@ -8,7 +8,7 @@ package realtalk.util;
  *
  */
 public class RequestResultSet {
-	public boolean fSucceeded;
+	private boolean fSucceeded;
 	private String stErrorMessage;
 	private String stErrorCode;
 	/** Constructor that stores flag and error indicators
@@ -32,5 +32,12 @@ public class RequestResultSet {
      */
     public String getStErrorCode() {
         return stErrorCode;
+    }
+    
+    /**
+     * @return the fSucceeded
+     */
+    public boolean getfSucceeded() {
+    	return fSucceeded;
     }
 }

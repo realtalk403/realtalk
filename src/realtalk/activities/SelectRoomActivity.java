@@ -47,10 +47,12 @@ import com.realtalk.R;
  */
 @SuppressLint("NewApi")
 public class SelectRoomActivity extends Activity {
-	List<String> rgstDisplayRoom;
-	List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
-	ChatRoomAdapter adapter;
-	Bundle bundleExtras;
+//	private List<String> rgstDisplayRoom;
+	//Checkstyle doesn't like magic #s, even if they are hacks that we know we will change TODO
+	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  
+	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
+	private ChatRoomAdapter adapter;
+	private Bundle bundleExtras;
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
 
@@ -71,7 +73,7 @@ public class SelectRoomActivity extends Activity {
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
 
-		rgstDisplayRoom = new ArrayList<String>();
+//		rgstDisplayRoom = new ArrayList<String>();
 
 		ListView listview = (ListView) findViewById(R.id.list);
 		listview.setClickable(false);
@@ -100,7 +102,7 @@ public class SelectRoomActivity extends Activity {
 
 		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
 		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
-		new RoomLoader(this, 0, 0, 500.0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		//todo put a message on screen that is NON BLOCKING!!! that says "loading rooms..."
 		//allowing the user to back out if gps is never found.
@@ -125,11 +127,11 @@ public class SelectRoomActivity extends Activity {
 //					if (locationUser == null)
 //					{
 //						locationUser = location;
-//						LoadRooms(locationUser, radiusMeters);
+//						loadRooms(locationUser, radiusMeters);
 //					}
 //					else if (location.getAccuracy() <= locationUser.getAccuracy()) {
 //						locationUser = location;
-//						LoadRooms(locationUser, radiusMeters);
+//						loadRooms(locationUser, radiusMeters);
 //					}
 //					//TODO stop always listening and updating?
 //				}
@@ -233,9 +235,9 @@ public class SelectRoomActivity extends Activity {
 	 */
 	class RoomLoader extends AsyncTask<String, String, ChatRoomResultSet> {
 		private SelectRoomActivity selectroomactivity;
-		double radiusMeters;
-		double latitude;
-		double longitude;
+		private double radiusMeters;
+		private double latitude;
+		private double longitude;
 
 		/**
 		 * Constructs a RoomLoader object
@@ -257,15 +259,16 @@ public class SelectRoomActivity extends Activity {
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 
-			rgchatroominfo = crrsNear.rgcri;
+			rgchatroominfo = crrsNear.rgcriGet();
 
 			selectroomactivity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
 					adapter.clear();
 
-					for (int i = 0; i < rgchatroominfo.size(); i++)
+					for (int i = 0; i < rgchatroominfo.size(); i++) {
 						adapter.add(rgchatroominfo.get(i));
+					}
 				}
 			});
 

@@ -36,7 +36,7 @@ import com.realtalk.R;
  */
 public class LoginActivity extends Activity {
     
-	private String REG_ID = "";
+	private String stRegisteredId = "";
     private ProgressDialog progressdialog;
     private CheckBox checkboxRememberMe;
     private SharedPreferences sharedpreferencesLoginPrefs;
@@ -81,7 +81,7 @@ public class LoginActivity extends Activity {
             GCMRegistrar.register(this, GCMUtilities.SENDER_ID);
 		} else {
 		    // Already registered on GCM server
-		    REG_ID = stRegId;
+		    stRegisteredId = stRegId;
 		}
 		
 		// For remembering username/password and if user is already logged in
@@ -100,7 +100,7 @@ public class LoginActivity extends Activity {
 		
 		//if user is already logged in, redirect to select room page
 		if(fLoggedIn) {
-			UserInfo userinfo = new UserInfo(stUsername, stPassword, REG_ID);
+			UserInfo userinfo = new UserInfo(stUsername, stPassword, stRegisteredId);
 			updateRegId(userinfo);
 		} else {			
 			fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
@@ -182,7 +182,7 @@ public class LoginActivity extends Activity {
 	    		editorLoginPrefs.putString("savedPassword", null);
 	    		editorLoginPrefs.commit();
 	    	}
-	    	new Authenticator(new UserInfo(stUsername, stPword, REG_ID), this).execute();
+	    	new Authenticator(new UserInfo(stUsername, stPword, stRegisteredId), this).execute();
 	    }
 	    
 	}
@@ -238,7 +238,7 @@ public class LoginActivity extends Activity {
 				    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 				    String stUsername = edittextUser.getText().toString();
 				    String stPword = edittextPword.getText().toString();
-				    new UserRemover(new UserInfo(stUsername, stPword, REG_ID), LoginActivity.this).execute();
+				    new UserRemover(new UserInfo(stUsername, stPword, stRegisteredId), LoginActivity.this).execute();
 				}	
 			});
 			
@@ -276,7 +276,7 @@ public class LoginActivity extends Activity {
                     String stResultCode = intent.getExtras().getString(GCMUtilities.RESULT_MESSAGE);
                     CharSequence charsequenceText = "";
                     if (stResultCode.equals(GCMUtilities.SUCCESS)) {
-                        REG_ID = intent.getExtras().getString(GCMUtilities.GCM_REG_ID);
+                        stRegisteredId = intent.getExtras().getString(GCMUtilities.GCM_REG_ID);
                         charsequenceText = "Initialization Complete";
                     } else {
                         // Registration failed. Alert user and lock app asking them to try again later.
@@ -319,15 +319,15 @@ public class LoginActivity extends Activity {
 	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
-            return ChatManager.rrsChangeID(userinfo, REG_ID);
+            return ChatManager.rrsChangeID(userinfo, stRegisteredId);
         }
 	    
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
-            if (requestresultset.fSucceeded) {                
+            if (requestresultset.getfSucceeded()) {                
                 Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
-                UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), REG_ID);
+                UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stRegisteredId);
                 itRoomSelect.putExtra("USER", loginUserinfo);
                 chatController.initialize(loginUserinfo);
                 activity.startActivity(itRoomSelect);
@@ -371,7 +371,7 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
-            if(!requestresultset.fSucceeded) {
+            if(!requestresultset.getfSucceeded()) {
             	//invalid username or password
             	
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
@@ -477,7 +477,7 @@ public class LoginActivity extends Activity {
 
             progressdialog.dismiss();
             //invalid username/password
-            if(!requestresultset.fSucceeded) {
+            if(!requestresultset.getfSucceeded()) {
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
 				alertdialogbuilder.setTitle("Invalid fields");
@@ -512,7 +512,7 @@ public class LoginActivity extends Activity {
 	    		editorLoginPrefs.putString("loggedin_password", password);
 	    		editorLoginPrefs.commit();
 	    		
-	    		LoginActivity.this.updateRegId(new UserInfo(username, password, REG_ID));  
+	    		LoginActivity.this.updateRegId(new UserInfo(username, password, stRegisteredId));  
             }
         }
 	}
