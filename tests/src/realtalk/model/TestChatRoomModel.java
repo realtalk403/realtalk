@@ -1,4 +1,4 @@
-package com.example.realtalk.test;
+package com.realtalk.test;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -20,7 +20,7 @@ public class TestChatRoomModel extends AndroidTestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		crm = new ChatRoomModel(stName, stId, stDescription, latitude, longitude, stCreator, timestampCreated);
+		crm = new ChatRoomModel(stName, stId, stDescription, latitude, longitude, stCreator, 0, timestampCreated);
 	}
 
 	protected void tearDown() throws Exception {

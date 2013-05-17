@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="tests" default="help">
+<project name="RealTalkTest" default="help">
 
     <!-- The local.properties file is created and updated by the 'android' tool.
          It contains the path to the SDK. It should *NOT* be checked into
@@ -88,19 +88,18 @@
     -->
     <!-- version-tag: custom -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
-
-	<target name="unittests" depends="debug,install" >
-        	<property name="unittestlog.file" value="unit_tests_log.txt" />
-        	<record name="${unittestlog.file}" action="start" />
-        	<antcall target="test" />
-        	<record name="${unittestlog.file}" action="stop" />
-        	<loadfile property="tests.output" srcFile="${unittestlog.file}" />
-        	<echo>Checking for failures</echo>
-        	<fail message="Unit tests failed!">
-        	    <condition>
-        	        <contains string="${tests.output}" substring="FAILURES" />
-        	    </condition>
-        	</fail>
-        	<echo>Unit tests passed!</echo>
-    	</target>
+    <target name="unittests" depends="debug,install" >
+        <property name="unittestlog.file" value="unit_tests_log.txt" />
+        <record name="${unittestlog.file}" action="start" />
+        <antcall target="test" />
+        <record name="${unittestlog.file}" action="stop" />
+        <loadfile property="tests.output" srcFile="${unittestlog.file}" />
+        <echo>Checking for failures</echo>
+        <fail message="Unit tests failed!">
+            <condition>
+                <contains string="${tests.output}" substring="FAILURES" />
+            </condition>
+        </fail>
+        <echo>Unit tests passed!</echo>
+    </target>
 </project>
