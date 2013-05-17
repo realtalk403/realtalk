@@ -29,3 +29,5 @@ proguard/
 .idea/
 
 .settings/
+
+tests/unit_tests_log.txt
