@@ -43,7 +43,7 @@ public class JSONParser {
         String stJson = "";
         try {
             // check for request method
-            if(stMethod == "POST"){
+            if(stMethod.equals("POST")){
                 // request method is POST
                 // defaultHttpClient
                 DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -54,7 +54,7 @@ public class JSONParser {
                 HttpEntity httpentity = httpresponse.getEntity();
                 inputstream = httpentity.getContent();
  
-            }else if(stMethod == "GET"){
+            }else if(stMethod.equals("GET")){
                 // request method is GET
                 DefaultHttpClient httpclient = new DefaultHttpClient();
                 String stParam = URLEncodedUtils.format(rgparams, "utf-8");
@@ -81,7 +81,8 @@ public class JSONParser {
             while ((line = reader.readLine()) != null) {
                 stringbuilder.append(line + "\n");
             }
-            inputstream.close();
+            if (inputstream != null)
+                inputstream.close();
             stJson = stringbuilder.toString();
         } catch (Exception e) {
             Log.e("Buffer Error", "Error converting result " + e.toString());

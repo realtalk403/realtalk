@@ -15,8 +15,8 @@ public class PullMessageResultSet {
 	boolean fSucceeded;
 
     //stError is only populated if the request failed
-	public String stErrorMessage;
-	public String stErrorCode;
+	private String stErrorMessage;
+	private String stErrorCode;
 	//rgmessage is only populated if request succeeded
 	public List<MessageInfo> rgmessage;
 	public PullMessageResultSet(boolean fSucceeded, List<MessageInfo> rgmessage, String stErrorCode, String stErrorMessage) {
@@ -54,5 +54,18 @@ public class PullMessageResultSet {
     public List<MessageInfo> getRgmessage() {
         return new ArrayList<MessageInfo>(rgmessage);
     }
-    
+
+    /**
+     * @return the stErrorMessage
+     */
+    public String getStErrorMessage() {
+        return stErrorMessage;
+    }
+
+    /**
+     * @return the stErrorCode
+     */
+    public String getStErrorCode() {
+        return stErrorCode;
+    }
 }

@@ -9,8 +9,8 @@ package realtalk.util;
  */
 public class RequestResultSet {
 	public boolean fSucceeded;
-	public String stErrorMessage;
-	public String stErrorCode;
+	private String stErrorMessage;
+	private String stErrorCode;
 	/** Constructor that stores flag and error indicators
 	 *@param fSucceeded		flag indicating succession
 	 *@param stErrorCode	the error code
@@ -21,4 +21,16 @@ public class RequestResultSet {
 		this.stErrorMessage = stErrorMessage;
 		this.stErrorCode = stErrorCode;
 	}
+    /**
+     * @return the stErrorMessage
+     */
+    public String getStErrorMessage() {
+        return stErrorMessage;
+    }
+    /**
+     * @return the stErrorCode
+     */
+    public String getStErrorCode() {
+        return stErrorCode;
+    }
 }
