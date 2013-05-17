@@ -49,7 +49,7 @@ public class GCMUtilities {
      */
     public static void sendRegistrationResult(Context context, String stRegId, String stRegCode) {
         Intent intent = new Intent(GCM_REGISTER_RESULT_ACTION);
-        if (stRegCode == SUCCESS) {
+        if (stRegCode.equals(SUCCESS)) {
             intent.putExtra(GCM_REG_ID, stRegId);
             intent.putExtra(RESULT_MESSAGE, SUCCESS);
         } else {
