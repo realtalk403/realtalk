@@ -86,7 +86,7 @@ public class ChatRoomActivity extends Activity {
 		rgstDisplayMessage = new ArrayList<String>();
 
 		ListView listview = (ListView) findViewById(R.id.list);
-		adapter = new MessageAdapter(this, R.layout.list_item, rgmessageinfo);
+		adapter = new MessageAdapter(this, R.layout.message_item, rgmessageinfo);
 		listview.setAdapter(adapter);
 	}
 	
@@ -125,26 +125,28 @@ public class ChatRoomActivity extends Activity {
 	}
 	
 	@Override
-//    public void onBackPressed() { 
-//        Intent itViewRooms = new Intent(this, SelectRoomActivity.class);
-//        itViewRooms.putExtra("USER", userinfo);
-//		this.startActivity(itViewRooms);
-//		this.finish();
-//
-//    }
-//	
-//	public void leaveRoom(View view) {
-//		new RoomLeaver(userinfo, chatroominfo, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public void onBackPressed() { 
+        Intent itViewRooms = new Intent(this, SelectRoomActivity.class);
+        itViewRooms.putExtra("USER", userinfo);
+		this.startActivity(itViewRooms);
+		this.finish();
+
+    }
 	
-    public void onBackPressed() {
-	    // TODO: warn user that we are leaving room? Also is this how we want to leave rooms.
-	    new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-	    if (progressdialog != null) {
-	        progressdialog.dismiss();
-	    }
-	    progressdialog = null;
-	    super.onBackPressed();
+	public void leaveRoom(View view) {
+		new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
+	
+//	@Override
+//    public void onBackPressed() {
+//	    // TODO: warn user that we are leaving room? Also is this how we want to leave rooms.
+//	    new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//	    if (progressdialog != null) {
+//	        progressdialog.dismiss();
+//	    }
+//	    progressdialog = null;
+//	    super.onBackPressed();
+//	}
 	
 	/**
 	 * Method that loads messages to adapter. Prepares the chat view to use GCM thereafter.
@@ -203,6 +205,11 @@ public class ChatRoomActivity extends Activity {
             if (progressdialog != null) {
                 progressdialog.dismiss();
             }
+            
+	        Intent itViewRooms = new Intent(ChatRoomActivity.this, SelectRoomActivity.class);
+	        itViewRooms.putExtra("USER", userinfo);
+	  		ChatRoomActivity.this.startActivity(itViewRooms);
+	  		ChatRoomActivity.this.finish();
         }    
 	}
 	
@@ -383,7 +390,7 @@ public class ChatRoomActivity extends Activity {
             View view = convertView;
             if (view == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = vi.inflate(R.layout.list_item, null);
+                view = vi.inflate(R.layout.message_item, null);
             }
             MessageInfo messageinfo = rgmessageinfo.get(position);
             if (messageinfo != null) {

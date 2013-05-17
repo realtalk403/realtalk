@@ -42,4 +42,6 @@
     <string name="leave_room">Leave Room</string>
     <string name="room">Room</string>
     <string name="user">User</string>
+    <string name="details">Details</string>
+    <string name="new_user">New User</string>
 </resources>
