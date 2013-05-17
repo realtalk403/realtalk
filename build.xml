@@ -106,7 +106,7 @@
             <class location="${out.dir}" />
         </findbugs>
         <fail if="findbugsError" message="FindBugs detected at least one error." />
-        <fail if="findbugsWarning" message="FindBugs detected at least one warning." />
+        <!-- <fail if="findbugsWarning" message="FindBugs detected at least one warning." /> -->
     </target>
     
     <taskdef resource="checkstyletask.properties" classpath="${basedir}/libs/checkstyle-5.6-all.jar" />
