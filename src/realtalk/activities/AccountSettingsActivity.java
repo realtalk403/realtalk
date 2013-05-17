@@ -43,6 +43,10 @@ public class AccountSettingsActivity extends Activity {
 		setContentView(R.layout.activity_account_settings);
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
+		
+		String stUser = sharedpreferencesLoginPrefs.getString("loggedin_username", null);
+		TextView textviewUserTitle = (TextView) findViewById(R.id.userTitle);
+		textviewUserTitle.setText(stUser);
 	}
 
 	@Override

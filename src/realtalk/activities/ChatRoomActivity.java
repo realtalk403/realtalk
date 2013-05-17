@@ -27,6 +27,7 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
 import android.content.IntentFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -65,17 +67,26 @@ public class ChatRoomActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_chat_room);
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		Bundle extras = getIntent().getExtras();
 		userinfo = ChatController.getInstance().getUser();
 		chatroominfo = extras.getParcelable("ROOM");
+		
+		String stUser = userinfo.stUserName();
+		String stRoom = chatroominfo.stName();
+		
+		TextView textviewRoomTitle = (TextView) findViewById(R.id.chatRoomTitle);
+		textviewRoomTitle.setText(stRoom);
+		TextView textviewUserTitle = (TextView) findViewById(R.id.userTitle);
+		textviewUserTitle.setText(stUser);
 		
 		new RoomCreator(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 //		rgstDisplayMessage = new ArrayList<String>();
 
 		ListView listview = (ListView) findViewById(R.id.list);
-		adapter = new MessageAdapter(this, R.layout.list_item, rgmessageinfo);
+		adapter = new MessageAdapter(this, R.layout.message_item, rgmessageinfo);
 		listview.setAdapter(adapter);
 	}
 	
@@ -114,15 +125,28 @@ public class ChatRoomActivity extends Activity {
 	}
 	
 	@Override
-    public void onBackPressed() {
-	    // TODO: warn user that we are leaving room? Also is this how we want to leave rooms.
-	    new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-	    if (progressdialog != null) {
-	        progressdialog.dismiss();
-	    }
-	    progressdialog = null;
-	    super.onBackPressed();
+    public void onBackPressed() { 
+        Intent itViewRooms = new Intent(this, SelectRoomActivity.class);
+        itViewRooms.putExtra("USER", userinfo);
+		this.startActivity(itViewRooms);
+		this.finish();
+
+    }
+	
+	public void leaveRoom(View view) {
+		new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
+	
+//	@Override
+//    public void onBackPressed() {
+//	    // TODO: warn user that we are leaving room? Also is this how we want to leave rooms.
+//	    new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//	    if (progressdialog != null) {
+//	        progressdialog.dismiss();
+//	    }
+//	    progressdialog = null;
+//	    super.onBackPressed();
+//	}
 	
 	/**
 	 * Method that loads messages to adapter. Prepares the chat view to use GCM thereafter.
@@ -140,11 +164,12 @@ public class ChatRoomActivity extends Activity {
 		EditText edittext = (EditText)findViewById(R.id.message);
 		String stValue = edittext.getText().toString();
 		
-		MessageInfo message = new MessageInfo
-				(stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
-		
-		new MessageSender(message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		edittext.setText("");
+		if (!stValue.equals("")) {
+			MessageInfo message = new MessageInfo (stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
+			
+			new MessageSender(message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			edittext.setText("");
+		}
 	}
 	
 	/**
@@ -180,6 +205,11 @@ public class ChatRoomActivity extends Activity {
             if (progressdialog != null) {
                 progressdialog.dismiss();
             }
+            
+	        Intent itViewRooms = new Intent(ChatRoomActivity.this, SelectRoomActivity.class);
+	        itViewRooms.putExtra("USER", userinfo);
+	  		ChatRoomActivity.this.startActivity(itViewRooms);
+	  		ChatRoomActivity.this.finish();
         }    
 	}
 	
@@ -363,14 +393,15 @@ public class ChatRoomActivity extends Activity {
             View view = convertView;
             if (view == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = vi.inflate(R.layout.list_item, null);
+                view = vi.inflate(R.layout.message_item, null);
             }
             MessageInfo messageinfo = rgmessageinfo.get(position);
             if (messageinfo != null) {
                 TextView textviewTop = (TextView) view.findViewById(R.id.toptext);
                 TextView textviewBottom = (TextView) view.findViewById(R.id.bottomtext);
                 if (textviewTop != null) {
-                    textviewTop.setText(messageinfo.stSender() + ": " + messageinfo.stBody());
+                	textviewTop.setTextAppearance(ChatRoomActivity.this, android.R.style.TextAppearance_Medium);
+                	textviewTop.setText(Html.fromHtml("<b>" + messageinfo.stSender() + ": " + "</b>" +  messageinfo.stBody()));
                 }
                 if(textviewBottom != null) {
                 	SimpleDateFormat simpledateformat = new SimpleDateFormat("hh:mm a, M/dd/yyyy", Locale.US);
