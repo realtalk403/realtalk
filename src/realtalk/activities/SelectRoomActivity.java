@@ -4,6 +4,7 @@ package realtalk.activities;
 import java.util.ArrayList;
 import java.util.List;
 
+import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.ChatRoomResultSet;
@@ -47,8 +48,6 @@ import com.realtalk.R;
  */
 @SuppressLint("NewApi")
 public class SelectRoomActivity extends Activity {
-//	private List<String> rgstDisplayRoom;
-	//Checkstyle doesn't like magic #s, even if they are hacks that we know we will change TODO
 	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  
 	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
 	private ChatRoomAdapter adapter;
@@ -72,8 +71,6 @@ public class SelectRoomActivity extends Activity {
 		String stUser = userinfo.stUserName();
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
-
-//		rgstDisplayRoom = new ArrayList<String>();
 
 		ListView listview = (ListView) findViewById(R.id.list);
 		listview.setClickable(false);
@@ -228,7 +225,7 @@ public class SelectRoomActivity extends Activity {
 	}
 
 	/**
-	 * Retrieves the user's available chatrooms
+	 * Retrieves the user's available chatrooms and initializes the ChatController
 	 * 
 	 * @author Jordan Hazari
 	 *
@@ -244,7 +241,8 @@ public class SelectRoomActivity extends Activity {
 		 * 
 		 * @param selectroomroomactivity the activity context
 		 */
-		public RoomLoader(SelectRoomActivity selectroomactivity, double latitude, double longitude, double radiusMeters) {
+		public RoomLoader(SelectRoomActivity selectroomactivity, 
+		        double latitude, double longitude, double radiusMeters) {
 			this.selectroomactivity = selectroomactivity;
 			this.longitude = longitude;
 			this.latitude = latitude;
@@ -256,6 +254,7 @@ public class SelectRoomActivity extends Activity {
 		 */
 		@Override
 		protected ChatRoomResultSet doInBackground(String... params) {
+		    ChatController.getInstance().fRefresh();
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 

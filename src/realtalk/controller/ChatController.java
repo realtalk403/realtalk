@@ -10,6 +10,7 @@ import android.content.Context;
 import realtalk.model.HallwayModel;
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
+import realtalk.util.ChatRoomResultSet;
 import realtalk.util.CommonUtilities;
 import realtalk.util.MessageInfo;
 import realtalk.util.PullMessageResultSet;
@@ -47,16 +48,58 @@ public final class ChatController {
         return instance;
     }
     
-    public void initialize(UserInfo userinfo) {
+    /**
+     * This initializes the ChatController by loading all the rooms that the user is currently in
+     * from the last session. It takes a userinfo and is set to that user.
+     * 
+     * NOTE: Must be called from an async task
+     * 
+     * @param userinfo
+     * @return true if initialization succeeded, false if it failed.
+     */
+    public boolean fInitialize(UserInfo userinfo) {
         this.userinfo = userinfo;
+        return fRefresh();
     }
     
     /**
-     * This updates the chatrooms information if user is in chatroom
+     * This method refreshes the chatrooms that the current instance user has joined.
      * 
+     * NOTE: Must be called from an async task.
+     * 
+     * @return True if refresh succeeded, false if otherwise.
      */
-    public void fUpdateChatroom(ChatRoomInfo chatroom) {
-        chatModel.updateChatroom(chatroom);
+    public boolean fRefresh() {
+        ChatRoomResultSet crrs = ChatManager.crrsUsersChatrooms(userinfo);
+        // Clear the current chat model.
+        chatModel = null;
+        chatModel = new HallwayModel();
+        if (!crrs.fSucceeded()) {
+            return false;
+        }    
+        List<ChatRoomInfo> rgCri = crrs.rgcriGet();
+        for (ChatRoomInfo chatroom : rgCri) {
+            // Load chatrooms only if the request succeeded.
+            chatModel.addRoom(chatroom.stName(), 
+                    chatroom.stId(), 
+                    chatroom.stDescription(), 
+                    chatroom.getLatitude(), 
+                    chatroom.getLongitude(), 
+                    chatroom.stCreator(), 
+                    chatroom.timestampCreated());
+            // Next load the messages for that chatroom.
+            PullMessageResultSet pmrsMessages = ChatManager.pmrsChatLogGet(chatroom);
+            if (!pmrsMessages.fIsSucceeded()) {
+                // Else remove all rooms and return failure.
+                chatModel = null;
+                chatModel = new HallwayModel();
+                return false;
+            } else {
+                // Load the messages into the correct room.
+                chatModel.addRgMiToCrm(pmrsMessages.getRgmessage(), chatroom.stId());
+            } 
+        }
+        return true;
     }
     
     /**
@@ -106,8 +149,8 @@ public final class ChatController {
      * @return True if succeeded, false if otherwise.
      */
     public boolean joinRoom(ChatRoomInfo chatroom) {
-        RequestResultSet crrs = ChatManager.rrsJoinRoom(userinfo, chatroom);
-        if (!crrs.getfSucceeded()) {
+        RequestResultSet rrs = ChatManager.rrsJoinRoom(userinfo, chatroom);
+        if (!rrs.getfSucceeded()) {
             return false;
         }
         chatModel.addRoom(chatroom.stName(), 
@@ -151,5 +194,30 @@ public final class ChatController {
      */
     public UserInfo getUser() {
         return userinfo;
+    }
+    
+    /**
+     * This method is used to uninitialize the chat controller. This should be used when a user is logged out.
+     */
+    public void uninitialize() {
+        userinfo = null;
+        chatModel = null;
+        chatModel = new HallwayModel();
+    }
+    
+    /**
+     * Checks to see if the chatroom is already present in the controller. This is
+     * same as saying that the user has already joined the room.
+     * 
+     * @param cri ChatRoomInfo
+     * @return true if user is has already joined the chatroom and false if not.
+     */
+    public boolean fIsAlreadyJoined(ChatRoomInfo cri) {
+        List<ChatRoomInfo> rgCri = getChatRooms();
+        for (ChatRoomInfo roominfo : rgCri) {
+            if (roominfo.stId().equals(cri.stId()))
+                return true;
+        }
+        return false;
     }
 }
