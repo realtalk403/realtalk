@@ -54,7 +54,6 @@ public class ChatRoomActivity extends Activity {
 	private UserInfo userinfo;
 	private ProgressDialog progressdialog;
 	private List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
-//	private List<String> rgstDisplayMessage;
 	private MessageAdapter adapter;
 	private ChatController chatController = ChatController.getInstance();
 	
@@ -82,8 +81,6 @@ public class ChatRoomActivity extends Activity {
 		textviewUserTitle.setText(stUser);
 		
 		new RoomCreator(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		
-//		rgstDisplayMessage = new ArrayList<String>();
 
 		ListView listview = (ListView) findViewById(R.id.list);
 		adapter = new MessageAdapter(this, R.layout.message_item, rgmessageinfo);
@@ -136,17 +133,6 @@ public class ChatRoomActivity extends Activity {
 	public void leaveRoom(View view) {
 		new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
-	
-//	@Override
-//    public void onBackPressed() {
-//	    // TODO: warn user that we are leaving room? Also is this how we want to leave rooms.
-//	    new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//	    if (progressdialog != null) {
-//	        progressdialog.dismiss();
-//	    }
-//	    progressdialog = null;
-//	    super.onBackPressed();
-//	}
 	
 	/**
 	 * Method that loads messages to adapter. Prepares the chat view to use GCM thereafter.
@@ -348,7 +334,7 @@ public class ChatRoomActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             progressdialog = new ProgressDialog(ChatRoomActivity.this);
-            progressdialog.setMessage("Joining room. Please wait...");
+            progressdialog.setMessage("Entering room. Please wait...");
             progressdialog.setIndeterminate(false);
             progressdialog.setCancelable(true);
             progressdialog.setCanceledOnTouchOutside(false);
@@ -361,7 +347,7 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected Boolean doInBackground(String... params) {
-			return ChatController.getInstance().joinRoom(chatroominfo);
+		    return (ChatController.getInstance().fIsAlreadyJoined(chatroominfo)) ? true : ChatController.getInstance().joinRoom(chatroominfo);
 		}
 		
 		/**
