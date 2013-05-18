@@ -19,16 +19,25 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.TextView;
 
 @SuppressLint("NewApi")
 public class CreateRoomActivity extends Activity {
 	private ProgressDialog progressdialog;
+	private UserInfo userinfo;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_create_room);
+		
+		Bundle extras = getIntent().getExtras();
+		userinfo = extras.getParcelable("USER");
+		
+		String stUser = userinfo.stUserName();
+		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
+		textviewRoomTitle.setText(stUser);
 	}
 
 	@Override
@@ -39,9 +48,6 @@ public class CreateRoomActivity extends Activity {
 	}
 	
 	public void addRoom(View view) {
-		Bundle extras = getIntent().getExtras();
-		UserInfo userinfo = extras.getParcelable("USER");
-		
 		new RoomCreator(userinfo, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
@@ -94,7 +100,7 @@ public class CreateRoomActivity extends Activity {
 			ChatRoomInfo chatroominfo = new ChatRoomInfo(stRoomName, stRoomName, stDescription, 0.0, 0.0, stCreator, 0, new Timestamp(System.currentTimeMillis()));
 			
 			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
-			if (!rrs.fSucceeded) {
+			if (!rrs.getfSucceeded()) {
 			    // TODO shouldnt through this exception. Just alert user server is down
 				throw new RuntimeException("server error");
 			}
@@ -111,6 +117,7 @@ public class CreateRoomActivity extends Activity {
             Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
             itViewRooms.putExtra("USER", userinfo);
     		activity.startActivity(itViewRooms);
+    		activity.finish();
 		}
 	}
 

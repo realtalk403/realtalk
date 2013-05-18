@@ -9,7 +9,7 @@ package realtalk.util;
  * @author Colin Kho
  *
  */
-public class ResponseParameters {
+public final class ResponseParameters {
     // Parameter that indicates an Error Code.
     public static final String PARAMETER_ERROR_CODE = "ERROR_CODE";
     // Parameter that indicates an Error Message.
@@ -51,4 +51,8 @@ public class ResponseParameters {
     // MESSAGE ERROR MESSAGES
     // Generic Message to indicate that room has encountered an error.
     public static final String RESPONSE_MESSAGE_MESSAGE_ERROR = "MESSAGE_MESSAGE_ERROR";
+
+    private ResponseParameters() {
+    	throw new UnsupportedOperationException("RequestParameters is a utility class and should not be instantiated");
+    }
 }

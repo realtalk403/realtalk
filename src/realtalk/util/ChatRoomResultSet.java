@@ -17,7 +17,7 @@ public class ChatRoomResultSet {
 	private String stErrorMessage;
 	private String stErrorCode;
 	//rgmessage is only populated if request succeeded
-	public List<ChatRoomInfo> rgcri;
+	private List<ChatRoomInfo> rgcri;
 	public ChatRoomResultSet(boolean fSucceeded, List<ChatRoomInfo> rgcri, String stErrorCode, String stErrorMessage) {
 		this.fSucceeded = fSucceeded;
 		this.stErrorMessage = stErrorMessage;
@@ -39,18 +39,19 @@ public class ChatRoomResultSet {
 		this.stErrorCode = stErrorCode;
 	}
 	
-	public boolean fSucceeded()
-	{
+	public boolean fSucceeded() {
 		return fSucceeded;
 	}
 	
-	public String stErrorMessage()
-	{
+	public String stErrorMessage() {
 		return stErrorMessage;
 	}
 	
-	public String stErrorCode()
-	{
+	public String stErrorCode() {
 		return stErrorCode;
+	}
+	
+	public List<ChatRoomInfo> rgcriGet() {
+		return rgcri;
 	}
 }

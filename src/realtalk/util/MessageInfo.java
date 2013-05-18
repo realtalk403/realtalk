@@ -84,12 +84,15 @@ public class MessageInfo implements Comparable<MessageInfo> {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-	    if (obj == null)
+	    if (obj == null) {
             return false;
-        if (obj == this)
+	    }
+        if (obj == this) {
             return true;
-        if (!(obj instanceof MessageInfo))
+        }
+        if (!(obj instanceof MessageInfo)){
             return false;
+        }
         MessageInfo miRhs = (MessageInfo) obj;
         return this.timeStamp.compareTo(miRhs.timeStamp) == 0;
 	}

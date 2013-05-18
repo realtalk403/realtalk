@@ -17,30 +17,36 @@ import org.json.JSONObject;
  * @author Taylor Williams
  *
  */
-public class ChatManager {
+public final class ChatManager {
 	
 	//HUNGARIAN TAGS:
 	//	rrs		RequestResultSet
 	//	pmrs	PullMessageResultSet
 	//	crrs	ChatRoomResultSet
 	
-	public static final String url_qualifier = "http://realtalkserver.herokuapp.com/";
+	public static final String URL_QUALIFIER = "http://realtalkserver.herokuapp.com/";
 	
 	//User servlets
-    public static final String url_add_user = url_qualifier+"register";
-    public static final String url_remove_user = url_qualifier+"unregister";
-    public static final String url_authenticate = url_qualifier+"authenticate";
-    public static final String url_change_password = url_qualifier+"changePwd";
-    public static final String url_change_id = url_qualifier+"changeRegId";
+    public static final String URL_ADD_USER = URL_QUALIFIER+"register";
+    public static final String URL_REMOVE_USER = URL_QUALIFIER+"unregister";
+    public static final String URL_AUTHENTICATE = URL_QUALIFIER+"authenticate";
+    public static final String URL_CHANGE_PASSWORD = URL_QUALIFIER+"changePwd";
+    public static final String URL_CHANGE_ID = URL_QUALIFIER+"changeRegId";
     //Chat room servlets
-    public static final String url_add_room = url_qualifier+"addRoom";
-    public static final String url_join_room = url_qualifier+"joinRoom";
-    public static final String url_leave_room = url_qualifier+"leaveRoom";
-    public static final String url_post_message = url_qualifier+"post";
-    public static final String url_get_recent_messages = url_qualifier+"pullRecentChat";
-    public static final String url_get_all_messages = url_qualifier + "pullChat";
-    public static final String url_get_nearby_chatrooms = url_qualifier + "nearbyRooms";
+    public static final String URL_ADD_ROOM = URL_QUALIFIER+"addRoom";
+    public static final String URL_JOIN_ROOM = URL_QUALIFIER+"joinRoom";
+    public static final String URL_LEAVE_ROOM = URL_QUALIFIER+"leaveRoom";
+    public static final String URL_POST_MESSAGE = URL_QUALIFIER+"post";
+    public static final String URL_GET_RECENT_MESSAGES = URL_QUALIFIER+"pullRecentChat";
+    public static final String URL_GET_ALL_MESSAGES = URL_QUALIFIER + "pullChat";
+    public static final String URL_GET_NEARBY_CHATROOMS = URL_QUALIFIER + "nearbyRooms";
     
+	/**
+	 * Private contructor prevents this class from being instantiated.
+	 */
+    private ChatManager() {
+    	throw new UnsupportedOperationException("ChatManager is a utility class and should not be instantiated.");
+    }
     
     /**
      * @param messageinfo         Message info object
@@ -193,7 +199,7 @@ public class ChatManager {
      */
 	public static RequestResultSet rrsAuthenticateUser(UserInfo userinfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
-        return rrsPostRequest(rgparams, url_authenticate);
+        return rrsPostRequest(rgparams, URL_AUTHENTICATE);
 	}
 	
     /** Adds a user
@@ -202,7 +208,7 @@ public class ChatManager {
      */
 	public static RequestResultSet rrsAddUser(UserInfo userinfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
-        return rrsPostRequest(rgparams, url_add_user);
+        return rrsPostRequest(rgparams, URL_ADD_USER);
 	}
 	
     /** Remove a user
@@ -211,7 +217,7 @@ public class ChatManager {
      */
 	public static RequestResultSet rrsRemoveUser(UserInfo userinfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
-        return rrsPostRequest(rgparams, url_remove_user);
+        return rrsPostRequest(rgparams, URL_REMOVE_USER);
 	}
 	
     /** Changes a user's password
@@ -222,7 +228,7 @@ public class ChatManager {
 	public static RequestResultSet rrsChangePassword(UserInfo userinfo, String stPasswordNew) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_PWORD, stPasswordNew));
-        return rrsPostRequest(rgparams, url_change_password);
+        return rrsPostRequest(rgparams, URL_CHANGE_PASSWORD);
 	}
 	
     /** Changes a user's ID
@@ -233,7 +239,7 @@ public class ChatManager {
 	public static RequestResultSet rrsChangeID(UserInfo userinfo, String stIdNew) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_REG_ID, stIdNew));
-        return rrsPostRequest(rgparams, url_change_id);
+        return rrsPostRequest(rgparams, URL_CHANGE_ID);
 	}
 	
     /** Adds a new chatroom
@@ -244,7 +250,7 @@ public class ChatManager {
 	public static RequestResultSet rrsAddRoom(ChatRoomInfo chatroominfo, UserInfo userinfo) {
         List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
         rgparams.addAll(rgparamsUserBasicInfo(userinfo));
-		return rrsPostRequest(rgparams, url_add_room);
+		return rrsPostRequest(rgparams, URL_ADD_ROOM);
 	}
 	
     /** Joins a user to a chatroom
@@ -255,7 +261,7 @@ public class ChatManager {
 	public static RequestResultSet rrsJoinRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
-		return rrsPostRequest(rgparams, url_join_room);
+		return rrsPostRequest(rgparams, URL_JOIN_ROOM);
 	}
 	
     /** Leaves a chatroom
@@ -266,7 +272,7 @@ public class ChatManager {
 	public static RequestResultSet rrsLeaveRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
-		return rrsPostRequest(rgparams, url_leave_room);
+		return rrsPostRequest(rgparams, URL_LEAVE_ROOM);
 	}
 	
     /** Posts a message to a chatroom
@@ -278,7 +284,7 @@ public class ChatManager {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
         rgparams.addAll(rgparamsMessageInfo(message));
-		return rrsPostRequest(rgparams, url_post_message);
+		return rrsPostRequest(rgparams, URL_POST_MESSAGE);
 	}
 	
     /** Returns the chatlog for a certain chatroom
@@ -287,7 +293,7 @@ public class ChatManager {
      */
 	public static PullMessageResultSet pmrsChatLogGet(ChatRoomInfo chatroominfo) {
         List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
-		return pmrsPostRequest(rgparams, url_get_all_messages);
+		return pmrsPostRequest(rgparams, URL_GET_ALL_MESSAGES);
 	}
 	
 	/**
@@ -312,7 +318,7 @@ public class ChatManager {
 		}
 		List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
 		rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_TIMESTAMP, stTimestamp));
-		return pmrsPostRequest(rgparams, url_get_recent_messages);
+		return pmrsPostRequest(rgparams, URL_GET_RECENT_MESSAGES);
 	}
 	
 	/**
@@ -327,6 +333,6 @@ public class ChatManager {
 	 */
 	public static ChatRoomResultSet crrsNearbyChatrooms(double latitude, double longitude, double radiusMeters) {
 		List<NameValuePair> rgparams = rgparamsLocationInfo(latitude, longitude, radiusMeters);
-		return crrsPostRequest(rgparams, url_get_nearby_chatrooms);
+		return crrsPostRequest(rgparams, URL_GET_NEARBY_CHATROOMS);
 	}
 }

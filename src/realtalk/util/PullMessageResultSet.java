@@ -12,13 +12,13 @@ import java.util.List;
  */
 public class PullMessageResultSet {
 	//shows if pull message request succeeded
-	boolean fSucceeded;
+	private boolean fSucceeded;
 
     //stError is only populated if the request failed
 	private String stErrorMessage;
 	private String stErrorCode;
 	//rgmessage is only populated if request succeeded
-	public List<MessageInfo> rgmessage;
+	private List<MessageInfo> rgmessage;
 	public PullMessageResultSet(boolean fSucceeded, List<MessageInfo> rgmessage, String stErrorCode, String stErrorMessage) {
 		this.fSucceeded = fSucceeded;
 		this.stErrorMessage = stErrorMessage;
