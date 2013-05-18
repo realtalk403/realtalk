@@ -215,8 +215,9 @@ public final class ChatController {
     public boolean fIsAlreadyJoined(ChatRoomInfo cri) {
         List<ChatRoomInfo> rgCri = getChatRooms();
         for (ChatRoomInfo roominfo : rgCri) {
-            if (roominfo.stId().equals(cri.stId()))
+            if (roominfo.stId().equals(cri.stId())) {
                 return true;
+            }
         }
         return false;
     }

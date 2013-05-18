@@ -1,5 +1,6 @@
 package realtalk.activities;
 
+import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
@@ -223,7 +224,13 @@ public class AccountSettingsActivity extends Activity {
 	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.rrsChangePassword(userinfo, stNewPword);
+            RequestResultSet requestresultset = ChatManager.rrsChangePassword(userinfo, stNewPword);
+            if (requestresultset.getfSucceeded()) {
+                ChatController.getInstance().uninitialize();
+                UserInfo updatedUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stNewPword);
+                ChatController.getInstance().fInitialize(updatedUserinfo);
+            }
+            return requestresultset;
         }
         
         /**
@@ -358,6 +365,7 @@ public class AccountSettingsActivity extends Activity {
 							dialog.cancel();
 							
 							Intent itCreateAcc = new Intent(activity, LoginActivity.class);
+							ChatController.getInstance().uninitialize();
 							activity.startActivity(itCreateAcc);
 						}	
 				});
