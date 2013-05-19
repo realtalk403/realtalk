@@ -1,22 +1,14 @@
 package realtalk.util;
 
-import org.junit.Test;
-import realtalk.util.JSONParser;
-import realtalk.util.RequestParameters;
-
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import realtalk.util.RequestParameters;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Test;
 
-import realtalk.util.ChatManager;
-
-import android.os.UserHandle;
 import android.test.AndroidTestCase;
 /**
  * JSONParser Test

@@ -1,11 +1,12 @@
 package realtalk.util;
 
-import org.junit.Test;
-import realtalk.util.MessageInfo;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
+
+import org.junit.Test;
+
 import android.test.AndroidTestCase;
 /**
  * Message Info Test
