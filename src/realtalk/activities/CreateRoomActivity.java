@@ -25,6 +25,8 @@ import android.widget.TextView;
 public class CreateRoomActivity extends Activity {
 	private ProgressDialog progressdialog;
 	private UserInfo userinfo;
+	private double latitude;
+	private double longitude;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,8 @@ public class CreateRoomActivity extends Activity {
 		
 		Bundle extras = getIntent().getExtras();
 		userinfo = extras.getParcelable("USER");
+		latitude = extras.getDouble("LATITUDE");
+		longitude = extras.getDouble("LONGITUDE");
 		
 		String stUser = userinfo.stUserName();
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
@@ -97,7 +101,7 @@ public class CreateRoomActivity extends Activity {
     		
     		String stCreator = userinfo.stUserName();
 			
-			ChatRoomInfo chatroominfo = new ChatRoomInfo(stRoomName, stRoomName, stDescription, 0.0, 0.0, stCreator, 0, new Timestamp(System.currentTimeMillis()));
+			ChatRoomInfo chatroominfo = new ChatRoomInfo(stRoomName, stRoomName, stDescription, latitude, longitude, stCreator, 0, new Timestamp(System.currentTimeMillis()));
 			
 			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
 			if (!rrs.getfSucceeded()) {
