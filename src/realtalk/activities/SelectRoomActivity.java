@@ -291,7 +291,7 @@ public class SelectRoomActivity extends Activity {
 					unJoinedAdapter.clear();
 
 					for (int i = 0; i < rgchatroominfo.size(); i++) {
-						if (!ChatController.fIsAlreadyJoined(rgchatroominfo.get(i))) {
+						if (!ChatController.getInstance().fIsAlreadyJoined(rgchatroominfo.get(i))) {
 							unJoinedAdapter.add(rgchatroominfo.get(i));
 						} else {
 							joinedAdapter.add(rgchatroominfo.get(i));
