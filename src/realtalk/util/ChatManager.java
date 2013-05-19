@@ -82,6 +82,8 @@ public final class ChatManager {
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_NAME, chatroominfo.stName()));
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_ID, chatroominfo.stId()));
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_DESCRIPTION, chatroominfo.stDescription()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER_LATITUDE, Double.valueOf(chatroominfo.getLatitude()).toString()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER_LONGITUDE, Double.valueOf(chatroominfo.getLongitude()).toString()));
         return rgparams;
     }
     
