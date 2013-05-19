@@ -2,8 +2,6 @@ package realtalk.util;
 
 import org.junit.Test;
 import realtalk.util.PullMessageResultSet;
-
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
