@@ -54,6 +54,7 @@ public class ChatRoomInfoTest extends AndroidTestCase {
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         this.stName = TEST_NAME;
         this.stId = TEST_ID;
         this.stDescription = TEST_DESC;
@@ -70,6 +71,7 @@ public class ChatRoomInfoTest extends AndroidTestCase {
      */
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
         cri = null;
     }
 
