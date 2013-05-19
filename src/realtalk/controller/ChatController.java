@@ -164,7 +164,7 @@ public final class ChatController {
         PullMessageResultSet pmrsMessages = ChatManager.pmrsChatLogGet(chatroom);
         if (!pmrsMessages.fIsSucceeded()) {
             // Else remove room and return failure
-            chatModel.removeRoom(chatroom.stId());
+            chatModel.fRemoveRoom(chatroom.stId());
             return false;
         } else {
             // Load the messages into the correct room.
@@ -184,7 +184,7 @@ public final class ChatController {
         if (!crrs.getfSucceeded()) {
             return false;
         }
-        return chatModel.removeRoom(chatroom.stId());
+        return chatModel.fRemoveRoom(chatroom.stId());
     }
     
     /**

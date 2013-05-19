@@ -3,13 +3,9 @@ package realtalk.model;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 
 import realtalk.util.MessageInfo;
-import realtalk.util.UserInfo;
 
 /**
  * This is the model class for the Chat Rooms.
@@ -25,7 +21,8 @@ public class ChatRoomModel {
 	 */
 	private List<MessageInfo> rgmi;
 	
-	private Set<UserInfo> rgu;
+//	Unused, but keep this around in case we switch to exlicit users rather than # of users
+//	private Set<UserInfo> rgu;
 	
     private String stName;
     private String stId;
@@ -59,7 +56,8 @@ public class ChatRoomModel {
         this.timestampCreated = new Timestamp(timestampCreated.getTime());
 				
 		rgmi = new ArrayList<MessageInfo>();
-		rgu = new HashSet<UserInfo>();
+//		Unused, but keep this around in case we switch to explicit users rather than # of users
+//		rgu = new HashSet<UserInfo>();
 	}
 	
 	/**
@@ -86,25 +84,27 @@ public class ChatRoomModel {
 		rgmi.add(0,mi);
 	}
 	
-	/**
-	 * Adds a user to the room
-	 * 
-	 * @param u info for the user being added
-	 * @return whether or not the add was successful (will fail if the user is already in the room)
-	 */
-	public boolean fAddU(UserInfo u) {
-		return rgu.add(u);
-	}
+//	Unused, but keep this around in case we switch to exlicit users rather than # of users
+//	/**
+//	 * Adds a user to the room
+//	 * 
+//	 * @param u info for the user being added
+//	 * @return whether or not the add was successful (will return false if the user is already in the room)
+//	 */
+//	public boolean fAddU(UserInfo u) {
+//		return rgu.add(u);
+//	}
 	
-	/**
-	 * Removes a user from the room
-	 * 
-	 * @param u info for the user being removed
-	 * @return whether or not the add was successful (will fail if the user was not in the room)
-	 */
-	public boolean fRemoveU(UserInfo u) {
-		return rgu.remove(u);
-	}
+//	Unused, but keep this around in case we switch to exlicit users rather than # of users
+//	/**
+//	 * Removes a user from the room
+//	 * 
+//	 * @param u info for the user being removed
+//	 * @return whether or not the remove was successful (will return false if the user was not in the room)
+//	 */
+//	public boolean fRemoveU(UserInfo u) {
+//		return rgu.remove(u);
+//	}
 	
 	/**
 	 * Gets an unmodifiable list of the messages in the room
@@ -157,12 +157,13 @@ public class ChatRoomModel {
         return stCreator;
     }
 
-    /**
-     * @return the numUsers
-     */
-    public int numUsersGet() {
-    	return rgu.size();
-    }
+//	Unused, but keep this around in case we switch to exlicit users rather than # of users
+//    /**
+//     * @return the count of how many users are in the room
+//     */
+//    public int cu() {
+//    	return rgu.size();
+//    }
 
 	/**
 	 * @return the timeStampCreated
@@ -171,12 +172,13 @@ public class ChatRoomModel {
 		return new Timestamp(timestampCreated.getTime());
 	}
 
-    /**
-     * @param rgu the rgu to set
-     */
-    public void setUsers(Set<UserInfo> rgu) {
-        this.rgu = new HashSet<UserInfo>(rgu);
-    }
+//	Unused, but keep this around in case we switch to explicit users rather than # of users
+//    /**
+//     * @param rgu the rgu to set
+//     */
+//    public void setUsers(Set<UserInfo> rgu) {
+//        this.rgu = new HashSet<UserInfo>(rgu);
+//    }
 
     /**
      * @param stName the stName to set
@@ -227,6 +229,7 @@ public class ChatRoomModel {
         this.timestampCreated = new Timestamp(timestampCreated.getTime());
     }
 
+//	  This function is a duplicate of numUsersGet()
     /**
      * @return the iUsers
      */
@@ -258,6 +261,7 @@ public class ChatRoomModel {
 												" \"" + miFormer.toString()+"\". ");
 			}
 		}
+		
 	}
 	
 }
