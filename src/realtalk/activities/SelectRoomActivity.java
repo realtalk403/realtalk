@@ -17,10 +17,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-//import android.location.Criteria;
-//import android.location.Location;
-//import android.location.LocationListener;
-//import android.location.LocationManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -37,8 +37,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.realtalk.R;
+//import android.location.Criteria;
+//import android.location.Location;
+//import android.location.LocationListener;
+//import android.location.LocationManager;
 
 /**
  * Activity for selecting a chat room to join
@@ -57,6 +62,7 @@ public class SelectRoomActivity extends Activity {
 	private Bundle bundleExtras;
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
+	private Location locationUser;
 
 	/**
 	 * Sets up the activity, and diplays a list of available rooms
@@ -69,6 +75,9 @@ public class SelectRoomActivity extends Activity {
 		bundleExtras = getIntent().getExtras();
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
+		
+		Button buttonCreateRoom = (Button) findViewById(R.id.createRoomId);
+		buttonCreateRoom.setEnabled(false);
 		
 		UserInfo userinfo = bundleExtras.getParcelable("USER");
 		String stUser = userinfo.stUserName();
@@ -121,48 +130,50 @@ public class SelectRoomActivity extends Activity {
 
 		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
 		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
-		new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		
-		//todo put a message on screen that is NON BLOCKING!!! that says "loading rooms..."
-		//allowing the user to back out if gps is never found.
+		//new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		//location code:
-//		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//		final double radiusMeters = 500.0;
-//		Criteria criteria = new Criteria();
-//		String stBestProvider = locationmanager.getBestProvider(criteria, true);
-//		if (stBestProvider == null) {
-//			//no location providers, must ask user to enable a provider
-//			//TODO set loading text equal to "fail...enable a location provider (wifi/network/gps)"
-//			throw new RuntimeException("NO LOCATION PROVIDER");
-//		}
-//		else {
-//			// Define a listener that responds to location updates
-//			LocationListener locationListener = new LocationListener() {
-//				Location locationUser;
-//				public void onLocationChanged(Location location) {
-//					// Called when a new location is found by the network location provider.
-//					//if new location data is not usable...
-//					if (locationUser == null)
-//					{
-//						locationUser = location;
-//						loadRooms(locationUser, radiusMeters);
-//					}
-//					else if (location.getAccuracy() <= locationUser.getAccuracy()) {
-//						locationUser = location;
-//						loadRooms(locationUser, radiusMeters);
-//					}
-//					//TODO stop always listening and updating?
-//				}
-//
-//				public void onStatusChanged(String provider, int status, Bundle extras) {}
-//				public void onProviderEnabled(String provider) {}
-//				public void onProviderDisabled(String provider) {}
-//			};
-//
-//			// Register the listener with the Location Manager to receive location updates
-//			locationmanager.requestLocationUpdates(stBestProvider, 0, 0, locationListener);
-//		}
+		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		final double radiusMeters = 500.0;
+		Criteria criteria = new Criteria();
+		String stBestProvider = locationmanager.getBestProvider(criteria, true);
+		if (stBestProvider == null) {
+			//no location providers, must ask user to enable a provider
+			Toast.makeText(getApplicationContext(), "Please turn on a location service providor (wifi/gps/cellular).", Toast.LENGTH_SHORT).show();
+		}
+		else {
+			// Define a listener that responds to location updates
+			LocationListener locationListener = new LocationListener() {
+				Location locationMostAccurate = null;
+				private int locationCount = 0;
+				public void onLocationChanged(Location location) {
+					// Called when a new location is found by the network location provider.
+					//if new location data is not usable...
+					locationUser = location;
+					loadRooms(locationUser, radiusMeters);
+					locationCount++;
+					if (locationMostAccurate == null || locationMostAccurate.getAccuracy() >= locationUser.getAccuracy())
+						locationMostAccurate = locationUser;
+					if (locationCount >= 5)
+					{
+						Button buttonCreateRoom = (Button) findViewById(R.id.createRoomId);
+						buttonCreateRoom.setEnabled(true);
+					}
+					//TODO stop always listening and updating?
+				}
+
+				public void onStatusChanged(String provider, int status, Bundle extras) {}
+				public void onProviderEnabled(String provider) {}
+				public void onProviderDisabled(String provider) {}
+			};
+
+			// Register the listener with the Location Manager to receive location updates
+			locationmanager.requestLocationUpdates(stBestProvider, 0, 0, locationListener);
+		}
+	}
+	
+	private void loadRooms(Location location, double radiusMeters) {
+		new RoomLoader(this, location.getLatitude(), location.getLongitude(), HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
 	private void getDetails(int position, boolean fJoined) {
@@ -246,6 +257,8 @@ public class SelectRoomActivity extends Activity {
 	public void createRoom(View view) {
 		Intent itCreateRoom = new Intent(this, CreateRoomActivity.class);
 		itCreateRoom.putExtra("USER", bundleExtras.getParcelable("USER"));
+		itCreateRoom.putExtra("LATITUDE", locationUser.getLatitude());
+		itCreateRoom.putExtra("LONGITUDE", locationUser.getLongitude());
 		this.startActivity(itCreateRoom);
 	}
 
