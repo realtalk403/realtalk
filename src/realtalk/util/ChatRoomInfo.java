@@ -6,13 +6,16 @@ package realtalk.util;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * ChatRoomInfo is an immutable container class used to represent a chat room.
  * 
  * @author Colin Kho
  *
  */
-public class ChatRoomInfo {
+public class ChatRoomInfo implements Parcelable {
     private String stName;
     private String stId;
     private String stDescription;
@@ -128,5 +131,41 @@ public class ChatRoomInfo {
 	public Timestamp timestampCreated() {
 		return new Timestamp(timestampCreated.getTime());
 	}
+	
+    public int describeContents() {
+        return 0;
+    }
+    
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(stName);
+        out.writeString(stId);
+        out.writeString(stDescription);
+        out.writeDouble(latitude);
+        out.writeDouble(longitude);
+        out.writeString(stCreator);
+        out.writeInt(numUsers);
+        out.writeSerializable(timestampCreated);
+    }
+    
+    public static final Parcelable.Creator<ChatRoomInfo> CREATOR = new Parcelable.Creator<ChatRoomInfo>() {
+		public ChatRoomInfo createFromParcel(Parcel in) {
+		    return new ChatRoomInfo(in);
+		}
+		
+		public ChatRoomInfo[] newArray(int size) {
+		    return new ChatRoomInfo[size];
+		}
+    };
+    
+    private ChatRoomInfo(Parcel in) {
+        stName = in.readString();
+        stId = in.readString();
+        stDescription = in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        stCreator = in.readString();
+        numUsers = in.readInt();
+        timestampCreated = (Timestamp) in.readSerializable();
+    }
 
 }

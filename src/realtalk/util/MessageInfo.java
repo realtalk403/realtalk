@@ -27,7 +27,7 @@ public class MessageInfo implements Comparable<MessageInfo> {
     public MessageInfo(String body, String sender,Timestamp timeStamp) {
         this.body = body;
         this.sender = sender;
-        this.timeStamp = timeStamp;
+        this.timeStamp = new Timestamp(timeStamp.getTime());
     }
     
     /**
@@ -77,5 +77,31 @@ public class MessageInfo implements Comparable<MessageInfo> {
 	 */
 	public int compareTo(MessageInfo arg) {
 		return this.timeStamp.compareTo(arg.timeStamp);
+	}
+	
+	/**
+	 * Overriding equals method.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+	    if (obj == null) {
+            return false;
+	    }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof MessageInfo)){
+            return false;
+        }
+        MessageInfo miRhs = (MessageInfo) obj;
+        return this.timeStamp.compareTo(miRhs.timeStamp) == 0;
+	}
+	
+	/**
+	 * Implements hashcode for message info.
+	 */
+	@Override
+	public int hashCode() {
+	    return body.hashCode();
 	}
 }

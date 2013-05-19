@@ -29,3 +29,9 @@ proguard/
 .idea/
 
 .settings/
+
+tests/unit_tests_log.txt
+
+checkstyle-result.xml
+
+findbugs.xml

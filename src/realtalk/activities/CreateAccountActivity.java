@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 
-import com.example.realtalk.R;
+import com.realtalk.R;
 
 /**
  * Activity for creating an account
@@ -26,6 +26,8 @@ import com.example.realtalk.R;
 public class CreateAccountActivity extends Activity {
 	
 	private static final String DEFAULT_ID = "someID";
+	private static final int USERNAME_MAX_LENGTH = 20;
+	private static final int PASSWORD_MAX_LENGTH = 20;
 	private ProgressDialog progressdialog;
 	
 	/**
@@ -55,7 +57,7 @@ public class CreateAccountActivity extends Activity {
 		EditText edittextUser = (EditText) findViewById(R.id.user);
 		EditText edittextPword = (EditText) findViewById(R.id.pword);
 		EditText edittextConfPword = (EditText) findViewById(R.id.conf_pword);
-		String stUsername = edittextUser.getText().toString();
+		String stUsername = edittextUser.getText().toString().trim();
 		String stPword = edittextPword.getText().toString();
 		String stConf = edittextConfPword.getText().toString();
 		
@@ -102,6 +104,69 @@ public class CreateAccountActivity extends Activity {
 			
 			//show alert dialog
 			alertdialogBadPword.show();	
+		} else if(stUsername.indexOf(" ") != -1) { //username has a space in it
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid username");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Username may not contain spaces.  Please try again.")
+				.setCancelable(false)
+				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						//close the dialog box if this button is clicked
+						dialog.cancel();
+					}	
+			});
+			
+			//create alert dialog
+			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogBadPword.show();		
+		} else if(stUsername.length() > USERNAME_MAX_LENGTH) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid Username");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Username must not exceed 20 characters.  Please try again.")
+				.setCancelable(false)
+				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						//close the dialog box if this button is clicked
+						dialog.cancel();
+					}	
+			});
+			
+			//create alert dialog
+			AlertDialog alertdialogBadUsername = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogBadUsername.show();
+		} else if(stPword.length() > PASSWORD_MAX_LENGTH) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid Password");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Password must not exceed 20 characters.  Please try again.")
+				.setCancelable(false)
+				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						//close the dialog box if this button is clicked
+						dialog.cancel();
+					}	
+			});
+			
+			//create alert dialog
+			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogBadPword.show();
 		} else {
 			new UserAdder(new UserInfo(stUsername, stPword, DEFAULT_ID), this).execute();
 		}
@@ -156,7 +221,7 @@ public class CreateAccountActivity extends Activity {
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
-            if(requestresultset.fSucceeded == false) {
+            if(!requestresultset.getfSucceeded()) {
             	//user already exists pop up
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title

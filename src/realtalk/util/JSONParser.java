@@ -29,12 +29,8 @@ import android.util.Log;
  *
  */
 public class JSONParser {
-
-    static InputStream inputstream = null;
-    static JSONObject jsonobject = null;
-    static String stJson = "";
-
     public JSONParser() {}
+    private static final int BUFFER_SIZE = 8;
     
     /** Sends a request to a url with given params
      * @param stUrl		The url to send the request to
@@ -43,9 +39,12 @@ public class JSONParser {
      *	@return a JSONObject with the result of the request
      */
     public JSONObject makeHttpRequest(String stUrl, String stMethod, List<NameValuePair> rgparams) {
+        InputStream inputstream = null;
+        JSONObject jsonobject = null;
+        String stJson = "";
         try {
             // check for request method
-            if(stMethod == "POST"){
+            if(stMethod.equals("POST")){
                 // request method is POST
                 // defaultHttpClient
                 DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -56,7 +55,7 @@ public class JSONParser {
                 HttpEntity httpentity = httpresponse.getEntity();
                 inputstream = httpentity.getContent();
  
-            }else if(stMethod == "GET"){
+            }else if(stMethod.equals("GET")){
                 // request method is GET
                 DefaultHttpClient httpclient = new DefaultHttpClient();
                 String stParam = URLEncodedUtils.format(rgparams, "utf-8");
@@ -77,13 +76,15 @@ public class JSONParser {
         
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    inputstream, "iso-8859-1"), 8);
+                    inputstream, "iso-8859-1"), BUFFER_SIZE);
             StringBuilder stringbuilder = new StringBuilder();
             String line = null;
             while ((line = reader.readLine()) != null) {
                 stringbuilder.append(line + "\n");
             }
-            inputstream.close();
+            if (inputstream != null) {
+                inputstream.close();
+            }
             stJson = stringbuilder.toString();
         } catch (Exception e) {
             Log.e("Buffer Error", "Error converting result " + e.toString());

@@ -1,4 +1,3 @@
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,17 +9,6 @@
     tools:context=".LoginActivity" >
 
     <EditText
-        android:id="@+id/editPword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/Button02"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:ems="10"
-        android:hint="@string/pword_hint"
-        android:inputType="textPassword" />
-
-    <EditText
         android:id="@+id/editQuery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,62 +16,77 @@
         android:layout_alignLeft="@+id/editPword"
         android:ems="10"
         android:hint="@string/uname_hint"
-        android:inputType="text" />
-
-    <Button
-        android:id="@+id/Button02"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/Button01"
-        android:layout_alignRight="@+id/editPword"
-        android:onClick="authenticateUser"
-        android:text="@string/authenticate_user_string" />
-
+        android:inputType="text" >
+        <requestFocus /> 
+    </EditText>
+        
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button1"
+        android:layout_above="@+id/createAccountBtn"
         android:layout_centerHorizontal="true"
         android:text="@string/sign_up"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/Button01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView2"
-        android:layout_alignRight="@+id/Button02"
-        android:layout_marginBottom="15dp"
-        android:onClick="removeUser"
-        android:text="@string/remove_user_string" />
-
     <ImageView
         android:id="@+id/imageView1"
+        android:contentDescription="@string/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/editQuery"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/realtalk" />
+        android:src="@drawable/realtalklogo" />
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
+        android:layout_alignRight="@+id/editQuery"
         android:text="@string/ad"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/createAccountBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/textView1"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="28dp"
         android:onClick="addUser"
         android:text="@string/create_account" />
+
+    <EditText
+        android:id="@+id/editPword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/loginButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="35dp"
+        android:ems="10"
+        android:hint="@string/pword_hint"
+        android:inputType="textPassword" >
+
+        <requestFocus />
+    </EditText>
+
+    <CheckBox
+        android:id="@+id/rememberme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/loginButton"
+        android:layout_alignLeft="@+id/editPword"
+        android:text="@string/remember_me" />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:onClick="authenticateUser"
+        android:text="@string/authenticate_user_string" />
 
 </RelativeLayout>

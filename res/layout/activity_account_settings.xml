@@ -1,0 +1,127 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AccountSettingsActivity" >
+
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp" >
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            tools:ignore="UselessParent" >
+
+            <realtalk.util.AutoFitTextView
+                android:id="@+id/settingsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="@string/account_settings"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#fff" />
+
+            <realtalk.util.AutoFitTextView
+                android:id="@+id/userTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="@string/user"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#fff" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout 
+        android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:paddingBottom="@dimen/activity_vertical_margin"
+    	android:paddingLeft="@dimen/activity_horizontal_margin"
+    	android:paddingRight="@dimen/activity_horizontal_margin"
+    	android:paddingTop="@dimen/activity_vertical_margin"
+    	android:layout_below="@+id/topBar" >
+        
+        <TextView
+	        android:id="@+id/changePword"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="14dp"
+	        android:text="@string/change_pword"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <EditText
+	        android:id="@+id/newpword"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/oldpword"
+	        android:layout_below="@+id/oldpword"
+	        android:ems="10"
+	        android:hint="@string/new_pword"
+	        android:inputType="textPassword" />
+	
+	    <EditText
+	        android:id="@+id/confpword"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/newpword"
+	        android:layout_below="@+id/newpword"
+	        android:ems="10"
+	        android:hint="@string/conf_new_pword"
+	        android:inputType="textPassword" />
+	
+	    <EditText
+	        android:id="@+id/oldpword"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/changePword"
+	        android:layout_below="@+id/changePword"
+	        android:layout_marginTop="15dp"
+	        android:ems="10"
+	        android:hint="@string/old_pword"
+	        android:inputType="textPassword" />
+	
+	    <TextView
+	        android:id="@+id/textView3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/confpword"
+	        android:layout_below="@+id/submit"
+	        android:layout_marginTop="30dp"
+	        android:text="@string/delete_account"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <Button
+	        android:id="@+id/deleteaccount"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/textView3"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="18dp"
+	        android:onClick="deleteAccount"
+	        android:text="@string/delete_acc_button" />
+	
+	    <Button
+	        android:id="@+id/submit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/confpword"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="21dp"
+	        android:onClick="changePword"
+	        android:text="@string/submit" />
+        
+    </RelativeLayout>
+</RelativeLayout>

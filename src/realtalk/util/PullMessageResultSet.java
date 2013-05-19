@@ -12,12 +12,13 @@ import java.util.List;
  */
 public class PullMessageResultSet {
 	//shows if pull message request succeeded
-	boolean fSucceeded;
-	//stError is only populated if the request failed
-	public String stErrorMessage;
-	public String stErrorCode;
+	private boolean fSucceeded;
+
+    //stError is only populated if the request failed
+	private String stErrorMessage;
+	private String stErrorCode;
 	//rgmessage is only populated if request succeeded
-	public List<MessageInfo> rgmessage;
+	private List<MessageInfo> rgmessage;
 	public PullMessageResultSet(boolean fSucceeded, List<MessageInfo> rgmessage, String stErrorCode, String stErrorMessage) {
 		this.fSucceeded = fSucceeded;
 		this.stErrorMessage = stErrorMessage;
@@ -40,5 +41,31 @@ public class PullMessageResultSet {
 		this.stErrorCode = stErrorCode;
 	}
 	
-	
+	/**
+     * @return the fSucceeded
+     */
+    public boolean fIsSucceeded() {
+        return fSucceeded;
+    }
+
+    /**
+     * @return the rgmessage
+     */
+    public List<MessageInfo> getRgmessage() {
+        return new ArrayList<MessageInfo>(rgmessage);
+    }
+
+    /**
+     * @return the stErrorMessage
+     */
+    public String getStErrorMessage() {
+        return stErrorMessage;
+    }
+
+    /**
+     * @return the stErrorCode
+     */
+    public String getStErrorCode() {
+        return stErrorCode;
+    }
 }

@@ -1,17 +1,22 @@
 package realtalk.activities;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
+import realtalk.controller.ChatController;
 import realtalk.util.ChatRoomInfo;
+import realtalk.util.CommonUtilities;
 import realtalk.util.MessageInfo;
 import realtalk.util.ChatManager;
 import realtalk.util.PullMessageResultSet;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 
-import com.example.realtalk.R;
+import com.realtalk.R;
 
 import android.os.AsyncTask;
 import android.os.Build;
@@ -19,11 +24,23 @@ import android.os.Bundle;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.text.Html;
+import android.content.IntentFilter;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Activity for a chat room, where the user can send/recieve messages.
@@ -33,13 +50,12 @@ import android.widget.ListView;
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChatRoomActivity extends Activity {
-	private static final String DEFAULT_ID = "someID";
-	ChatRoomInfo chatroominfo;
-	UserInfo userinfo;
+	private ChatRoomInfo chatroominfo;
+	private UserInfo userinfo;
 	private ProgressDialog progressdialog;
-	List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
-	List<String> rgstDisplayMessage;
-	ArrayAdapter<String> adapter;
+	private List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
+	private MessageAdapter adapter;
+	private ChatController chatController = ChatController.getInstance();
 	
 	/**
 	 * Sets up the chat room activity and loads the previous
@@ -48,24 +64,54 @@ public class ChatRoomActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_chat_room);
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
-		chatroominfo = new ChatRoomInfo("Room 001", "001", "a room", 0.0, 0.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
 		Bundle extras = getIntent().getExtras();
-		String stUsername = extras.getString("USER_NAME");
-		String stPword = extras.getString("PASSWORD");
+		userinfo = ChatController.getInstance().getUser();
+		chatroominfo = extras.getParcelable("ROOM");
 		
-		userinfo = new UserInfo(stUsername, stPword, DEFAULT_ID);
-		new RoomCreator(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		String stUser = userinfo.stUserName();
+		String stRoom = chatroominfo.stName();
 		
-		rgstDisplayMessage = new ArrayList<String>();
+		TextView textviewRoomTitle = (TextView) findViewById(R.id.chatRoomTitle);
+		textviewRoomTitle.setText(stRoom);
+		TextView textviewUserTitle = (TextView) findViewById(R.id.userTitle);
+		textviewUserTitle.setText(stUser);
+		
+		new RoomCreator(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 		ListView listview = (ListView) findViewById(R.id.list);
-		// Binding resources Array to ListAdapter
-		adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.label, rgstDisplayMessage);
+		adapter = new MessageAdapter(this, R.layout.message_item, rgmessageinfo);
 		listview.setAdapter(adapter);
-		
-		new MessageLoader(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+	
+	@Override
+	protected void onStart() {
+	    super.onStart();
+	    registerReceiver(handleNewMessageAlertReceiver,
+	            new IntentFilter(CommonUtilities.NEW_MESSAGE_ALERT));
+	}
+	
+	@Override
+	protected void onResume() {
+	    super.onResume();
+	    registerReceiver(handleNewMessageAlertReceiver,
+                new IntentFilter(CommonUtilities.NEW_MESSAGE_ALERT));
+	}
+	
+	@Override
+	protected void onPause() {
+	    super.onPause();
+	    unregisterReceiver(handleNewMessageAlertReceiver);
+	}
+	
+	@Override
+	protected void onRestart() {
+	    super.onRestart();
+	    registerReceiver(handleNewMessageAlertReceiver,
+                new IntentFilter(CommonUtilities.NEW_MESSAGE_ALERT));
 	}
 
 	@Override
@@ -73,6 +119,26 @@ public class ChatRoomActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.chat_room, menu);
 		return true;
+	}
+	
+	@Override
+    public void onBackPressed() { 
+        Intent itViewRooms = new Intent(this, SelectRoomActivity.class);
+        itViewRooms.putExtra("USER", userinfo);
+		this.startActivity(itViewRooms);
+		this.finish();
+
+    }
+	
+	public void leaveRoom(View view) {
+		new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+	
+	/**
+	 * Method that loads messages to adapter. Prepares the chat view to use GCM thereafter.
+	 */
+	public void createGCMMessageLoader() {
+	    new GCMMessageLoader(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
 	/**
@@ -84,11 +150,53 @@ public class ChatRoomActivity extends Activity {
 		EditText edittext = (EditText)findViewById(R.id.message);
 		String stValue = edittext.getText().toString();
 		
-		MessageInfo message = new MessageInfo
-				(stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
-		
-		new MessageSender(message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		edittext.setText("");
+		if (!stValue.equals("")) {
+			MessageInfo message = new MessageInfo (stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
+			
+			new MessageSender(message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			edittext.setText("");
+		}
+	}
+	
+	/**
+	 * AsyncTask that leaves the room.
+	 * 
+	 * @author Colin Kho
+	 *
+	 */
+	class RoomLeaver extends AsyncTask<String, String, Boolean> {
+	    private ChatRoomInfo chatroominfo;
+	    public RoomLeaver(ChatRoomInfo roominfo) {
+	        chatroominfo = roominfo;
+	    }
+	    
+	    @Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+            progressdialog = new ProgressDialog(ChatRoomActivity.this);
+            progressdialog.setMessage("Leaving room. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
+	    }
+	    
+        @Override
+        protected Boolean doInBackground(String... params) {
+            Boolean leaveRoomSuccess = chatController.leaveRoom(chatroominfo);
+            return leaveRoomSuccess;
+        }
+        
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (progressdialog != null) {
+                progressdialog.dismiss();
+            }
+            
+	        Intent itViewRooms = new Intent(ChatRoomActivity.this, SelectRoomActivity.class);
+	        itViewRooms.putExtra("USER", userinfo);
+	  		ChatRoomActivity.this.startActivity(itViewRooms);
+	  		ChatRoomActivity.this.finish();
+        }    
 	}
 	
 	/**
@@ -119,7 +227,6 @@ public class ChatRoomActivity extends Activity {
 		protected RequestResultSet doInBackground(String... params) {
 			return ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
 		}
-		
 	}
 	
 	/**
@@ -131,6 +238,7 @@ public class ChatRoomActivity extends Activity {
 	class MessageLoader extends AsyncTask<String, String, PullMessageResultSet> {
 		private ChatRoomActivity chatroomactivity;
 		private ChatRoomInfo chatroominfo;
+		private static final int RECENT_MESSAGE_TIME_LIMIT = 1000000000;
 		
 		/**
 		 * Constructs a MessageLoader object
@@ -150,9 +258,9 @@ public class ChatRoomActivity extends Activity {
 		protected PullMessageResultSet doInBackground(String... params) {
 			while (true) {
 				PullMessageResultSet pmrsRecent = ChatManager.pmrsChatRecentChat
-						(chatroominfo, new Timestamp(System.currentTimeMillis()-10000000));
+						(chatroominfo, new Timestamp(System.currentTimeMillis()-RECENT_MESSAGE_TIME_LIMIT));
 				
-				rgmessageinfo = pmrsRecent.rgmessage;
+				rgmessageinfo = pmrsRecent.getRgmessage();
 				
 				chatroomactivity.runOnUiThread(new Runnable() {
 					@Override
@@ -160,33 +268,63 @@ public class ChatRoomActivity extends Activity {
 						adapter.clear();
 						
 						for (int i = 0; i < rgmessageinfo.size(); i++) {
-							String stMessage = rgmessageinfo.get(i).stSender() + ": " + 
-									rgmessageinfo.get(i).stBody();
-							adapter.add(stMessage);
+							adapter.add(rgmessageinfo.get(i));
 						}
 					}
 				});
 			}
 		}
-		
 	}
 	
 	/**
-	 * Creates and joins a chat room
+	 * Loads messages from chat controller which is prepared for GCM.
+	 * 
+	 * @author Colin Kho
+	 *
+	 */
+	class GCMMessageLoader extends AsyncTask<String, String, Boolean> {
+	    private Activity activity;
+	    private ChatRoomInfo chatroominfo;
+	    
+	    public GCMMessageLoader(Activity activity, ChatRoomInfo chatroominfo) {
+	        this.activity = activity;
+	        this.chatroominfo = chatroominfo;
+	    }
+        @Override
+        protected Boolean doInBackground(String... params) {
+            rgmessageinfo = chatController.getMessagesFromChatRoom(chatroominfo.stId());
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.clear();
+                    
+                    for (int i = 0; i < rgmessageinfo.size(); i++) {
+                        adapter.add(rgmessageinfo.get(i));
+                    }
+                }
+            });
+            return true;
+        }	    
+	}
+	
+	/**
+	 * Joins a chat room
 	 * 
 	 * @author Jordan Hazari
 	 *
 	 */
-	class RoomCreator extends AsyncTask<String, String, RequestResultSet> {
+	class RoomCreator extends AsyncTask<String, String, Boolean> {
 		private ChatRoomInfo chatroominfo;
+		private Activity activity;
 		
 		/**
 		 * Constructs a RoomCreator object
 		 * 
 		 * @param chatroominfo the room to create/join
 		 */
-		public RoomCreator(ChatRoomInfo chatroominfo) {
+		public RoomCreator(Activity activity, ChatRoomInfo chatroominfo) {
 			this.chatroominfo = chatroominfo;
+			this.activity = activity;
 		}
 		
 		/**
@@ -196,33 +334,88 @@ public class ChatRoomActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             progressdialog = new ProgressDialog(ChatRoomActivity.this);
-            progressdialog.setMessage("Joining room. Please wait...");
+            progressdialog.setMessage("Entering room. Please wait...");
             progressdialog.setIndeterminate(false);
             progressdialog.setCancelable(true);
+            progressdialog.setCanceledOnTouchOutside(false);
             progressdialog.show();
         }
 
 	    /**
 	     * Adds the room, or joins it if it already exists
+	     * @return 
 	     */
 		@Override
-		protected RequestResultSet doInBackground(String... params) {
-			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
-			if (!rrs.fSucceeded) {
-				rrs = ChatManager.rrsJoinRoom(userinfo, chatroominfo);
-				if (!rrs.fSucceeded) {
-					throw new RuntimeException("server error");
-				}
-			}
-			return rrs;
+		protected Boolean doInBackground(String... params) {
+		    return (ChatController.getInstance().fIsAlreadyJoined(chatroominfo)) ? true : ChatController.getInstance().joinRoom(chatroominfo);
 		}
 		
 		/**
 		 * Closes the popup dialogue
 		 */
 		@Override
-        protected void onPostExecute(RequestResultSet requestresultset) {
+        protected void onPostExecute(Boolean success) {
             progressdialog.dismiss();
+            if (!success) {
+                Toast serverToast = Toast.makeText(activity, "Failed to join room. Please try again.", Toast.LENGTH_LONG);
+                serverToast.show();
+            } else {
+                ChatRoomActivity.this.createGCMMessageLoader();
+            }
 		}
 	}
+	
+	private class MessageAdapter extends ArrayAdapter<MessageInfo> {
+
+        private List<MessageInfo> rgmessageinfo;
+
+        public MessageAdapter(Context context, int textViewResourceId, List<MessageInfo> rgmessageinfo) {
+            super(context, textViewResourceId, rgmessageinfo);
+            this.rgmessageinfo = rgmessageinfo;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null) {
+                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = vi.inflate(R.layout.message_item, null);
+            }
+            MessageInfo messageinfo = rgmessageinfo.get(position);
+            if (messageinfo != null) {
+                TextView textviewTop = (TextView) view.findViewById(R.id.toptext);
+                TextView textviewBottom = (TextView) view.findViewById(R.id.bottomtext);
+                if (textviewTop != null) {
+                	textviewTop.setTextAppearance(ChatRoomActivity.this, android.R.style.TextAppearance_Medium);
+                	textviewTop.setText(Html.fromHtml("<b>" + messageinfo.stSender() + ": " + "</b>" +  messageinfo.stBody()));
+                }
+                if(textviewBottom != null) {
+                	SimpleDateFormat simpledateformat = new SimpleDateFormat("hh:mm a, M/dd/yyyy", Locale.US);
+                	simpledateformat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
+                    textviewBottom.setText("\t" + simpledateformat.format(messageinfo.timestampGet()));
+                }
+            }
+            return view;
+        }
+	}
+	
+	private final BroadcastReceiver handleNewMessageAlertReceiver = 
+	        new BroadcastReceiver() {
+
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    Log.v("Handling Message Receiver", "Received Message");
+                    String stRoomId = intent.getExtras().getString(CommonUtilities.ROOM_ID);
+                    
+                    // Retrieve messages from controller.
+                    List<MessageInfo> rgmessageinfo = chatController.getMessagesFromChatRoom(stRoomId);
+                    
+                    // Update adapter to have new messages.
+                    adapter.clear();
+                    
+                    for (int iMsgIndex = 0; iMsgIndex < rgmessageinfo.size(); iMsgIndex++) {
+                        adapter.add(rgmessageinfo.get(iMsgIndex));
+                    }
+                }    
+	};
 }

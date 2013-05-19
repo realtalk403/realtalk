@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.realtalk"
+    package="com.realtalk"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -10,15 +10,21 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    
+    <permission android:protectionLevel="signature" android:name="com.realtalk.permission.C2D_MESSAGE"></permission>
+    <uses-permission android:name="com.realtalk.permission.C2D_MESSAGE"/>
+    
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/realtalkicon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
             android:name="realtalk.activities.LoginActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,6 +43,25 @@
             android:name="realtalk.activities.ChatRoomActivity"
             android:label="@string/title_activity_chat_room" >
         </activity>
+        <activity
+            android:name="realtalk.activities.AccountSettingsActivity"
+            android:label="@string/title_activity_account_settings" >
+        </activity>
+        <activity
+            android:name="realtalk.activities.CreateRoomActivity"
+            android:label="@string/title_activity_create_room" >
+        </activity>
+        <!--  Broadcast Receiver for GCM -->
+        <receiver 
+            android:name="realtalk.util.gcm.GCMReceiver" 
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="com.realtalk" />
+            </intent-filter>
+        </receiver>
+        
+        <service android:name="realtalk.util.gcm.GCMIntentService" />
     </application>
-
 </manifest>
