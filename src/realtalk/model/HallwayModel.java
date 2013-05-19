@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.MessageInfo;
-import realtalk.util.UserInfo;
 
 
 /**
@@ -87,7 +86,7 @@ public class HallwayModel {
 	 * 
 	 * @return true if left room, false if room does not exist or an error has occurred leaving the room.
 	 */
-	public boolean removeRoom(String stRoomId) {
+	public boolean fRemoveRoom(String stRoomId) {
 	    if (mpcricrm.containsKey(stRoomId)) {
 	        mpcricrm.remove(stRoomId);
 	        return true;
@@ -96,47 +95,40 @@ public class HallwayModel {
 	    }
 	}
 	
-	/**
-	 * Removes the room matching the given cri
-	 * 
-	 * @param cri info for the room to be removed
-	 */
-	public void deleteRoom(String stcrmId) {
-		mpcricrm.remove(stcrmId);
-	}
+//	Unused, but keep this around in case we switch to explicit users rather than # of users	
+//	/**
+//	 * Adds a user to a room. Throws an IllegalArgumentException if no such room exists.
+//	 * 
+//	 * @param u user to add to the room
+//	 * @param cri the room to be added to
+//	 * @return if the user was added to the room. 
+//	 */
+//	public boolean fAddUToCrm(UserInfo u, String stcrmId) {
+//		ChatRoomModel crm = crmGetFromId(stcrmId);
+//		if (crm == null) {
+//			throw new IllegalArgumentException("No room matching id: \"" + stcrmId + "\" exists.");
+//		} else {
+//			return crm.fAddU(u);
+//		}
+//	}
 	
-	/**
-	 * Adds a user to a room. Throws an IllegalArgumentException if no such room exists.
-	 * 
-	 * @param u user to add to the room
-	 * @param cri the room to be added to
-	 * @return if the user was added to the room. 
-	 */
-	public boolean fAddUToCrm(UserInfo u, String stcrmId) {
-		ChatRoomModel crm = crmGetFromId(stcrmId);
-		if (crm == null) {
-			throw new IllegalArgumentException("No room matching id: \"" + stcrmId + "\" exists.");
-		} else {
-			return crm.fAddU(u);
-		}
-	}
-	
-	/**
-	 * Removes a user from a room. Throws an IllegalArgumentException if no such room exists.
-	 * 
-	 * @param u user to remove from the room
-	 * @param cri the room to be removed from
-	 * @return true if the user was removed from the room, false if the user was 
-	 * not in the room to start.
-	 */
-	public boolean fRemoveUFromCrm(UserInfo u, String stcrmId) {
-		ChatRoomModel crm = crmGetFromId(stcrmId);
-		if (crm == null) {
-			throw new IllegalArgumentException("No room matching id: \"" + stcrmId + "\" exists.");
-		} else {
-			return crm.fRemoveU(u);
-		}
-	}
+//	Unused, but keep this around in case we switch to explicit users rather than # of users
+//	/**
+//	 * Removes a user from a room. Throws an IllegalArgumentException if no such room exists.
+//	 * 
+//	 * @param u user to remove from the room
+//	 * @param cri the room to be removed from
+//	 * @return true if the user was removed from the room, false if the user was 
+//	 * not in the room to start.
+//	 */
+//	public boolean fRemoveUFromCrm(UserInfo u, String stcrmId) {
+//		ChatRoomModel crm = crmGetFromId(stcrmId);
+//		if (crm == null) {
+//			throw new IllegalArgumentException("No room matching id: \"" + stcrmId + "\" exists.");
+//		} else {
+//			return crm.fRemoveU(u);
+//		}
+//	}
 	
 	/**
 	 * Adds a message to a chat room.
