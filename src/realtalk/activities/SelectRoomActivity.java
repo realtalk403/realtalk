@@ -53,7 +53,7 @@ import com.realtalk.R;
  */
 @SuppressLint("NewApi")
 public class SelectRoomActivity extends Activity {
-	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  
+	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 5000000000000000000000.0;  
 	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoJoined = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoUnjoined = new ArrayList<ChatRoomInfo>();
