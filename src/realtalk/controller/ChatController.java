@@ -25,7 +25,7 @@ import realtalk.util.UserInfo;
  */
 public final class ChatController {
     private static ChatController instance = null;
-    private HallwayModel chatModel;
+    private static HallwayModel chatModel;
     // Keeps track of the current user in the RealTalk application.
     // Set to null if user not set / logged out.
     private UserInfo userinfo;
@@ -135,7 +135,7 @@ public final class ChatController {
      * 
      * @return
      */
-    public List<ChatRoomInfo> getChatRooms() {
+    public static List<ChatRoomInfo> getChatRooms() {
         return chatModel.getRoomInfo();
     }
     
@@ -212,7 +212,7 @@ public final class ChatController {
      * @param cri ChatRoomInfo
      * @return true if user is has already joined the chatroom and false if not.
      */
-    public boolean fIsAlreadyJoined(ChatRoomInfo cri) {
+    public static boolean fIsAlreadyJoined(ChatRoomInfo cri) {
         List<ChatRoomInfo> rgCri = getChatRooms();
         for (ChatRoomInfo roominfo : rgCri) {
             if (roominfo.stId().equals(cri.stId())) {

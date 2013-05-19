@@ -50,7 +50,10 @@ import com.realtalk.R;
 public class SelectRoomActivity extends Activity {
 	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  
 	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
-	private ChatRoomAdapter adapter;
+	private List<ChatRoomInfo> rgchatroominfoJoined = new ArrayList<ChatRoomInfo>();
+	private List<ChatRoomInfo> rgchatroominfoUnjoined = new ArrayList<ChatRoomInfo>();
+	private ChatRoomAdapter unJoinedAdapter;
+	private ChatRoomAdapter joinedAdapter;
 	private Bundle bundleExtras;
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
@@ -72,14 +75,30 @@ public class SelectRoomActivity extends Activity {
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
 
-		ListView listview = (ListView) findViewById(R.id.list);
-		listview.setClickable(false);
+		ListView listviewJoined = (ListView) findViewById(R.id.joined_list);
+		listviewJoined.setClickable(false);
+		
+		ListView listviewUnjoined = (ListView) findViewById(R.id.unjoined_list);
+		listviewUnjoined.setClickable(false);
 
 		// when a room is clicked, starts a new ChatRoomActivity
-        listview.setOnItemClickListener(new OnItemClickListener() {
+        listviewJoined.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            	ChatRoomInfo criSelected = rgchatroominfo.get(position);
+            	ChatRoomInfo criSelected = rgchatroominfoJoined.get(position);
+        		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
+        		itStartChat.putExtras(bundleExtras);
+        		itStartChat.putExtra("ROOM", criSelected);
+        		SelectRoomActivity.this.startActivity(itStartChat);
+        		SelectRoomActivity.this.finish();
+            }
+        });
+        
+		// when a room is clicked, starts a new ChatRoomActivity
+        listviewUnjoined.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            	ChatRoomInfo criSelected = rgchatroominfoUnjoined.get(position);
         		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		itStartChat.putExtras(bundleExtras);
         		itStartChat.putExtra("ROOM", criSelected);
@@ -89,8 +108,11 @@ public class SelectRoomActivity extends Activity {
         });
 
 		// Binding resources Array to ListAdapter
-		adapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfo);
-		listview.setAdapter(adapter);
+		unJoinedAdapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoUnjoined, false);
+		listviewUnjoined.setAdapter(unJoinedAdapter);
+		
+		joinedAdapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoJoined, true);
+		listviewJoined.setAdapter(joinedAdapter);
 		
 		// REASON for commenting out location code: chatController will get updated indefinitely if location continously changes.
 		// Should meet up to agree on a convention or protocol regarding this.
@@ -143,10 +165,13 @@ public class SelectRoomActivity extends Activity {
 //		}
 	}
 	
-	private void getDetails(int position) {
-		//Toast.makeText(getApplicationContext(), ""+position, Toast.LENGTH_LONG).show();
-		
-		final ChatRoomInfo chatroominfo = rgchatroominfo.get(position);
+	private void getDetails(int position, boolean fJoined) {
+		final ChatRoomInfo chatroominfo;
+		if(fJoined) {
+			chatroominfo = rgchatroominfoJoined.get(position);
+		} else {
+			chatroominfo = rgchatroominfoUnjoined.get(position);
+		}
 		
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		//set title
@@ -263,10 +288,14 @@ public class SelectRoomActivity extends Activity {
 			selectroomactivity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					adapter.clear();
+					unJoinedAdapter.clear();
 
 					for (int i = 0; i < rgchatroominfo.size(); i++) {
-						adapter.add(rgchatroominfo.get(i));
+						if (!ChatController.fIsAlreadyJoined(rgchatroominfo.get(i))) {
+							unJoinedAdapter.add(rgchatroominfo.get(i));
+						} else {
+							joinedAdapter.add(rgchatroominfo.get(i));
+						}
 					}
 				}
 			});
@@ -278,10 +307,12 @@ public class SelectRoomActivity extends Activity {
 	private class ChatRoomAdapter extends ArrayAdapter<ChatRoomInfo> {
 
 		private List<ChatRoomInfo> rgchatroominfo;
+		private boolean fJoined;
 
-		public ChatRoomAdapter(Context context, int textViewResourceId, List<ChatRoomInfo> rgchatroominfo) {
+		public ChatRoomAdapter(Context context, int textViewResourceId, List<ChatRoomInfo> rgchatroominfo, boolean fJoined) {
 			super(context, textViewResourceId, rgchatroominfo);
 			this.rgchatroominfo = rgchatroominfo;
+			this.fJoined = fJoined;
 		}
 
 		@Override
@@ -300,7 +331,7 @@ public class SelectRoomActivity extends Activity {
 				OnClickListener listener = new OnClickListener() {
 				    @Override
 				    public void onClick(View view) {
-				    	getDetails((Integer) view.getTag());
+				    	getDetails((Integer) view.getTag(), fJoined);
 				    }
 				};
 				
