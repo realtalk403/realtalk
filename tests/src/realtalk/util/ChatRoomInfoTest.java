@@ -1,16 +1,13 @@
 package realtalk.util;
 
-import static org.junit.Assert.*;
+import java.sql.Timestamp;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import realtalk.util.ChatRoomInfo;
-import android.test.AndroidTestCase;
-import java.sql.Timestamp;
 import android.os.Parcel;
-import android.os.Parcelable;
+import android.test.AndroidTestCase;
 /**
  * 
  */

@@ -1,15 +1,7 @@
 package realtalk.util;
 
 import org.junit.Test;
-import realtalk.util.UserInfo;
 
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-
-import android.os.Parcel;
-import android.os.UserHandle;
 import android.test.AndroidTestCase;
 /**
  * UserInfo Test

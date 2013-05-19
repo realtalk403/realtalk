@@ -1,10 +1,9 @@
 package realtalk.util;
 
-import org.junit.Test;
-import realtalk.util.PullMessageResultSet;
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
+
+import org.junit.Test;
+
 import android.test.AndroidTestCase;
 /**
  * PullMessageResult Test
