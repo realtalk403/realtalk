@@ -40,6 +40,7 @@ public final class ChatManager {
     public static final String URL_GET_RECENT_MESSAGES = URL_QUALIFIER+"pullRecentChat";
     public static final String URL_GET_ALL_MESSAGES = URL_QUALIFIER + "pullChat";
     public static final String URL_GET_NEARBY_CHATROOMS = URL_QUALIFIER + "nearbyRooms";
+    public static final String URL_GET_USERS_ROOMS = URL_QUALIFIER + "userRooms";
     
 	/**
 	 * Private contructor prevents this class from being instantiated.
@@ -334,5 +335,18 @@ public final class ChatManager {
 	public static ChatRoomResultSet crrsNearbyChatrooms(double latitude, double longitude, double radiusMeters) {
 		List<NameValuePair> rgparams = rgparamsLocationInfo(latitude, longitude, radiusMeters);
 		return crrsPostRequest(rgparams, URL_GET_NEARBY_CHATROOMS);
+	}
+	
+	/**
+	 * This method pulls all chatrooms that the given user has joined from the server
+	 * 
+	 * @param userinfo     Information about the user
+     * @return             Result set that contains a boolean that indicates success or failure and 
+     *                     returns an error code and message if failure was occurred. If success,
+     *                     it holds a list of ChatRoomInfo objects describing the user's rooms.
+	 */
+	public static ChatRoomResultSet crrsUsersChatrooms(UserInfo userinfo) {
+	    List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
+	    return crrsPostRequest(rgparams, URL_GET_USERS_ROOMS);
 	}
 }

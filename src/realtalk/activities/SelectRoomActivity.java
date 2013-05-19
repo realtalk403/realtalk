@@ -4,27 +4,37 @@ package realtalk.activities;
 import java.util.ArrayList;
 import java.util.List;
 
+import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.ChatRoomResultSet;
+import realtalk.util.UserInfo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.location.Location;
+//import android.location.Criteria;
+//import android.location.Location;
+//import android.location.LocationListener;
+//import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -38,11 +48,12 @@ import com.realtalk.R;
  */
 @SuppressLint("NewApi")
 public class SelectRoomActivity extends Activity {
-//	private List<String> rgstDisplayRoom;
-	//Checkstyle doesn't like magic #s, even if they are hacks that we know we will change TODO
 	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  
 	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
-	private ChatRoomAdapter adapter;
+	private List<ChatRoomInfo> rgchatroominfoJoined = new ArrayList<ChatRoomInfo>();
+	private List<ChatRoomInfo> rgchatroominfoUnjoined = new ArrayList<ChatRoomInfo>();
+	private ChatRoomAdapter unJoinedAdapter;
+	private ChatRoomAdapter joinedAdapter;
 	private Bundle bundleExtras;
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
@@ -58,27 +69,50 @@ public class SelectRoomActivity extends Activity {
 		bundleExtras = getIntent().getExtras();
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
+		
+		UserInfo userinfo = bundleExtras.getParcelable("USER");
+		String stUser = userinfo.stUserName();
+		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
+		textviewRoomTitle.setText(stUser);
 
-//		rgstDisplayRoom = new ArrayList<String>();
-
-		ListView listview = (ListView) findViewById(R.id.list);
-		listview.setClickable(false);
+		ListView listviewJoined = (ListView) findViewById(R.id.joined_list);
+		listviewJoined.setClickable(false);
+		
+		ListView listviewUnjoined = (ListView) findViewById(R.id.unjoined_list);
+		listviewUnjoined.setClickable(false);
 
 		// when a room is clicked, starts a new ChatRoomActivity
-		listview.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				ChatRoomInfo criSelected = rgchatroominfo.get(position);
-				Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
-				itStartChat.putExtras(bundleExtras);
-				itStartChat.putExtra("ROOM", criSelected);
-				SelectRoomActivity.this.startActivity(itStartChat);
-			}
-		});
+        listviewJoined.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            	ChatRoomInfo criSelected = rgchatroominfoJoined.get(position);
+        		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
+        		itStartChat.putExtras(bundleExtras);
+        		itStartChat.putExtra("ROOM", criSelected);
+        		SelectRoomActivity.this.startActivity(itStartChat);
+        		SelectRoomActivity.this.finish();
+            }
+        });
+        
+		// when a room is clicked, starts a new ChatRoomActivity
+        listviewUnjoined.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            	ChatRoomInfo criSelected = rgchatroominfoUnjoined.get(position);
+        		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
+        		itStartChat.putExtras(bundleExtras);
+        		itStartChat.putExtra("ROOM", criSelected);
+        		SelectRoomActivity.this.startActivity(itStartChat);
+        		SelectRoomActivity.this.finish();
+            }
+        });
 
 		// Binding resources Array to ListAdapter
-		adapter = new ChatRoomAdapter(this, R.layout.list_item, rgchatroominfo);
-		listview.setAdapter(adapter);
+		unJoinedAdapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoUnjoined, false);
+		listviewUnjoined.setAdapter(unJoinedAdapter);
+		
+		joinedAdapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoJoined, true);
+		listviewJoined.setAdapter(joinedAdapter);
 		
 		// REASON for commenting out location code: chatController will get updated indefinitely if location continously changes.
 		// Should meet up to agree on a convention or protocol regarding this.
@@ -130,10 +164,53 @@ public class SelectRoomActivity extends Activity {
 //			locationmanager.requestLocationUpdates(stBestProvider, 0, 0, locationListener);
 //		}
 	}
-
-	private void loadRooms(Location locationUser, double radiusMeters) {
-		new RoomLoader(this, locationUser.getLatitude(), locationUser.getLongitude(), radiusMeters).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	
+	private void getDetails(int position, boolean fJoined) {
+		final ChatRoomInfo chatroominfo;
+		if(fJoined) {
+			chatroominfo = rgchatroominfoJoined.get(position);
+		} else {
+			chatroominfo = rgchatroominfoUnjoined.get(position);
+		}
+		
+    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		//set title
+		alertDialogBuilder.setTitle(chatroominfo.stName());
+		
+		//set dialog message
+		alertDialogBuilder
+			.setMessage(Html.fromHtml("<b>Description: </b> " +  chatroominfo.stDescription() + 
+									"<br/><br/><b>Active Users: </b> " + chatroominfo.numUsersGet() +
+									"<br/><br/><b>Creator: </b> " + chatroominfo.stCreator()))
+			.setCancelable(false);
+		
+		alertDialogBuilder.setNegativeButton("Join", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
+        		itStartChat.putExtras(bundleExtras);
+        		itStartChat.putExtra("ROOM", chatroominfo);
+        		SelectRoomActivity.this.startActivity(itStartChat);
+        		SelectRoomActivity.this.finish();
+			}	
+		});
+		
+		alertDialogBuilder.setPositiveButton("Back", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				// User cancelled the dialog
+				dialog.cancel();
+			}
+		});
+		
+		//create alert dialog
+		AlertDialog alertdialogDeleteAcc = alertDialogBuilder.create();
+		
+		//show alert dialog
+		alertdialogDeleteAcc.show();
 	}
+	
+//	private void LoadRooms(Location locationUser, double radiusMeters) {
+//		new RoomLoader(this, locationUser.getLatitude(), locationUser.getLongitude(), radiusMeters).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -173,7 +250,7 @@ public class SelectRoomActivity extends Activity {
 	}
 
 	/**
-	 * Retrieves the user's available chatrooms
+	 * Retrieves the user's available chatrooms and initializes the ChatController
 	 * 
 	 * @author Jordan Hazari
 	 *
@@ -189,7 +266,8 @@ public class SelectRoomActivity extends Activity {
 		 * 
 		 * @param selectroomroomactivity the activity context
 		 */
-		public RoomLoader(SelectRoomActivity selectroomactivity, double latitude, double longitude, double radiusMeters) {
+		public RoomLoader(SelectRoomActivity selectroomactivity, 
+		        double latitude, double longitude, double radiusMeters) {
 			this.selectroomactivity = selectroomactivity;
 			this.longitude = longitude;
 			this.latitude = latitude;
@@ -201,6 +279,7 @@ public class SelectRoomActivity extends Activity {
 		 */
 		@Override
 		protected ChatRoomResultSet doInBackground(String... params) {
+		    ChatController.getInstance().fRefresh();
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 
@@ -209,10 +288,14 @@ public class SelectRoomActivity extends Activity {
 			selectroomactivity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					adapter.clear();
+					unJoinedAdapter.clear();
 
 					for (int i = 0; i < rgchatroominfo.size(); i++) {
-						adapter.add(rgchatroominfo.get(i));
+						if (!ChatController.getInstance().fIsAlreadyJoined(rgchatroominfo.get(i))) {
+							unJoinedAdapter.add(rgchatroominfo.get(i));
+						} else {
+							joinedAdapter.add(rgchatroominfo.get(i));
+						}
 					}
 				}
 			});
@@ -224,10 +307,12 @@ public class SelectRoomActivity extends Activity {
 	private class ChatRoomAdapter extends ArrayAdapter<ChatRoomInfo> {
 
 		private List<ChatRoomInfo> rgchatroominfo;
+		private boolean fJoined;
 
-		public ChatRoomAdapter(Context context, int textViewResourceId, List<ChatRoomInfo> rgchatroominfo) {
+		public ChatRoomAdapter(Context context, int textViewResourceId, List<ChatRoomInfo> rgchatroominfo, boolean fJoined) {
 			super(context, textViewResourceId, rgchatroominfo);
 			this.rgchatroominfo = rgchatroominfo;
+			this.fJoined = fJoined;
 		}
 
 		@Override
@@ -235,17 +320,31 @@ public class SelectRoomActivity extends Activity {
 			View view = convertView;
 			if (view == null) {
 				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				view = vi.inflate(R.layout.list_item, null);
+				view = vi.inflate(R.layout.room_item, null);
 			}
 			ChatRoomInfo chatroominfo = rgchatroominfo.get(position);
 			if (chatroominfo != null) {
 				TextView textviewTop = (TextView) view.findViewById(R.id.toptext);
 				TextView textviewBottom = (TextView) view.findViewById(R.id.bottomtext);
+				Button button = (Button) view.findViewById(R.id.detailsButton);
+				
+				OnClickListener listener = new OnClickListener() {
+				    @Override
+				    public void onClick(View view) {
+				    	getDetails((Integer) view.getTag(), fJoined);
+				    }
+				};
+				
 				if (textviewTop != null) {
 					textviewTop.setText(chatroominfo.stName());
 				}
 				if(textviewBottom != null) {
 					textviewBottom.setText("\t" + chatroominfo.numUsersGet() + " users");
+				}
+				if(button != null) {
+					button.setTag(position);
+					button.setOnClickListener(listener);
+					button.setFocusable(false);
 				}
 			}
 			return view;

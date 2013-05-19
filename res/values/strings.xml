@@ -39,5 +39,11 @@
     <string name="available_rooms">Available Rooms</string>
     <string name="logout">Log Out</string>
     <string name="action_settings">Settings</string>
-
+    <string name="leave_room">Leave Room</string>
+    <string name="room">Room</string>
+    <string name="user">User</string>
+    <string name="details">Details</string>
+    <string name="new_user">New User</string>
+    <string name="joined_rooms">Joined Rooms</string>
+    <string name="unjoined_rooms">Other Nearby Rooms</string>
 </resources>

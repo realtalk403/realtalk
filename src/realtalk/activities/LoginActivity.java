@@ -45,7 +45,6 @@ public class LoginActivity extends Activity {
     private EditText edittextUser;
     private EditText edittextPword;
     private boolean fLoggedIn;
-    private ChatController chatController;
     
     
     /**
@@ -55,9 +54,6 @@ public class LoginActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
-		// Initialize Controller by getting its instance
-		chatController = ChatController.getInstance();
 		
 		// Make sure the device has the proper dependencies and manifest is properly set
 		GCMRegistrar.checkDevice(this);
@@ -319,6 +315,8 @@ public class LoginActivity extends Activity {
 	    
         @Override
         protected RequestResultSet doInBackground(String... params) {
+            UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stRegisteredId);
+            ChatController.getInstance().fInitialize(loginUserinfo);
             return ChatManager.rrsChangeID(userinfo, stRegisteredId);
         }
 	    
@@ -329,7 +327,6 @@ public class LoginActivity extends Activity {
                 Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
                 UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stRegisteredId);
                 itRoomSelect.putExtra("USER", loginUserinfo);
-                chatController.initialize(loginUserinfo);
                 activity.startActivity(itRoomSelect);
                 activity.finish();
             } else {
