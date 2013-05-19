@@ -302,7 +302,7 @@ public class SelectRoomActivity extends Activity {
 		 */
 		@Override
 		protected ChatRoomResultSet doInBackground(String... params) {
-		    ChatController.getInstance().fRefresh();
+		    //ChatController.getInstance().fRefresh();
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 
