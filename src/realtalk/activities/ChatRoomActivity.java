@@ -45,7 +45,7 @@ import android.widget.Toast;
 /**
  * Activity for a chat room, where the user can send/recieve messages.
  * 
- * @author Jordan Hazari
+ * @author Jordan Hazari 
  *
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
