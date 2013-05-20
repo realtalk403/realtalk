@@ -1,7 +1,5 @@
 package realtalk.controller;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +53,11 @@ public class ChatControllerTest extends AndroidTestCase {
 		assertTrue(chatcontroller.equals(ChatController.getInstance()));
 	}
 
+	@Test(timeout = TIMEOUT)
+	public void testRefresh() {
+		assertTrue(chatcontroller.fRefresh());
+	}
+	
 	@Test(timeout = TIMEOUT)
 	public void testGetUser() {
 		assertEquals(chatcontroller.getUser(), userinfo);

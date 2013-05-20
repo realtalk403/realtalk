@@ -367,6 +367,7 @@ public class AccountSettingsActivity extends Activity {
 							Intent itCreateAcc = new Intent(activity, LoginActivity.class);
 							ChatController.getInstance().uninitialize();
 							activity.startActivity(itCreateAcc);
+							activity.finish();
 						}	
 				});
 					

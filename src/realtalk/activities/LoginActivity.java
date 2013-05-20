@@ -87,6 +87,8 @@ public class LoginActivity extends Activity {
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 		
+		//Uncomment line below if you need to clear preferences and start at the login page again
+		
 //		editorLoginPrefs.clear();
 //		editorLoginPrefs.commit();
 		
@@ -109,6 +111,7 @@ public class LoginActivity extends Activity {
 			}
 		}
 	}
+	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -139,7 +142,7 @@ public class LoginActivity extends Activity {
 	 * @param view
 	 */
 	public void authenticateUser(View view) {
-	    String stUsername = edittextUser.getText().toString();
+	    String stUsername = edittextUser.getText().toString().trim();
 	    String stPword = edittextPword.getText().toString();
 	    
 	    if(stUsername.equals("") || stPword.equals("")) {	    	

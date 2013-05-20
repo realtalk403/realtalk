@@ -1,7 +1,5 @@
 package realtalk.util;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import android.test.AndroidTestCase;

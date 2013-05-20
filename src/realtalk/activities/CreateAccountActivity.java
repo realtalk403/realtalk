@@ -62,7 +62,7 @@ public class CreateAccountActivity extends Activity {
 		String stConf = edittextConfPword.getText().toString();
 		
 		//if any fields are blank, dialog box pops up
-		if(stPword.equals("") || stUsername.equals("") || stConf.equals("")) {
+		if(stPword.equals("") || stUsername.trim().equals("") || stConf.equals("")) {
 			AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
 			alertdialogbuilder.setTitle("Invalid fields");
