@@ -56,6 +56,11 @@ public class ChatControllerTest extends AndroidTestCase {
 	}
 
 	@Test(timeout = TIMEOUT)
+	public void testRefresh() {
+		assertTrue(chatcontroller.fRefresh());
+	}
+	
+	@Test(timeout = TIMEOUT)
 	public void testGetUser() {
 		assertEquals(chatcontroller.getUser(), userinfo);
 	}
