@@ -1,5 +1,6 @@
 package realtalk.util;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.junit.Test;
@@ -48,12 +49,23 @@ public class ChatManagerTest extends AndroidTestCase {
     }
     
     @Test(timeout = TIMEOUT)
-    public void testChatRecentTest() {
+    public void testChatLogGetTest() {
     	ChatRoomResultSet crrs = ChatManager.crrsNearbyChatrooms(0, 0, 500.0);
     	List<ChatRoomInfo> rgcri = crrs.rgcriGet();
     	if (rgcri != null && rgcri.size() > 0)
     	{
     		PullMessageResultSet pmrs = ChatManager.pmrsChatLogGet(rgcri.get(0));
+    		assertTrue(pmrs.fIsSucceeded());
+    	}
+    }
+    
+    @Test(timeout = TIMEOUT)
+    public void testPullRecentChatTest() {
+    	ChatRoomResultSet crrs = ChatManager.crrsNearbyChatrooms(0, 0, 500.0);
+    	List<ChatRoomInfo> rgcri = crrs.rgcriGet();
+    	if (rgcri != null && rgcri.size() > 0)
+    	{
+    		PullMessageResultSet pmrs = ChatManager.pmrsChatRecentChat(rgcri.get(0), new Timestamp(10000));
     		assertTrue(pmrs.fIsSucceeded());
     	}
     }
