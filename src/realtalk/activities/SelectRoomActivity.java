@@ -21,6 +21,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -162,7 +163,16 @@ public class SelectRoomActivity extends Activity {
 					//TODO stop always listening and updating?
 				}
 
-				public void onStatusChanged(String provider, int status, Bundle extras) {}
+		        public void onStatusChanged(String provider, int status, Bundle extras) {
+		            switch (status) {
+		            case LocationProvider.OUT_OF_SERVICE:
+		            	Toast.makeText(getApplicationContext(), "GPS is out of service.", Toast.LENGTH_SHORT).show();
+		                break;
+		            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+		            	Toast.makeText(getApplicationContext(), "GPS is temporarily unavailable.", Toast.LENGTH_SHORT).show();
+		                break;
+		            }
+		        }
 				public void onProviderEnabled(String provider) {}
 				public void onProviderDisabled(String provider) {}
 			};
@@ -292,7 +302,7 @@ public class SelectRoomActivity extends Activity {
 		 */
 		@Override
 		protected ChatRoomResultSet doInBackground(String... params) {
-		    ChatController.getInstance().fRefresh();
+		    //ChatController.getInstance().fRefresh();
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 
@@ -302,6 +312,7 @@ public class SelectRoomActivity extends Activity {
 				@Override
 				public void run() {
 					unJoinedAdapter.clear();
+					joinedAdapter.clear();
 
 					for (int i = 0; i < rgchatroominfo.size(); i++) {
 						if (!ChatController.getInstance().fIsAlreadyJoined(rgchatroominfo.get(i))) {
