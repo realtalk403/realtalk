@@ -2,12 +2,12 @@ package realtalk.activities;
 
 import java.sql.Timestamp;
 
+import com.realtalk.R;
+
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
-
-import com.realtalk.R;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +27,7 @@ public class CreateRoomActivity extends Activity {
 	private UserInfo userinfo;
 	private double latitude;
 	private double longitude;
+	private boolean fDebugMode;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +104,7 @@ public class CreateRoomActivity extends Activity {
 			
 			ChatRoomInfo chatroominfo = new ChatRoomInfo(stRoomName, stRoomName, stDescription, latitude, longitude, stCreator, 0, new Timestamp(System.currentTimeMillis()));
 			
-			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
+			RequestResultSet rrs = (activity.fDebugMode()) ? (new RequestResultSet(true, "NO ERROR MESSAGE", "NO ERROR MESSAGE")) : ChatManager.rrsAddRoom(chatroominfo, userinfo);
 			if (!rrs.getfSucceeded()) {
 			    // TODO shouldnt through this exception. Just alert user server is down
 				throw new RuntimeException("server error");
@@ -120,9 +121,19 @@ public class CreateRoomActivity extends Activity {
             
             Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
             itViewRooms.putExtra("USER", userinfo);
-    		activity.startActivity(itViewRooms);
+    		if (!activity.fDebugMode()) {
+    			activity.startActivity(itViewRooms);
+    		}
     		activity.finish();
 		}
 	}
 
+	public boolean fDebugMode() {
+		return fDebugMode;
+	}
+	
+	public void setDebugMode() {
+		fDebugMode = true;
+	}
+	
 }
