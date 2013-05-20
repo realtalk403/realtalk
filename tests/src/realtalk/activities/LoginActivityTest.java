@@ -11,6 +11,11 @@ import realtalk.activities.LoginActivity;
 import com.jayway.android.robotium.solo.Solo;
 import com.realtalk.R;
 
+/**
+ * Black Box Tests that test functionality of Login Page and Create Account page
+ * @author Brandon
+ *
+ */
 public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginActivity> {
 	private Solo solo;
 	 
