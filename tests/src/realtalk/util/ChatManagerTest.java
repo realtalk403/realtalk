@@ -42,6 +42,18 @@ public class ChatManagerTest extends AndroidTestCase {
     }
     
     @Test(timeout = TIMEOUT)
+    public void testChangePwordFailure() {
+    	RequestResultSet rrs = ChatManager.rrsChangePassword(userinfo, "lol");
+    	assertFalse(rrs.getfSucceeded());
+    }
+    
+    @Test(timeout = TIMEOUT)
+    public void testChangeIdFailure() {
+    	RequestResultSet rrs = ChatManager.rrsChangeID(userinfo, "lol");
+    	assertFalse(rrs.getfSucceeded());
+    }
+    
+    @Test(timeout = TIMEOUT)
     public void testNearbyRooms() {
     	ChatRoomResultSet crrs = ChatManager.crrsNearbyChatrooms(0, 0, 500.0);
     	assertTrue(crrs.fSucceeded());
