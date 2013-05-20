@@ -24,7 +24,7 @@ public final class ChatManager {
 	//	pmrs	PullMessageResultSet
 	//	crrs	ChatRoomResultSet
 	
-	public static final String URL_QUALIFIER = "http://realtalkserver.herokuapp.com/";
+	public static final String URL_QUALIFIER = "http://realtalkserverbeta.herokuapp.com/";
 	
 	//User servlets
     public static final String URL_ADD_USER = URL_QUALIFIER+"register";
