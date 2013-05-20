@@ -20,7 +20,7 @@ public final class CommonUtilities {
     /**
      * Base URL of the RealTalk Server
      */
-    public static final String SERVER_URL = "http://realtalkserver.herokuapp.com";
+    public static final String SERVER_URL = "http://realtalkserverbeta.herokuapp.com";
     
     /**
      * Intent used to indicate that new message should be retrieved
