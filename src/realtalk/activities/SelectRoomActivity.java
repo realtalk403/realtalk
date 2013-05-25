@@ -17,10 +17,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-//import android.location.Criteria;
-//import android.location.Location;
-//import android.location.LocationListener;
-//import android.location.LocationManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -37,8 +38,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.realtalk.R;
+//import android.location.Criteria;
+//import android.location.Location;
+//import android.location.LocationListener;
+//import android.location.LocationManager;
 
 /**
  * Activity for selecting a chat room to join
@@ -50,10 +56,14 @@ import com.realtalk.R;
 public class SelectRoomActivity extends Activity {
 	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  
 	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
-	private ChatRoomAdapter adapter;
+	private List<ChatRoomInfo> rgchatroominfoJoined = new ArrayList<ChatRoomInfo>();
+	private List<ChatRoomInfo> rgchatroominfoUnjoined = new ArrayList<ChatRoomInfo>();
+	private ChatRoomAdapter unJoinedAdapter;
+	private ChatRoomAdapter joinedAdapter;
 	private Bundle bundleExtras;
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
+	private Location locationUser;
 
 	/**
 	 * Sets up the activity, and diplays a list of available rooms
@@ -67,19 +77,38 @@ public class SelectRoomActivity extends Activity {
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 		
+		Button buttonCreateRoom = (Button) findViewById(R.id.createRoomId);
+		buttonCreateRoom.setEnabled(false);
+		
 		UserInfo userinfo = bundleExtras.getParcelable("USER");
 		String stUser = userinfo.stUserName();
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
 
-		ListView listview = (ListView) findViewById(R.id.list);
-		listview.setClickable(false);
+		ListView listviewJoined = (ListView) findViewById(R.id.joined_list);
+		listviewJoined.setClickable(false);
+		
+		ListView listviewUnjoined = (ListView) findViewById(R.id.unjoined_list);
+		listviewUnjoined.setClickable(false);
 
 		// when a room is clicked, starts a new ChatRoomActivity
-        listview.setOnItemClickListener(new OnItemClickListener() {
+        listviewJoined.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            	ChatRoomInfo criSelected = rgchatroominfo.get(position);
+            	ChatRoomInfo criSelected = rgchatroominfoJoined.get(position);
+        		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
+        		itStartChat.putExtras(bundleExtras);
+        		itStartChat.putExtra("ROOM", criSelected);
+        		SelectRoomActivity.this.startActivity(itStartChat);
+        		SelectRoomActivity.this.finish();
+            }
+        });
+        
+		// when a room is clicked, starts a new ChatRoomActivity
+        listviewUnjoined.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            	ChatRoomInfo criSelected = rgchatroominfoUnjoined.get(position);
         		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		itStartChat.putExtras(bundleExtras);
         		itStartChat.putExtra("ROOM", criSelected);
@@ -89,8 +118,11 @@ public class SelectRoomActivity extends Activity {
         });
 
 		// Binding resources Array to ListAdapter
-		adapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfo);
-		listview.setAdapter(adapter);
+		unJoinedAdapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoUnjoined, false);
+		listviewUnjoined.setAdapter(unJoinedAdapter);
+		
+		joinedAdapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoJoined, true);
+		listviewJoined.setAdapter(joinedAdapter);
 		
 		// REASON for commenting out location code: chatController will get updated indefinitely if location continously changes.
 		// Should meet up to agree on a convention or protocol regarding this.
@@ -99,54 +131,68 @@ public class SelectRoomActivity extends Activity {
 
 		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
 		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
-		new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		
-		//todo put a message on screen that is NON BLOCKING!!! that says "loading rooms..."
-		//allowing the user to back out if gps is never found.
+		//new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		//location code:
-//		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//		final double radiusMeters = 500.0;
-//		Criteria criteria = new Criteria();
-//		String stBestProvider = locationmanager.getBestProvider(criteria, true);
-//		if (stBestProvider == null) {
-//			//no location providers, must ask user to enable a provider
-//			//TODO set loading text equal to "fail...enable a location provider (wifi/network/gps)"
-//			throw new RuntimeException("NO LOCATION PROVIDER");
-//		}
-//		else {
-//			// Define a listener that responds to location updates
-//			LocationListener locationListener = new LocationListener() {
-//				Location locationUser;
-//				public void onLocationChanged(Location location) {
-//					// Called when a new location is found by the network location provider.
-//					//if new location data is not usable...
-//					if (locationUser == null)
-//					{
-//						locationUser = location;
-//						loadRooms(locationUser, radiusMeters);
-//					}
-//					else if (location.getAccuracy() <= locationUser.getAccuracy()) {
-//						locationUser = location;
-//						loadRooms(locationUser, radiusMeters);
-//					}
-//					//TODO stop always listening and updating?
-//				}
-//
-//				public void onStatusChanged(String provider, int status, Bundle extras) {}
-//				public void onProviderEnabled(String provider) {}
-//				public void onProviderDisabled(String provider) {}
-//			};
-//
-//			// Register the listener with the Location Manager to receive location updates
-//			locationmanager.requestLocationUpdates(stBestProvider, 0, 0, locationListener);
-//		}
+		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		final double radiusMeters = 500.0;
+		Criteria criteria = new Criteria();
+		String stBestProvider = locationmanager.getBestProvider(criteria, true);
+		if (stBestProvider == null) {
+			//no location providers, must ask user to enable a provider
+			Toast.makeText(getApplicationContext(), "Please turn on a location service providor (wifi/gps/cellular).", Toast.LENGTH_SHORT).show();
+		}
+		else {
+			// Define a listener that responds to location updates
+			LocationListener locationListener = new LocationListener() {
+				Location locationMostAccurate = null;
+				private int locationCount = 0;
+				public void onLocationChanged(Location location) {
+					// Called when a new location is found by the network location provider.
+					//if new location data is not usable...
+					locationUser = location;
+					loadRooms(locationUser, radiusMeters);
+					locationCount++;
+					if (locationMostAccurate == null || locationMostAccurate.getAccuracy() >= locationUser.getAccuracy())
+						locationMostAccurate = locationUser;
+					if (locationCount >= 5)
+					{
+						Button buttonCreateRoom = (Button) findViewById(R.id.createRoomId);
+						buttonCreateRoom.setEnabled(true);
+					}
+					//TODO stop always listening and updating?
+				}
+
+		        public void onStatusChanged(String provider, int status, Bundle extras) {
+		            switch (status) {
+		            case LocationProvider.OUT_OF_SERVICE:
+		            	Toast.makeText(getApplicationContext(), "GPS is out of service.", Toast.LENGTH_SHORT).show();
+		                break;
+		            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+		            	Toast.makeText(getApplicationContext(), "GPS is temporarily unavailable.", Toast.LENGTH_SHORT).show();
+		                break;
+		            }
+		        }
+				public void onProviderEnabled(String provider) {}
+				public void onProviderDisabled(String provider) {}
+			};
+
+			// Register the listener with the Location Manager to receive location updates
+			locationmanager.requestLocationUpdates(stBestProvider, 0, 0, locationListener);
+		}
 	}
 	
-	private void getDetails(int position) {
-		//Toast.makeText(getApplicationContext(), ""+position, Toast.LENGTH_LONG).show();
-		
-		final ChatRoomInfo chatroominfo = rgchatroominfo.get(position);
+	private void loadRooms(Location location, double radiusMeters) {
+		new RoomLoader(this, location.getLatitude(), location.getLongitude(), HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+	
+	private void getDetails(int position, boolean fJoined) {
+		final ChatRoomInfo chatroominfo;
+		if(fJoined) {
+			chatroominfo = rgchatroominfoJoined.get(position);
+		} else {
+			chatroominfo = rgchatroominfoUnjoined.get(position);
+		}
 		
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		//set title
@@ -221,6 +267,8 @@ public class SelectRoomActivity extends Activity {
 	public void createRoom(View view) {
 		Intent itCreateRoom = new Intent(this, CreateRoomActivity.class);
 		itCreateRoom.putExtra("USER", bundleExtras.getParcelable("USER"));
+		itCreateRoom.putExtra("LATITUDE", locationUser.getLatitude());
+		itCreateRoom.putExtra("LONGITUDE", locationUser.getLongitude());
 		this.startActivity(itCreateRoom);
 	}
 
@@ -254,7 +302,7 @@ public class SelectRoomActivity extends Activity {
 		 */
 		@Override
 		protected ChatRoomResultSet doInBackground(String... params) {
-		    ChatController.getInstance().fRefresh();
+		    //ChatController.getInstance().fRefresh();
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 
@@ -263,10 +311,15 @@ public class SelectRoomActivity extends Activity {
 			selectroomactivity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					adapter.clear();
+					unJoinedAdapter.clear();
+					joinedAdapter.clear();
 
 					for (int i = 0; i < rgchatroominfo.size(); i++) {
-						adapter.add(rgchatroominfo.get(i));
+						if (!ChatController.getInstance().fIsAlreadyJoined(rgchatroominfo.get(i))) {
+							unJoinedAdapter.add(rgchatroominfo.get(i));
+						} else {
+							joinedAdapter.add(rgchatroominfo.get(i));
+						}
 					}
 				}
 			});
@@ -278,10 +331,12 @@ public class SelectRoomActivity extends Activity {
 	private class ChatRoomAdapter extends ArrayAdapter<ChatRoomInfo> {
 
 		private List<ChatRoomInfo> rgchatroominfo;
+		private boolean fJoined;
 
-		public ChatRoomAdapter(Context context, int textViewResourceId, List<ChatRoomInfo> rgchatroominfo) {
+		public ChatRoomAdapter(Context context, int textViewResourceId, List<ChatRoomInfo> rgchatroominfo, boolean fJoined) {
 			super(context, textViewResourceId, rgchatroominfo);
 			this.rgchatroominfo = rgchatroominfo;
+			this.fJoined = fJoined;
 		}
 
 		@Override
@@ -300,7 +355,7 @@ public class SelectRoomActivity extends Activity {
 				OnClickListener listener = new OnClickListener() {
 				    @Override
 				    public void onClick(View view) {
-				    	getDetails((Integer) view.getTag());
+				    	getDetails((Integer) view.getTag(), fJoined);
 				    }
 				};
 				

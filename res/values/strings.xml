@@ -44,4 +44,6 @@
     <string name="user">User</string>
     <string name="details">Details</string>
     <string name="new_user">New User</string>
+    <string name="joined_rooms">Joined Rooms</string>
+    <string name="unjoined_rooms">Other Nearby Rooms</string>
 </resources>

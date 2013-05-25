@@ -35,3 +35,5 @@ tests/unit_tests_log.txt
 checkstyle-result.xml
 
 findbugs.xml
+
+project.properties
