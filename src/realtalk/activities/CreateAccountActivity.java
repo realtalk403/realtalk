@@ -247,6 +247,7 @@ public class CreateAccountActivity extends Activity {
             	//redirect back to LoginActivity if successful
             	Intent createAcc = new Intent(activity, LoginActivity.class);
 				activity.startActivity(createAcc);
+				activity.finish();
             } 
         }
 	}
