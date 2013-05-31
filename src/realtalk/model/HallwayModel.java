@@ -80,6 +80,25 @@ public class HallwayModel {
 	}
 	
 	/**
+	 * Adds a new room to match the given cri
+	 * 
+	 * @param cri info for the room to be added
+	 */
+	public void addRoom(String stName, String stId, String stDescription, double latitude, 
+						double longitude, String stCreator, int numUsers, Timestamp timestampCreated) {
+		
+		ChatRoomModel crm = new ChatRoomModel(stName, 
+											  stId, 
+											  stDescription, 
+											  latitude, 
+											  longitude, 
+											  stCreator,
+											  numUsers,
+											  timestampCreated);
+		mpcricrm.put(stId, crm);
+	}
+	
+	/**
 	 * Removes an existing room from the model
 	 * 
 	 * @param stRoomId Chat Rooms Id

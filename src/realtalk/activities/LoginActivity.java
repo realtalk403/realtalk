@@ -328,8 +328,6 @@ public class LoginActivity extends Activity {
             progressdialog.dismiss();
             if (requestresultset.getfSucceeded()) {                
                 Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
-                UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stRegisteredId);
-                itRoomSelect.putExtra("USER", loginUserinfo);
                 activity.startActivity(itRoomSelect);
                 activity.finish();
             } else {
