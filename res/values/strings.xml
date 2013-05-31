@@ -16,7 +16,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="create_account">Create Account</string>
     <string name="sign_up">Haven\'t signed up yet?</string>
-    <string name="ad">AD WOULD GO HERE</string>
+    <string name="ad">ADVERTISEMENT</string>
     <string name="message_hint">Enter message</string>
     <string name="send">Send</string>
     <string name="title_activity_select_room">SelectRoomActivity</string>
@@ -46,4 +46,5 @@
     <string name="new_user">New User</string>
     <string name="joined_rooms">Joined Rooms</string>
     <string name="unjoined_rooms">Other Nearby Rooms</string>
+    <string name="huskysoftlogo">HuskySoft</string>
 </resources>
