@@ -2,6 +2,7 @@ package realtalk.activities;
 
 import java.sql.Timestamp;
 
+import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.RequestResultSet;
@@ -35,7 +36,7 @@ public class CreateRoomActivity extends Activity {
 		setContentView(R.layout.activity_create_room);
 		
 		Bundle extras = getIntent().getExtras();
-		userinfo = extras.getParcelable("USER");
+		userinfo = ChatController.getInstance().getUser();
 		latitude = extras.getDouble("LATITUDE");
 		longitude = extras.getDouble("LONGITUDE");
 		
@@ -119,7 +120,6 @@ public class CreateRoomActivity extends Activity {
             progressdialog.dismiss();
             
             Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
-            itViewRooms.putExtra("USER", userinfo);
     		activity.startActivity(itViewRooms);
     		activity.finish();
 		}
