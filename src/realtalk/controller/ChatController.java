@@ -85,7 +85,8 @@ public final class ChatController {
                     chatroom.stDescription(), 
                     chatroom.getLatitude(), 
                     chatroom.getLongitude(), 
-                    chatroom.stCreator(), 
+                    chatroom.stCreator(),
+                    chatroom.numUsersGet(),
                     chatroom.timestampCreated());
             // Next load the messages for that chatroom.
             PullMessageResultSet pmrsMessages = ChatManager.pmrsChatLogGet(chatroom);

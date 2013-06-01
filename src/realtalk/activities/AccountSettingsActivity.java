@@ -73,7 +73,7 @@ public class AccountSettingsActivity extends Activity {
 		//check to see if the old password is correct
 
 		//if any fields are blank, dialog box pops up
-		if(stNewPword.equals("") || stOldPword.equals("") || stConfPword.equals("")) {
+		if(stNewPword.trim().equals("") || stOldPword.trim().equals("") || stConfPword.trim().equals("")) {
 			AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
 			alertdialogbuilder.setTitle("Invalid fields");
@@ -364,9 +364,11 @@ public class AccountSettingsActivity extends Activity {
 							//close the dialog box if this button is clicked
 							dialog.cancel();
 							
-							Intent itCreateAcc = new Intent(activity, LoginActivity.class);
+							Intent itLogin = new Intent(activity, LoginActivity.class);
+							itLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+							itLogin.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 							ChatController.getInstance().uninitialize();
-							activity.startActivity(itCreateAcc);
+							activity.startActivity(itLogin);
 							activity.finish();
 						}	
 				});
