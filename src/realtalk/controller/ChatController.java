@@ -23,7 +23,7 @@ import realtalk.util.UserInfo;
  * @author Colin Kho
  *
  */
-public final class ChatController {
+public final class ChatController implements IChatController {
     private static ChatController instance = null;
     private HallwayModel chatModel;
     // Keeps track of the current user in the RealTalk application.
