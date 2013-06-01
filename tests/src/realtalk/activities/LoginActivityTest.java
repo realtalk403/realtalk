@@ -81,6 +81,7 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 	@Test
 	public void testSuccessfulLogin() {
 		setUpAccount();
+		solo.waitForActivity(LoginActivity.class, 30000);
 		EditText edittextUsername = (EditText) solo.getView(R.id.editQuery);
 		solo.enterText(edittextUsername, "ab3r5i9");
 		EditText edittextPassword = (EditText) solo.getView(R.id.editPword);
