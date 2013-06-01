@@ -16,17 +16,47 @@
         android:paddingRight="10dp"
         android:paddingTop="10dp" >
 
-        <Button
+        <ImageView
             android:id="@+id/createRoomId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignBottom="@+id/linearLayout1"
+            android:layout_toLeftOf="@+id/settingsId"
             android:layout_alignTop="@+id/linearLayout1"
-            android:background="#bcbcbc"
+            android:clickable="true"
+            android:contentDescription="@string/create_room"
             android:onClick="createRoom"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:text="@string/create_room" />
+            android:src="@drawable/create_false" />
+        
+        <ImageView
+            android:id="@+id/settingsId"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignBottom="@+id/linearLayout1"
+            android:layout_toLeftOf="@+id/logoutId"
+            android:layout_alignTop="@+id/linearLayout1"
+            android:clickable="true"
+            android:contentDescription="@string/account_settings"
+            android:onClick="clickSettings"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/settings_icon" />
+        
+        <ImageView
+            android:id="@+id/logoutId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/linearLayout1"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/linearLayout1"
+            android:clickable="true"
+            android:contentDescription="@string/logout"
+            android:onClick="clickLogout"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/logout_icon" />
 
         <LinearLayout
             android:id="@+id/linearLayout1"
