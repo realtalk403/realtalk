@@ -188,7 +188,7 @@ public class ChatRoomActivity extends Activity {
 	    protected void onPreExecute() {
 	        super.onPreExecute();
             progressdialog = new ProgressDialog(ChatRoomActivity.this);
-            progressdialog.setMessage("Leaving room. Please wait..."); //TODO strings.xml
+            progressdialog.setMessage(getApplicationContext().getString(R.string.leaving_room));
             progressdialog.setIndeterminate(false);
             progressdialog.setCancelable(true);
             progressdialog.show();
