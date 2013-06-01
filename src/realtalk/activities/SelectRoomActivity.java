@@ -93,6 +93,7 @@ public class SelectRoomActivity extends Activity {
             	ChatRoomInfo criSelected = rgchatroominfoJoined.get(position);
         		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		itStartChat.putExtra("ROOM", criSelected);
+        		itStartChat.putExtra("DEBUG", "false");
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
             }
@@ -105,6 +106,7 @@ public class SelectRoomActivity extends Activity {
             	ChatRoomInfo criSelected = rgchatroominfoUnjoined.get(position);
         		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		itStartChat.putExtra("ROOM", criSelected);
+        		itStartChat.putExtra("DEBUG", "false");
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
             }
@@ -214,6 +216,7 @@ public class SelectRoomActivity extends Activity {
 			public void onClick(DialogInterface dialog, int id) {
 				Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		itStartChat.putExtra("ROOM", chatroominfo);
+        		itStartChat.putExtra("DEBUG", "false");
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
 			}	

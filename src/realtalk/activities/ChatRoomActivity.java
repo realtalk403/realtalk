@@ -55,7 +55,7 @@ public class ChatRoomActivity extends Activity {
 	private ProgressDialog progressdialog;
 	private List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
 	private MessageAdapter adapter;
-	private ChatController chatController = ChatController.getInstance();
+	private ChatController chatController;
 	
 	/**
 	 * Sets up the chat room activity and loads the previous
@@ -69,8 +69,15 @@ public class ChatRoomActivity extends Activity {
 		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		Bundle extras = getIntent().getExtras();
-		userinfo = ChatController.getInstance().getUser();
 		chatroominfo = extras.getParcelable("ROOM");
+		String fDebug = extras.getString("DEBUG");
+		
+		if(fDebug.equals("true"))
+			chatController = ChatController.getInstance();
+		else
+			chatController = ChatController.getInstance();
+//			chatController = ChatControllerStub.getInstance();
+		userinfo = chatController.getUser();
 		
 		String stUser = userinfo.stUserName();
 		String stRoom = chatroominfo.stName();
@@ -345,7 +352,7 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected Boolean doInBackground(String... params) {
-		    return (ChatController.getInstance().fIsAlreadyJoined(chatroominfo)) ? true : ChatController.getInstance().joinRoom(chatroominfo);
+		    return (chatController.fIsAlreadyJoined(chatroominfo)) ? true : chatController.joinRoom(chatroominfo);
 		}
 		
 		/**

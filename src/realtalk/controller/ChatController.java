@@ -222,4 +222,11 @@ public final class ChatController {
         }
         return false;
     }
+    
+    /**
+     * For testing purposes
+     */
+    public void fInitializeTest(UserInfo userinfo) {
+        this.userinfo = userinfo;
+    }
 }
