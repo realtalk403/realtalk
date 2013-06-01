@@ -7,20 +7,20 @@ import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
-
-import com.realtalk.R;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.realtalk.R;
 
 @SuppressLint("NewApi")
 public class CreateRoomActivity extends Activity {
@@ -106,8 +106,7 @@ public class CreateRoomActivity extends Activity {
 			
 			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
 			if (!rrs.getfSucceeded()) {
-			    // TODO shouldnt through this exception. Just alert user server is down
-				throw new RuntimeException("server error");
+				Toast.makeText(getApplicationContext(), "Server error", Toast.LENGTH_SHORT).show();
 			}
 			return rrs;
 		}

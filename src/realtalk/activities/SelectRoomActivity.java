@@ -79,8 +79,6 @@ public class SelectRoomActivity extends Activity {
 		String stUser = userinfo.stUserName();
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
-		TextView textviewUserTitle = (TextView) findViewById(R.id.selectRoomTitle);
-		textviewUserTitle.setText("RealTalk");
 
 		ListView listviewJoined = (ListView) findViewById(R.id.joined_list);
 		listviewJoined.setClickable(false);
@@ -179,6 +177,13 @@ public class SelectRoomActivity extends Activity {
 		}
 	}
 	
+//	public void onUserLeaveHint() {
+//		List<ChatRoomInfo> rgJoinedRooms = ChatController.getInstance().getChatRooms();
+//		for (ChatRoomInfo chatroominfo : rgJoinedRooms) {
+//			new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//		}
+//	}
+	
 	private void loadRooms(Location location, double radiusMeters) {
 		new RoomLoader(this, location.getLatitude(), location.getLongitude(), HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
@@ -188,7 +193,7 @@ public class SelectRoomActivity extends Activity {
 		String stJoinView;
 		if(fJoined) {
 			chatroominfo = rgchatroominfoJoined.get(position);
-			stJoinView = "View";
+			stJoinView = "Enter";
 		} else {
 			chatroominfo = rgchatroominfoUnjoined.get(position);
 			stJoinView = "Join";
