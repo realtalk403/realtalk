@@ -188,7 +188,7 @@ public class ChatRoomActivity extends Activity {
 	    protected void onPreExecute() {
 	        super.onPreExecute();
             progressdialog = new ProgressDialog(ChatRoomActivity.this);
-            progressdialog.setMessage("Leaving room. Please wait...");
+            progressdialog.setMessage("Leaving room. Please wait..."); //TODO strings.xml
             progressdialog.setIndeterminate(false);
             progressdialog.setCancelable(true);
             progressdialog.show();
@@ -199,18 +199,13 @@ public class ChatRoomActivity extends Activity {
 	     */
         @Override
         protected Boolean doInBackground(String... params) {
-        	Log.d("connectivitiy", "Arrived in ChatRoomActivity.RoomLeaver.doInBackground");
             ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            Log.d("connectivitiy", "Accessed ConnectivityManager");
             NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
-            Log.d("connectivitiy", "Accessed network info");
             
 			if (networkinfo != null && networkinfo.isConnected()) {
-				Log.d("connectivitiy", "Attempting to leave room");
 				Boolean fLeaveRoom = chatController.leaveRoom(chatroominfo);
 				return fLeaveRoom;
 			} else {
-				Log.d("connectivitiy", "disconnected, leaving doInBackground");
 				return false;
 			}
         }
@@ -229,8 +224,6 @@ public class ChatRoomActivity extends Activity {
 		  		ChatRoomActivity.this.startActivity(itViewRooms);
 		  		ChatRoomActivity.this.finish();
             }
-            Log.d("connectivity", "Leaving RoomLeaver asynctask");
-
         }    
 	}
 	
@@ -282,53 +275,6 @@ public class ChatRoomActivity extends Activity {
 			}
 		}
 	}
-	
-//	/**
-//	 * Retrieves the message log of a chat room
-//	 * 
-//	 * @author Jordan Hazari
-//	 *
-//	 */
-//	class MessageLoader extends AsyncTask<String, String, PullMessageResultSet> {
-//		private ChatRoomActivity chatroomactivity;
-//		private ChatRoomInfo chatroominfo;
-//		private static final int RECENT_MESSAGE_TIME_LIMIT = 1000000000;
-//		
-//		/**
-//		 * Constructs a MessageLoader object
-//		 * 
-//		 * @param chatroomactivity the activity context
-//		 * @param chatroominfo the chat room to retrieve the chat log from
-//		 */
-//		public MessageLoader(ChatRoomActivity chatroomactivity, ChatRoomInfo chatroominfo) {
-//			this.chatroomactivity = chatroomactivity;
-//			this.chatroominfo = chatroominfo;
-//		}
-//
-//		/**
-//		 * Retrieves and displays the chat log, constantly updating
-//		 */
-//		@Override
-//		protected PullMessageResultSet doInBackground(String... params) {
-//			while (true) {
-//				PullMessageResultSet pmrsRecent = ChatManager.pmrsChatRecentChat
-//						(chatroominfo, new Timestamp(System.currentTimeMillis()-RECENT_MESSAGE_TIME_LIMIT));
-//				
-//				rgmi = pmrsRecent.getRgmessage();
-//				
-//				chatroomactivity.runOnUiThread(new Runnable() {
-//					@Override
-//					public void run() {
-//						adapter.clear();
-//						
-//						for (int i = 0; i < rgmi.size(); i++) {
-//							adapter.add(rgmi.get(i));
-//						}
-//					}
-//				});
-//			}
-//		}
-//	}
 	
 	/**
 	 * Loads messages from chat controller which is prepared for GCM.

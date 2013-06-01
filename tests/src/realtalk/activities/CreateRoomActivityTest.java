@@ -29,7 +29,6 @@ public class CreateRoomActivityTest extends ActivityInstrumentationTestCase2<Cre
 		super.setUp();
 		u = new UserInfo("IAmTheUser", "IAmThePassword", "IAmTheRegId");
 		Intent intent = new Intent();
-		intent.putExtra("USER", u);
 		setActivityIntent(intent);
 		CreateRoomActivity activity = getActivity();
 		activity.setDebugMode();

@@ -54,7 +54,7 @@ import com.realtalk.R;
  */
 @SuppressLint("NewApi")
 public class SelectRoomActivity extends Activity {
-	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  
+	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  //TODO remove for final product
 	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoJoined = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoUnjoined = new ArrayList<ChatRoomInfo>();
@@ -129,7 +129,7 @@ public class SelectRoomActivity extends Activity {
 
 		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
 		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
-//		new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		//new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		//location code:
 		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -138,7 +138,7 @@ public class SelectRoomActivity extends Activity {
 		String stBestProvider = locationmanager.getBestProvider(criteria, true);
 		if (stBestProvider == null) {
 			//no location providers, must ask user to enable a provider
-			Toast.makeText(getApplicationContext(), "Please turn on a location service providor (wifi/gps/cellular).", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), R.string.turn_gps_on, Toast.LENGTH_SHORT).show();
 		}
 		else {
 			// Define a listener that responds to location updates
@@ -166,10 +166,10 @@ public class SelectRoomActivity extends Activity {
 		        public void onStatusChanged(String provider, int status, Bundle extras) {
 		            switch (status) {
 		            case LocationProvider.OUT_OF_SERVICE:
-		            	Toast.makeText(getApplicationContext(), "GPS is out of service.", Toast.LENGTH_SHORT).show();
+		            	Toast.makeText(getApplicationContext(), R.string.gps_out_of_service, Toast.LENGTH_SHORT).show();
 		                break;
 		            case LocationProvider.TEMPORARILY_UNAVAILABLE:
-		            	Toast.makeText(getApplicationContext(), "GPS is temporarily unavailable.", Toast.LENGTH_SHORT).show();
+		            	Toast.makeText(getApplicationContext(), R.string.gps_unavailable, Toast.LENGTH_SHORT).show();
 		                break;
 		            }
 		        }
@@ -348,11 +348,7 @@ public class SelectRoomActivity extends Activity {
 		 * @return null if application is disconnected from the network
 		 */
 		@Override
-		protected ChatRoomResultSet doInBackground(String... params) {
-
-			
-			Log.d("connectivity", "loading rooms");
-			
+		protected ChatRoomResultSet doInBackground(String... params) {			
 			ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
             
@@ -362,7 +358,7 @@ public class SelectRoomActivity extends Activity {
 				return null;
 			}
 			
-		    ChatController.getInstance().fRefresh();
+//		    ChatController.getInstance().fRefresh();
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 
@@ -466,8 +462,15 @@ public class SelectRoomActivity extends Activity {
 	    
         @Override
         protected Boolean doInBackground(String... params) {
-            Boolean leaveRoomSuccess = ChatController.getInstance().leaveRoom(chatroominfo);
-            return leaveRoomSuccess;
+            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+            
+			if (networkinfo != null && networkinfo.isConnected()) {
+	            Boolean leaveRoomSuccess = ChatController.getInstance().leaveRoom(chatroominfo);
+	            return leaveRoomSuccess;
+			} else {
+				return false;
+			}
         }
         
         @Override
@@ -476,9 +479,14 @@ public class SelectRoomActivity extends Activity {
                 progressdialog.dismiss();
             }
             
-	        Intent itViewRooms = new Intent(SelectRoomActivity.this, SelectRoomActivity.class);
-	  		SelectRoomActivity.this.startActivity(itViewRooms);
-	  		SelectRoomActivity.this.finish();
+            if (success == false) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.leave_room_failed, Toast.LENGTH_SHORT);
+				toast.show();
+            } else {
+		        Intent itViewRooms = new Intent(SelectRoomActivity.this, SelectRoomActivity.class);
+		  		SelectRoomActivity.this.startActivity(itViewRooms);
+		  		SelectRoomActivity.this.finish();
+            }
         }    
 	}
 }
