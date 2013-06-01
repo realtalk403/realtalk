@@ -56,6 +56,7 @@ public class ChatRoomActivity extends Activity {
 	private List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
 	private MessageAdapter adapter;
 	private ChatController chatController = ChatController.getInstance();
+	private Boolean fAnon;
 	
 	/**
 	 * Sets up the chat room activity and loads the previous
@@ -71,6 +72,7 @@ public class ChatRoomActivity extends Activity {
 		Bundle extras = getIntent().getExtras();
 		userinfo = ChatController.getInstance().getUser();
 		chatroominfo = extras.getParcelable("ROOM");
+		fAnon = extras.getBoolean("ANON", false);
 		
 		String stUser = userinfo.stUserName();
 		String stRoom = chatroominfo.stName();
@@ -345,8 +347,6 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected Boolean doInBackground(String... params) {
-			// TODO: add anon checkbox
-			boolean fAnon = false;
 		    return (ChatController.getInstance().fIsAlreadyJoined(chatroominfo)) ? true : ChatController.getInstance().joinRoom(chatroominfo, fAnon);
 		}
 		
