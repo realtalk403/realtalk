@@ -158,8 +158,7 @@ public final class ChatManager {
             e.printStackTrace();
         }
         //if all else fails, return generic error code and message
-    	return new ChatRoomResultSet(false, "REQUEST FAILED", 
-    			"REQUEST FAILED");
+    	return new ChatRoomResultSet(false, "REQUEST FAILED", "REQUEST FAILED");
     }
     
     /** Sends a message/chatroom specific request.
@@ -192,8 +191,7 @@ public final class ChatManager {
             e.printStackTrace();
         }
         //if all else fails, return generic error code and message
-    	return new PullMessageResultSet(false, "REQUEST FAILED", 
-    			"REQUEST FAILED");
+    	return new PullMessageResultSet(false, "REQUEST FAILED", "REQUEST FAILED");
     }
 	
     /** Authenticates a user
@@ -309,7 +307,9 @@ public final class ChatManager {
 	 *                     returns an error code and message if failure was occurred. If success,
 	 *                     it returns a list of MessageInfo that have a timestamp later than the given
 	 *                     timestamp
+	 *                     
 	 */
+	@Deprecated
 	public static PullMessageResultSet pmrsChatRecentChat(ChatRoomInfo chatroominfo, Timestamp timestamp) {
 		long rawtimestamp = timestamp.getTime();
 		String stTimestamp = "";

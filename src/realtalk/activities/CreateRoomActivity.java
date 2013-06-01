@@ -9,17 +9,21 @@ import realtalk.util.ChatRoomInfo;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class CreateRoomActivity extends Activity {
@@ -91,6 +95,8 @@ public class CreateRoomActivity extends Activity {
 
 	    /**
 	     * Adds the room, or joins it if it already exists
+	     * 
+	     * @return rrs with results. rrs will contain false if server is down, and will be null if disconnected.
 	     */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
@@ -104,11 +110,16 @@ public class CreateRoomActivity extends Activity {
 			
 			ChatRoomInfo chatroominfo = new ChatRoomInfo(stRoomName, stRoomName, stDescription, latitude, longitude, stCreator, 0, new Timestamp(System.currentTimeMillis()));
 			
-			RequestResultSet rrs = (activity.fDebugMode()) ? (new RequestResultSet(true, "NO ERROR MESSAGE", "NO ERROR MESSAGE")) : ChatManager.rrsAddRoom(chatroominfo, userinfo);
-			if (!rrs.getfSucceeded()) {
-			    // TODO shouldnt through this exception. Just alert user server is down
-				throw new RuntimeException("server error");
-			}
+			ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+			
+			RequestResultSet rrs = null;
+			if (activity.fDebugMode) {
+				rrs = new RequestResultSet(true, "NO ERROR MESSAGE", "NO ERROR MESSAGE");
+			} else if (networkinfo != null && networkinfo.isConnected()) {
+				 ChatManager.rrsAddRoom(chatroominfo, userinfo);
+			} 
+			
 			return rrs;
 		}
 		
@@ -116,15 +127,23 @@ public class CreateRoomActivity extends Activity {
 		 * Closes the popup dialogue
 		 */
 		@Override
-        protected void onPostExecute(RequestResultSet requestresultset) {
+        protected void onPostExecute(RequestResultSet rrs) {
             progressdialog.dismiss();
             
-            Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
-            itViewRooms.putExtra("USER", userinfo);
-    		if (!activity.fDebugMode()) {
-    			activity.startActivity(itViewRooms);
-    		}
-    		activity.finish();
+            if (rrs == null) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
+				toast.show();
+            } else if (!rrs.getfSucceeded()) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.server_error, Toast.LENGTH_LONG);
+            	toast.show();
+            } else {
+            	Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
+                itViewRooms.putExtra("USER", userinfo);
+        		if (!activity.fDebugMode()) {
+        			activity.startActivity(itViewRooms);
+        		}
+        		activity.finish();
+            }
 		}
 	}
 

@@ -22,9 +22,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -131,7 +134,7 @@ public class SelectRoomActivity extends Activity {
 
 		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
 		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
-		//new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//		new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		
 		//location code:
 		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -299,10 +302,23 @@ public class SelectRoomActivity extends Activity {
 
 		/**
 		 * Retrieves and displays the available rooms
+		 * 
+		 * @return null if application is disconnected from the network
 		 */
 		@Override
 		protected ChatRoomResultSet doInBackground(String... params) {
 		    //ChatController.getInstance().fRefresh();
+			
+			Log.d("connectivity", "loading rooms");
+			
+			ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+            
+			if (networkinfo == null || !networkinfo.isConnected()) {
+				Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_SHORT);
+				toast.show();
+				return null;
+			}
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 

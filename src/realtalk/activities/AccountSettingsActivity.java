@@ -7,10 +7,13 @@ import realtalk.util.UserInfo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.realtalk.R;
 
@@ -221,16 +225,27 @@ public class AccountSettingsActivity extends Activity {
 	    
 	    /**
 	     * Changes the user's password in database
+	     * @return rrs of the request, null if disconnected
 	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
-            RequestResultSet requestresultset = ChatManager.rrsChangePassword(userinfo, stNewPword);
-            if (requestresultset.getfSucceeded()) {
-                ChatController.getInstance().uninitialize();
-                UserInfo updatedUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stNewPword);
-                ChatController.getInstance().fInitialize(updatedUserinfo);
-            }
-            return requestresultset;
+            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+            
+			if (networkinfo != null && networkinfo.isConnected()) {
+				RequestResultSet requestresultset = ChatManager.rrsChangePassword(userinfo, stNewPword);
+				
+	            if (requestresultset.getfSucceeded()) {
+	                ChatController.getInstance().uninitialize();
+	                UserInfo updatedUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stNewPword);
+	                ChatController.getInstance().fInitialize(updatedUserinfo);
+	            }
+	            
+	            return requestresultset;
+			} else {
+				return null;
+			}
+            
         }
         
         /**
@@ -238,9 +253,12 @@ public class AccountSettingsActivity extends Activity {
          * invalid fields
          */
         @Override
-        protected void onPostExecute(RequestResultSet requestresultset) {
+        protected void onPostExecute(RequestResultSet rrs) {
             progressdialog.dismiss();
-            if(!requestresultset.getfSucceeded()) {
+            if (rrs == null) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
+				toast.show();
+            } else if(!rrs.getfSucceeded()) {
             	//invalid password pop up
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
@@ -334,19 +352,31 @@ public class AccountSettingsActivity extends Activity {
 	    
 	    /**
 	     * Removes account from the database
+	     * 
+	     * @return rrs with results or null if diconnected
 	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.rrsRemoveUser(userinfo);
+        	 ConnectivityManager connectivitymanager = (ConnectivityManager) AccountSettingsActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+             NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+             
+ 			if (networkinfo != null && networkinfo.isConnected()) {
+ 				return ChatManager.rrsRemoveUser(userinfo);
+ 			} else {
+ 				return null;
+ 			}
         }
         
         /**
          * Prompts the user that their account has been deleted and redirects them to login page
          */
         @Override
-        protected void onPostExecute(RequestResultSet requestresultset) {
+        protected void onPostExecute(RequestResultSet rrs) {
         	progressdialog.dismiss();
-        	if(requestresultset.getfSucceeded()) {
+        	if (rrs == null) {
+        		Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
+				toast.show();
+        	} else if(rrs.getfSucceeded()) {
 	        	editorLoginPrefs.clear();
 	        	editorLoginPrefs.commit();
 	        	
