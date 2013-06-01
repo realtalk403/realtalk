@@ -145,7 +145,7 @@ public class LoginActivity extends Activity {
 	    String stUsername = edittextUser.getText().toString().trim();
 	    String stPword = edittextPword.getText().toString();
 	    
-	    if(stUsername.equals("") || stPword.equals("")) {	    	
+	    if(stUsername.trim().equals("") || stPword.trim().equals("")) {	    	
 	    	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
 			alertdialogbuilder.setTitle("Invalid input");
@@ -196,7 +196,7 @@ public class LoginActivity extends Activity {
 	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 	    String stUsername = edittextUser.getText().toString();
 	    String stPword = edittextPword.getText().toString();
-		if(stUsername.equals("") || stPword.equals("")) {
+		if(stUsername.trim().equals("") || stPword.trim().equals("")) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
 			alertDialogBuilder.setTitle("Invalid input");
@@ -262,7 +262,7 @@ public class LoginActivity extends Activity {
 	 * @param userinfo
 	 */
 	public void updateRegId(UserInfo userinfo) {
-	    new UpdateRegId(userinfo, LoginActivity.this).execute();
+	    new UpdateRegId(userinfo, this).execute();
 	}
 	
 	/**
@@ -328,8 +328,6 @@ public class LoginActivity extends Activity {
             progressdialog.dismiss();
             if (requestresultset.getfSucceeded()) {                
                 Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
-                UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stRegisteredId);
-                itRoomSelect.putExtra("USER", loginUserinfo);
                 activity.startActivity(itRoomSelect);
                 activity.finish();
             } else {

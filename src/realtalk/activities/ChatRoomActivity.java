@@ -124,7 +124,6 @@ public class ChatRoomActivity extends Activity {
 	@Override
     public void onBackPressed() { 
         Intent itViewRooms = new Intent(this, SelectRoomActivity.class);
-        itViewRooms.putExtra("USER", userinfo);
 		this.startActivity(itViewRooms);
 		this.finish();
 
@@ -193,7 +192,6 @@ public class ChatRoomActivity extends Activity {
             }
             
 	        Intent itViewRooms = new Intent(ChatRoomActivity.this, SelectRoomActivity.class);
-	        itViewRooms.putExtra("USER", userinfo);
 	  		ChatRoomActivity.this.startActivity(itViewRooms);
 	  		ChatRoomActivity.this.finish();
         }    

@@ -12,6 +12,7 @@ import realtalk.util.UserInfo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,16 +36,12 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.realtalk.R;
-//import android.location.Criteria;
-//import android.location.Location;
-//import android.location.LocationListener;
-//import android.location.LocationManager;
 
 /**
  * Activity for selecting a chat room to join
@@ -60,7 +57,6 @@ public class SelectRoomActivity extends Activity {
 	private List<ChatRoomInfo> rgchatroominfoUnjoined = new ArrayList<ChatRoomInfo>();
 	private ChatRoomAdapter unJoinedAdapter;
 	private ChatRoomAdapter joinedAdapter;
-	private Bundle bundleExtras;
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
 	private Location locationUser;
@@ -73,17 +69,18 @@ public class SelectRoomActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_select_room);
-		bundleExtras = getIntent().getExtras();
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
 		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
 		
-		Button buttonCreateRoom = (Button) findViewById(R.id.createRoomId);
+		ImageView buttonCreateRoom = (ImageView) findViewById(R.id.createRoomId);
 		buttonCreateRoom.setEnabled(false);
 		
-		UserInfo userinfo = bundleExtras.getParcelable("USER");
+		UserInfo userinfo = ChatController.getInstance().getUser();
 		String stUser = userinfo.stUserName();
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
+		TextView textviewUserTitle = (TextView) findViewById(R.id.selectRoomTitle);
+		textviewUserTitle.setText("RealTalk");
 
 		ListView listviewJoined = (ListView) findViewById(R.id.joined_list);
 		listviewJoined.setClickable(false);
@@ -97,7 +94,6 @@ public class SelectRoomActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	ChatRoomInfo criSelected = rgchatroominfoJoined.get(position);
         		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
-        		itStartChat.putExtras(bundleExtras);
         		itStartChat.putExtra("ROOM", criSelected);
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
@@ -110,7 +106,6 @@ public class SelectRoomActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	ChatRoomInfo criSelected = rgchatroominfoUnjoined.get(position);
         		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
-        		itStartChat.putExtras(bundleExtras);
         		itStartChat.putExtra("ROOM", criSelected);
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
@@ -148,6 +143,7 @@ public class SelectRoomActivity extends Activity {
 				Location locationMostAccurate = null;
 				private int locationCount = 0;
 				public void onLocationChanged(Location location) {
+					
 					// Called when a new location is found by the network location provider.
 					//if new location data is not usable...
 					locationUser = location;
@@ -157,8 +153,9 @@ public class SelectRoomActivity extends Activity {
 						locationMostAccurate = locationUser;
 					if (locationCount >= 5)
 					{
-						Button buttonCreateRoom = (Button) findViewById(R.id.createRoomId);
+						ImageView buttonCreateRoom = (ImageView) findViewById(R.id.createRoomId);
 						buttonCreateRoom.setEnabled(true);
+						buttonCreateRoom.setImageResource(R.drawable.createroom_icon);
 					}
 					//TODO stop always listening and updating?
 				}
@@ -188,10 +185,13 @@ public class SelectRoomActivity extends Activity {
 	
 	private void getDetails(int position, boolean fJoined) {
 		final ChatRoomInfo chatroominfo;
+		String stJoinView;
 		if(fJoined) {
 			chatroominfo = rgchatroominfoJoined.get(position);
+			stJoinView = "View";
 		} else {
 			chatroominfo = rgchatroominfoUnjoined.get(position);
+			stJoinView = "Join";
 		}
 		
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -203,12 +203,11 @@ public class SelectRoomActivity extends Activity {
 			.setMessage(Html.fromHtml("<b>Description: </b> " +  chatroominfo.stDescription() + 
 									"<br/><br/><b>Active Users: </b> " + chatroominfo.numUsersGet() +
 									"<br/><br/><b>Creator: </b> " + chatroominfo.stCreator()))
-			.setCancelable(false);
+			.setCancelable(true);
 		
-		alertDialogBuilder.setNegativeButton("Join", new DialogInterface.OnClickListener() {
+		alertDialogBuilder.setNegativeButton(stJoinView, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
-        		itStartChat.putExtras(bundleExtras);
         		itStartChat.putExtra("ROOM", chatroominfo);
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
@@ -221,6 +220,15 @@ public class SelectRoomActivity extends Activity {
 				dialog.cancel();
 			}
 		});
+		
+		if(fJoined) {	
+			alertDialogBuilder.setNeutralButton("Leave", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+					dialog.cancel();
+				}
+			});
+		}
 		
 		//create alert dialog
 		AlertDialog alertdialogDeleteAcc = alertDialogBuilder.create();
@@ -248,25 +256,59 @@ public class SelectRoomActivity extends Activity {
 		//respond to menu item selection
 		switch (item.getItemId()){
 		case R.id.logout:
-			editorLoginPrefs.putBoolean("loggedIn", false);
-			editorLoginPrefs.putString("loggedin_username", null);
-			editorLoginPrefs.putString("loggedin_password", null);
-			editorLoginPrefs.commit();
-			Intent itLogin = new Intent(this, LoginActivity.class);
-			startActivity(itLogin);
-			finish();
+			this.clickLogout(getCurrentFocus());
 			return true;
 		case R.id.settings:
-			startActivity(new Intent(this, AccountSettingsActivity.class));
+			this.clickSettings(getCurrentFocus());
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	public void clickSettings(View view) {
+		startActivity(new Intent(this, AccountSettingsActivity.class));
+	}
+	
+	public void clickLogout(View view) {
+    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		//set title
+		alertDialogBuilder.setTitle("Log Out");
+		
+		//set dialog message
+		alertDialogBuilder
+			.setMessage("Are you sure you want to log out?")
+			.setCancelable(true);
+		
+		alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				editorLoginPrefs.putBoolean("loggedIn", false);
+				editorLoginPrefs.putString("loggedin_username", null);
+				editorLoginPrefs.putString("loggedin_password", null);
+				editorLoginPrefs.commit();
+				Intent itLogin = new Intent(SelectRoomActivity.this, LoginActivity.class);
+				startActivity(itLogin);
+				finish();
+			}	
+		});
+		
+		alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				// User cancelled the dialog
+				dialog.cancel();
+			}
+		});
+		
+		//create alert dialog
+		AlertDialog alertdialogDeleteAcc = alertDialogBuilder.create();
+		
+		//show alert dialog
+		alertdialogDeleteAcc.show();
+		
+	}
 
 	public void createRoom(View view) {
 		Intent itCreateRoom = new Intent(this, CreateRoomActivity.class);
-		itCreateRoom.putExtra("USER", bundleExtras.getParcelable("USER"));
 		itCreateRoom.putExtra("LATITUDE", locationUser.getLatitude());
 		itCreateRoom.putExtra("LONGITUDE", locationUser.getLongitude());
 		this.startActivity(itCreateRoom);
@@ -302,7 +344,7 @@ public class SelectRoomActivity extends Activity {
 		 */
 		@Override
 		protected ChatRoomResultSet doInBackground(String... params) {
-		    //ChatController.getInstance().fRefresh();
+		    ChatController.getInstance().fRefresh();
 			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
 					(latitude, longitude, radiusMeters);
 
@@ -317,9 +359,15 @@ public class SelectRoomActivity extends Activity {
 					for (int i = 0; i < rgchatroominfo.size(); i++) {
 						if (!ChatController.getInstance().fIsAlreadyJoined(rgchatroominfo.get(i))) {
 							unJoinedAdapter.add(rgchatroominfo.get(i));
-						} else {
-							joinedAdapter.add(rgchatroominfo.get(i));
 						}
+//						} else {
+//							joinedAdapter.add(rgchatroominfo.get(i));
+//						}
+					}
+					
+					List<ChatRoomInfo> rgJoinedRooms = ChatController.getInstance().getChatRooms();
+					for (int i = 0; i < rgJoinedRooms.size(); i++) {
+						joinedAdapter.add(rgJoinedRooms.get(i));
 					}
 				}
 			});
@@ -350,7 +398,7 @@ public class SelectRoomActivity extends Activity {
 			if (chatroominfo != null) {
 				TextView textviewTop = (TextView) view.findViewById(R.id.toptext);
 				TextView textviewBottom = (TextView) view.findViewById(R.id.bottomtext);
-				Button button = (Button) view.findViewById(R.id.detailsButton);
+				ImageView button = (ImageView) view.findViewById(R.id.detailsButton);
 				
 				OnClickListener listener = new OnClickListener() {
 				    @Override
@@ -373,5 +421,46 @@ public class SelectRoomActivity extends Activity {
 			}
 			return view;
 		}
+	}
+	
+	/**
+	 * AsyncTask that leaves the room.
+	 * 
+	 * @author Colin Kho
+	 *
+	 */
+	class RoomLeaver extends AsyncTask<String, String, Boolean> {
+	    private ChatRoomInfo chatroominfo;
+	    ProgressDialog progressdialog;
+	    public RoomLeaver(ChatRoomInfo roominfo) {
+	        chatroominfo = roominfo;
+	    }
+	    
+	    @Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+            progressdialog = new ProgressDialog(SelectRoomActivity.this);
+            progressdialog.setMessage("Leaving room. Please wait...");
+            progressdialog.setIndeterminate(false);
+            progressdialog.setCancelable(true);
+            progressdialog.show();
+	    }
+	    
+        @Override
+        protected Boolean doInBackground(String... params) {
+            Boolean leaveRoomSuccess = ChatController.getInstance().leaveRoom(chatroominfo);
+            return leaveRoomSuccess;
+        }
+        
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (progressdialog != null) {
+                progressdialog.dismiss();
+            }
+            
+	        Intent itViewRooms = new Intent(SelectRoomActivity.this, SelectRoomActivity.class);
+	  		SelectRoomActivity.this.startActivity(itViewRooms);
+	  		SelectRoomActivity.this.finish();
+        }    
 	}
 }
