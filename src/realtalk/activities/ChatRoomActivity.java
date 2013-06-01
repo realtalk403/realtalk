@@ -8,27 +8,34 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import realtalk.controller.ChatController;
+import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.CommonUtilities;
+import realtalk.util.Emoticonifier;
 import realtalk.util.MessageInfo;
-import realtalk.util.ChatManager;
 import realtalk.util.PullMessageResultSet;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
-
-import com.realtalk.R;
-
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.text.Html;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,7 +47,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TextView.BufferType;
 import android.widget.Toast;
+
+import com.realtalk.R;
 
 /**
  * Activity for a chat room, where the user can send/recieve messages.
@@ -53,9 +63,11 @@ public class ChatRoomActivity extends Activity {
 	private ChatRoomInfo chatroominfo;
 	private UserInfo userinfo;
 	private ProgressDialog progressdialog;
-	private List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
+	private List<MessageInfo> rgmi = new ArrayList<MessageInfo>();
 	private MessageAdapter adapter;
 	private ChatController chatController = ChatController.getInstance();
+	private SoundPool soundpool;
+	private int iMessageBeep = 0;
 	
 	/**
 	 * Sets up the chat room activity and loads the previous
@@ -80,10 +92,13 @@ public class ChatRoomActivity extends Activity {
 		TextView textviewUserTitle = (TextView) findViewById(R.id.userTitle);
 		textviewUserTitle.setText(stUser);
 		
+		soundpool = new SoundPool(2, AudioManager.STREAM_NOTIFICATION, 0);
+		iMessageBeep = soundpool.load(getApplicationContext(), R.raw.messagebeep, 1);
+		
 		new RoomCreator(this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 		ListView listview = (ListView) findViewById(R.id.list);
-		adapter = new MessageAdapter(this, R.layout.message_item, rgmessageinfo);
+		adapter = new MessageAdapter(this, R.layout.message_item, rgmi);
 		listview.setAdapter(adapter);
 	}
 	
@@ -180,10 +195,25 @@ public class ChatRoomActivity extends Activity {
             progressdialog.show();
 	    }
 	    
+	    /**
+	     * @return Boolean with whether the room was left successfully.
+	     */
         @Override
         protected Boolean doInBackground(String... params) {
-            Boolean leaveRoomSuccess = chatController.leaveRoom(chatroominfo);
-            return leaveRoomSuccess;
+        	Log.d("connectivitiy", "Arrived in ChatRoomActivity.RoomLeaver.doInBackground");
+            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            Log.d("connectivitiy", "Accessed ConnectivityManager");
+            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+            Log.d("connectivitiy", "Accessed network info");
+            
+			if (networkinfo != null && networkinfo.isConnected()) {
+				Log.d("connectivitiy", "Attempting to leave room");
+				Boolean fLeaveRoom = chatController.leaveRoom(chatroominfo);
+				return fLeaveRoom;
+			} else {
+				Log.d("connectivitiy", "disconnected, leaving doInBackground");
+				return false;
+			}
         }
         
         @Override
@@ -192,10 +222,16 @@ public class ChatRoomActivity extends Activity {
                 progressdialog.dismiss();
             }
             
-	        Intent itViewRooms = new Intent(ChatRoomActivity.this, SelectRoomActivity.class);
-	        itViewRooms.putExtra("USER", userinfo);
-	  		ChatRoomActivity.this.startActivity(itViewRooms);
-	  		ChatRoomActivity.this.finish();
+            if (success == false) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.leave_room_failed, Toast.LENGTH_SHORT);
+				toast.show();
+            } else {
+		        Intent itViewRooms = new Intent(ChatRoomActivity.this, SelectRoomActivity.class);
+		        itViewRooms.putExtra("USER", userinfo);
+		  		ChatRoomActivity.this.startActivity(itViewRooms);
+		  		ChatRoomActivity.this.finish();
+            }
+            Log.d("connectivity", "Leaving RoomLeaver asynctask");
         }    
 	}
 	
@@ -222,59 +258,78 @@ public class ChatRoomActivity extends Activity {
 
 		/**
 		 * Posts the message to the room
+		 * 
+		 * @return null if disconnected from network
 		 */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
-			return ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
+			ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+			if (networkinfo != null && networkinfo.isConnected()) {
+				Log.d("connectivity", "Connected and attempting to post message");
+				RequestResultSet rrs =ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
+				Log.d("connectivity", "Message posted");
+				return rrs;
+			} else {
+				return null;
+			}
 		}
-	}
-	
-	/**
-	 * Retrieves the message log of a chat room
-	 * 
-	 * @author Jordan Hazari
-	 *
-	 */
-	class MessageLoader extends AsyncTask<String, String, PullMessageResultSet> {
-		private ChatRoomActivity chatroomactivity;
-		private ChatRoomInfo chatroominfo;
-		private static final int RECENT_MESSAGE_TIME_LIMIT = 1000000000;
 		
-		/**
-		 * Constructs a MessageLoader object
-		 * 
-		 * @param chatroomactivity the activity context
-		 * @param chatroominfo the chat room to retrieve the chat log from
-		 */
-		public MessageLoader(ChatRoomActivity chatroomactivity, ChatRoomInfo chatroominfo) {
-			this.chatroomactivity = chatroomactivity;
-			this.chatroominfo = chatroominfo;
-		}
-
-		/**
-		 * Retrieves and displays the chat log, constantly updating
-		 */
 		@Override
-		protected PullMessageResultSet doInBackground(String... params) {
-			while (true) {
-				PullMessageResultSet pmrsRecent = ChatManager.pmrsChatRecentChat
-						(chatroominfo, new Timestamp(System.currentTimeMillis()-RECENT_MESSAGE_TIME_LIMIT));
-				
-				rgmessageinfo = pmrsRecent.getRgmessage();
-				
-				chatroomactivity.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						adapter.clear();
-						
-						for (int i = 0; i < rgmessageinfo.size(); i++) {
-							adapter.add(rgmessageinfo.get(i));
-						}
-					}
-				});
+		protected void onPostExecute(RequestResultSet rrs) {
+			if (rrs == null) {
+				Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
+				toast.show();
 			}
 		}
 	}
+	
+//	/**
+//	 * Retrieves the message log of a chat room
+//	 * 
+//	 * @author Jordan Hazari
+//	 *
+//	 */
+//	class MessageLoader extends AsyncTask<String, String, PullMessageResultSet> {
+//		private ChatRoomActivity chatroomactivity;
+//		private ChatRoomInfo chatroominfo;
+//		private static final int RECENT_MESSAGE_TIME_LIMIT = 1000000000;
+//		
+//		/**
+//		 * Constructs a MessageLoader object
+//		 * 
+//		 * @param chatroomactivity the activity context
+//		 * @param chatroominfo the chat room to retrieve the chat log from
+//		 */
+//		public MessageLoader(ChatRoomActivity chatroomactivity, ChatRoomInfo chatroominfo) {
+//			this.chatroomactivity = chatroomactivity;
+//			this.chatroominfo = chatroominfo;
+//		}
+//
+//		/**
+//		 * Retrieves and displays the chat log, constantly updating
+//		 */
+//		@Override
+//		protected PullMessageResultSet doInBackground(String... params) {
+//			while (true) {
+//				PullMessageResultSet pmrsRecent = ChatManager.pmrsChatRecentChat
+//						(chatroominfo, new Timestamp(System.currentTimeMillis()-RECENT_MESSAGE_TIME_LIMIT));
+//				
+//				rgmi = pmrsRecent.getRgmessage();
+//				
+//				chatroomactivity.runOnUiThread(new Runnable() {
+//					@Override
+//					public void run() {
+//						adapter.clear();
+//						
+//						for (int i = 0; i < rgmi.size(); i++) {
+//							adapter.add(rgmi.get(i));
+//						}
+//					}
+//				});
+//			}
+//		}
+//	}
 	
 	/**
 	 * Loads messages from chat controller which is prepared for GCM.
@@ -292,14 +347,14 @@ public class ChatRoomActivity extends Activity {
 	    }
         @Override
         protected Boolean doInBackground(String... params) {
-            rgmessageinfo = chatController.getMessagesFromChatRoom(chatroominfo.stId());
+            rgmi = chatController.getMessagesFromChatRoom(chatroominfo.stId());
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     adapter.clear();
                     
-                    for (int i = 0; i < rgmessageinfo.size(); i++) {
-                        adapter.add(rgmessageinfo.get(i));
+                    for (int i = 0; i < rgmi.size(); i++) {
+                        adapter.add(rgmi.get(i));
                     }
                 }
             });
@@ -347,7 +402,17 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected Boolean doInBackground(String... params) {
-		    return (ChatController.getInstance().fIsAlreadyJoined(chatroominfo)) ? true : ChatController.getInstance().joinRoom(chatroominfo);
+			ChatController chatcontroller = ChatController.getInstance();
+			if (chatcontroller.fIsAlreadyJoined(chatroominfo)) {
+				return true;
+			} else {
+				ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+	            if (networkinfo != null && networkinfo.isConnected()) {
+					return chatcontroller.joinRoom(chatroominfo);
+				}
+	            return null;
+			}
 		}
 		
 		/**
@@ -356,8 +421,11 @@ public class ChatRoomActivity extends Activity {
 		@Override
         protected void onPostExecute(Boolean success) {
             progressdialog.dismiss();
-            if (!success) {
-                Toast serverToast = Toast.makeText(activity, "Failed to join room. Please try again.", Toast.LENGTH_LONG);
+            if (success == null) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
+    			toast.show();
+            } else if (!success) {
+                Toast serverToast = Toast.makeText(activity, R.string.join_room_failed, Toast.LENGTH_LONG);
                 serverToast.show();
             } else {
                 ChatRoomActivity.this.createGCMMessageLoader();
@@ -367,35 +435,39 @@ public class ChatRoomActivity extends Activity {
 	
 	private class MessageAdapter extends ArrayAdapter<MessageInfo> {
 
-        private List<MessageInfo> rgmessageinfo;
-
+        private List<MessageInfo> rgmi;
+        
         public MessageAdapter(Context context, int textViewResourceId, List<MessageInfo> rgmessageinfo) {
             super(context, textViewResourceId, rgmessageinfo);
-            this.rgmessageinfo = rgmessageinfo;
+            this.rgmi = rgmessageinfo;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            if (view == null) {
+            if (convertView == null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = vi.inflate(R.layout.message_item, null);
+                convertView = vi.inflate(R.layout.message_item, null);
             }
-            MessageInfo messageinfo = rgmessageinfo.get(position);
-            if (messageinfo != null) {
-                TextView textviewTop = (TextView) view.findViewById(R.id.toptext);
-                TextView textviewBottom = (TextView) view.findViewById(R.id.bottomtext);
+            MessageInfo mi = rgmi.get(position);
+            if (mi != null) {
+                TextView textviewTop = (TextView) convertView.findViewById(R.id.toptext);
+                TextView textviewBottom = (TextView) convertView.findViewById(R.id.bottomtext);
                 if (textviewTop != null) {
                 	textviewTop.setTextAppearance(ChatRoomActivity.this, android.R.style.TextAppearance_Medium);
-                	textviewTop.setText(Html.fromHtml("<b>" + messageinfo.stSender() + ": " + "</b>" +  messageinfo.stBody()));
+                	
+                	SpannableStringBuilder ssbSender = new SpannableStringBuilder(mi.stSender()+": ");
+                	ssbSender.setSpan(new StyleSpan(Typeface.BOLD), 0, ssbSender.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                	Spannable stBody = Emoticonifier.getSmiledText(getApplicationContext(), mi.stBody());
+                	Spanned stTopText = (Spanned) TextUtils.concat(ssbSender, stBody);
+                	textviewTop.setText(stTopText, BufferType.SPANNABLE);
                 }
-                if(textviewBottom != null) {
+                if (textviewBottom != null) {
                 	SimpleDateFormat simpledateformat = new SimpleDateFormat("hh:mm a, M/dd/yyyy", Locale.US);
                 	simpledateformat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
-                    textviewBottom.setText("\t" + simpledateformat.format(messageinfo.timestampGet()));
+                    textviewBottom.setText("\t" + simpledateformat.format(mi.timestampGet()));
                 }
             }
-            return view;
+            return convertView;
         }
 	}
 	
@@ -416,6 +488,9 @@ public class ChatRoomActivity extends Activity {
                     for (int iMsgIndex = 0; iMsgIndex < rgmessageinfo.size(); iMsgIndex++) {
                         adapter.add(rgmessageinfo.get(iMsgIndex));
                     }
+                    
+                    //play sound here TODO
+                    soundpool.play(iMessageBeep, .1f, .1f, 1, 0, 1f);
                 }    
 	};
 }
