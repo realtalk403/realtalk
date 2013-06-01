@@ -3,36 +3,31 @@
  */
 package realtalk.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import realtalk.util.ChatRoomInfo;
+import realtalk.util.MessageInfo;
+import realtalk.util.UserInfo;
 import android.content.Context;
 
-import realtalk.model.HallwayModel;
-import realtalk.util.ChatManager;
-import realtalk.util.ChatRoomInfo;
-import realtalk.util.ChatRoomResultSet;
-import realtalk.util.CommonUtilities;
-import realtalk.util.MessageInfo;
-import realtalk.util.PullMessageResultSet;
-import realtalk.util.RequestResultSet;
-import realtalk.util.UserInfo;
-
 /**
- * Controller that handles the chatroom model and handles all internal logic.
+ * Controller STUB
  * 
- * @author Colin Kho
+ * @author Taylor Williams
  *
  */
-public final class ChatController implements IChatController {
-    private static ChatController instance = null;
-    private HallwayModel chatModel;
-    // Keeps track of the current user in the RealTalk application.
-    // Set to null if user not set / logged out.
+public final class ChatControllerStub implements IChatController {
+    private static ChatControllerStub instance = null;
+    List<ChatRoomInfo> rgcri = new ArrayList<ChatRoomInfo>();
+    Map<String, List<MessageInfo>> mpstid_rgmi;
     private UserInfo userinfo;
     
-    private ChatController() {
-        chatModel = new HallwayModel();
+    private ChatControllerStub() {
         this.userinfo = null;
+        mpstid_rgmi = new HashMap<String, List<MessageInfo>>();
     }
     
     /**
@@ -41,9 +36,9 @@ public final class ChatController implements IChatController {
      * 
      * @return ChatController's instance.
      */
-    public static ChatController getInstance() {
+    public static ChatControllerStub getInstance() {
         if (instance == null) {
-            instance = new ChatController();
+            instance = new ChatControllerStub();
         }
         return instance;
     }
@@ -69,37 +64,7 @@ public final class ChatController implements IChatController {
      * 
      * @return True if refresh succeeded, false if otherwise.
      */
-    public boolean fRefresh() {
-        ChatRoomResultSet crrs = ChatManager.crrsUsersChatrooms(userinfo);
-        // Clear the current chat model.
-        chatModel = null;
-        chatModel = new HallwayModel();
-        if (!crrs.fSucceeded()) {
-            return false;
-        }    
-        List<ChatRoomInfo> rgCri = crrs.rgcriGet();
-        for (ChatRoomInfo chatroom : rgCri) {
-            // Load chatrooms only if the request succeeded.
-            chatModel.addRoom(chatroom.stName(), 
-                    chatroom.stId(), 
-                    chatroom.stDescription(), 
-                    chatroom.getLatitude(), 
-                    chatroom.getLongitude(), 
-                    chatroom.stCreator(),
-                    chatroom.numUsersGet(),
-                    chatroom.timestampCreated());
-            // Next load the messages for that chatroom.
-            PullMessageResultSet pmrsMessages = ChatManager.pmrsChatLogGet(chatroom);
-            if (!pmrsMessages.fIsSucceeded()) {
-                // Else remove all rooms and return failure.
-                chatModel = null;
-                chatModel = new HallwayModel();
-                return false;
-            } else {
-                // Load the messages into the correct room.
-                chatModel.addRgMiToCrm(pmrsMessages.getRgmessage(), chatroom.stId());
-            } 
-        }
+    public boolean fRefresh() {  	
         return true;
     }
     
@@ -112,12 +77,10 @@ public final class ChatController implements IChatController {
      * @param context  Context used to send broadcast.
      */
     public void addMessageToRoom(MessageInfo msginfo, String roomId, Context context) {
-        if (chatModel.fChatRoomExists(roomId)) {
-            chatModel.addMiToCrm(msginfo, roomId);
-            
-            // Alert ChatRoomActivity if running to retrieve the new message by refreshing view state.
-            CommonUtilities.sendNewMessageAlert(context, roomId);
-        }
+    	if (mpstid_rgmi.containsKey(roomId))
+    	{
+    		mpstid_rgmi.get(roomId).add(msginfo);
+    	}
     }
     
     /**
@@ -127,7 +90,7 @@ public final class ChatController implements IChatController {
      * @return List of messages in an immutable read only list.
      */
     public List<MessageInfo> getMessagesFromChatRoom(String roomId) {
-        return chatModel.rgmiGetFromCrmId(roomId);
+        return mpstid_rgmi.get(roomId);
     }
     
     /**
@@ -137,7 +100,7 @@ public final class ChatController implements IChatController {
      * @return
      */
     public List<ChatRoomInfo> getChatRooms() {
-        return chatModel.getRoomInfo();
+    	return rgcri;
     }
     
     /**
@@ -150,27 +113,8 @@ public final class ChatController implements IChatController {
      * @return True if succeeded, false if otherwise.
      */
     public boolean joinRoom(ChatRoomInfo chatroom) {
-        RequestResultSet rrs = ChatManager.rrsJoinRoom(userinfo, chatroom);
-        if (!rrs.getfSucceeded()) {
-            return false;
-        }
-        chatModel.addRoom(chatroom.stName(), 
-                chatroom.stId(), 
-                chatroom.stDescription(), 
-                chatroom.getLatitude(), 
-                chatroom.getLongitude(), 
-                chatroom.stCreator(), 
-                chatroom.timestampCreated());
-        // Next load the messages for that chatroom.
-        PullMessageResultSet pmrsMessages = ChatManager.pmrsChatLogGet(chatroom);
-        if (!pmrsMessages.fIsSucceeded()) {
-            // Else remove room and return failure
-            chatModel.fRemoveRoom(chatroom.stId());
-            return false;
-        } else {
-            // Load the messages into the correct room.
-            chatModel.addRgMiToCrm(pmrsMessages.getRgmessage(), chatroom.stId());
-        }
+    	rgcri.add(chatroom);
+    	mpstid_rgmi.put(chatroom.stId(), new ArrayList<MessageInfo>());
         return true;
     }
     
@@ -181,11 +125,7 @@ public final class ChatController implements IChatController {
      * @return
      */
     public boolean leaveRoom(ChatRoomInfo chatroom) {
-        RequestResultSet crrs = ChatManager.rrsLeaveRoom(userinfo, chatroom);
-        if (!crrs.getfSucceeded()) {
-            return false;
-        }
-        return chatModel.fRemoveRoom(chatroom.stId());
+    	return mpstid_rgmi.remove(chatroom.stId()) != null;
     }
     
     /**
@@ -202,8 +142,8 @@ public final class ChatController implements IChatController {
      */
     public void uninitialize() {
         userinfo = null;
-        chatModel = null;
-        chatModel = new HallwayModel();
+        mpstid_rgmi = new HashMap<String, List<MessageInfo>>();
+        rgcri = new ArrayList<ChatRoomInfo>();
     }
     
     /**
@@ -214,8 +154,7 @@ public final class ChatController implements IChatController {
      * @return true if user is has already joined the chatroom and false if not.
      */
     public boolean fIsAlreadyJoined(ChatRoomInfo cri) {
-        List<ChatRoomInfo> rgCri = getChatRooms();
-        for (ChatRoomInfo roominfo : rgCri) {
+        for (ChatRoomInfo roominfo : rgcri) {
             if (roominfo.stId().equals(cri.stId())) {
                 return true;
             }
