@@ -1,5 +1,6 @@
 package realtalk.util;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import android.content.Context;
 import android.content.Intent;
 
@@ -43,4 +44,14 @@ public final class CommonUtilities {
         intent.putExtra(ROOM_ID, roomId);
         context.sendBroadcast(intent);
     }
+
+	/**
+	 * Hash the given string using SHA, for secure sending to the server.
+	 * 
+	 * @param st a string to hash
+	 * @return the hashed version of the string
+	 */
+	public static String hash(String st) {
+		return DigestUtils.sha256Hex(st);
+	}
 }

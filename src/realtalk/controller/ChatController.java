@@ -148,8 +148,8 @@ public final class ChatController {
      * @param chatroom ChatRoomInfo describing the room to join.
      * @return True if succeeded, false if otherwise.
      */
-    public boolean joinRoom(ChatRoomInfo chatroom) {
-        RequestResultSet rrs = ChatManager.rrsJoinRoom(userinfo, chatroom);
+    public boolean joinRoom(ChatRoomInfo chatroom, boolean fAnon) {
+        RequestResultSet rrs = ChatManager.rrsJoinRoom(userinfo, chatroom, fAnon);
         if (!rrs.getfSucceeded()) {
             return false;
         }

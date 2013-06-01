@@ -347,7 +347,9 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected Boolean doInBackground(String... params) {
-		    return (ChatController.getInstance().fIsAlreadyJoined(chatroominfo)) ? true : ChatController.getInstance().joinRoom(chatroominfo);
+			// TODO: add anon checkbox
+			boolean fAnon = false;
+		    return (ChatController.getInstance().fIsAlreadyJoined(chatroominfo)) ? true : ChatController.getInstance().joinRoom(chatroominfo, fAnon);
 		}
 		
 		/**
