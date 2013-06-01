@@ -1,7 +1,5 @@
 package realtalk.activities;
 
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import android.test.ActivityInstrumentationTestCase2;
