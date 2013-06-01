@@ -1,3 +1,4 @@
+
 package realtalk.activities;
 
 import java.sql.Timestamp;
@@ -138,7 +139,6 @@ public class CreateRoomActivity extends Activity {
             	toast.show();
             } else {
             	Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
-                itViewRooms.putExtra("USER", userinfo);
         		if (!activity.fDebugMode()) {
         			activity.startActivity(itViewRooms);
         		}
@@ -156,3 +156,4 @@ public class CreateRoomActivity extends Activity {
 	}
 	
 }
+

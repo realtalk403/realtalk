@@ -147,7 +147,7 @@ public class LoginActivity extends Activity {
 	    String stUsername = edittextUser.getText().toString().trim();
 	    String stPword = edittextPword.getText().toString();
 	    
-	    if(stUsername.equals("") || stPword.equals("")) {	    	
+	    if(stUsername.trim().equals("") || stPword.trim().equals("")) {	    	
 	    	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
 			alertdialogbuilder.setTitle("Invalid input");
@@ -188,83 +188,13 @@ public class LoginActivity extends Activity {
 	    
 	}
 	
-//	/**
-//	 * Called when user attempts to delete their account.
-//	 * 
-//	 * @param view
-//	 */
-//	public void removeUser(View view) {
-//		EditText edittextUser = (EditText) findViewById(R.id.editQuery);
-//	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
-//	    String stUsername = edittextUser.getText().toString();
-//	    String stPword = edittextPword.getText().toString();
-//		if(stUsername.equals("") || stPword.equals("")) {
-//			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-//			//set title
-//			alertDialogBuilder.setTitle("Invalid input");
-//			
-//			//set dialog message
-//			alertDialogBuilder
-//				.setMessage("Please enter a username & password.")
-//				.setCancelable(false);
-//			
-//			
-//			alertDialogBuilder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-//				public void onClick(DialogInterface dialog, int id) {
-//					// User cancelled the dialog
-//					dialog.cancel();
-//				}
-//			});
-//			
-//			//create alert dialog
-//			AlertDialog alertdialogEmptyFields = alertDialogBuilder.create();
-//			
-//			//show alert dialog
-//			alertdialogEmptyFields.show();
-//		} else {
-//			//confirmation pop up
-//	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-//			//set title
-//			alertDialogBuilder.setTitle("Delete account");
-//			
-//			//set dialog message
-//			alertDialogBuilder
-//				.setMessage("Are you sure you want to delete this account?")
-//				.setCancelable(false);
-//			
-//			alertDialogBuilder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
-//				public void onClick(DialogInterface dialog, int id) {
-//					//close the dialog box if this button is clicked
-//					EditText edittextUser = (EditText) findViewById(R.id.editQuery);
-//				    EditText edittextPword = (EditText) findViewById(R.id.editPword);
-//				    String stUsername = edittextUser.getText().toString();
-//				    String stPword = edittextPword.getText().toString();
-//				    new UserRemover(new UserInfo(stUsername, stPword, stRegisteredId), LoginActivity.this).execute();
-//				}	
-//			});
-//			
-//			alertDialogBuilder.setPositiveButton("No", new DialogInterface.OnClickListener() {
-//				public void onClick(DialogInterface dialog, int id) {
-//					// User cancelled the dialog
-//					dialog.cancel();
-//				}
-//			});
-//			
-//			//create alert dialog
-//			AlertDialog alertdialogDeleteAcc = alertDialogBuilder.create();
-//			
-//			//show alert dialog
-//			alertdialogDeleteAcc.show();	
-//		}
-//	}
-	
 	/**
 	 * Method that starts an async task used to update the registration Id.
 	 * 
 	 * @param userinfo
 	 */
 	public void updateRegId(UserInfo userinfo) {
-	    new UpdateRegId(userinfo, LoginActivity.this).execute();
+	    new UpdateRegId(userinfo, this).execute();
 	}
 	
 	/**
@@ -344,8 +274,6 @@ public class LoginActivity extends Activity {
 				toast.show();
             } else if (rrs.getfSucceeded()) {                
                 Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
-                UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stRegisteredId);
-                itRoomSelect.putExtra("USER", loginUserinfo);
                 activity.startActivity(itRoomSelect);
                 activity.finish();
             } else {

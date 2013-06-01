@@ -19,7 +19,7 @@ import realtalk.util.RequestParameters;
 public class GCMIntentService extends GCMBaseIntentService {
     
     public GCMIntentService() {
-        super();
+        super(GCMUtilities.SENDER_ID);
     }
     
     @Override

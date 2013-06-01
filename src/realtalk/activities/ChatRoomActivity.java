@@ -139,7 +139,6 @@ public class ChatRoomActivity extends Activity {
 	@Override
     public void onBackPressed() { 
         Intent itViewRooms = new Intent(this, SelectRoomActivity.class);
-        itViewRooms.putExtra("USER", userinfo);
 		this.startActivity(itViewRooms);
 		this.finish();
 
@@ -227,11 +226,11 @@ public class ChatRoomActivity extends Activity {
 				toast.show();
             } else {
 		        Intent itViewRooms = new Intent(ChatRoomActivity.this, SelectRoomActivity.class);
-		        itViewRooms.putExtra("USER", userinfo);
 		  		ChatRoomActivity.this.startActivity(itViewRooms);
 		  		ChatRoomActivity.this.finish();
             }
             Log.d("connectivity", "Leaving RoomLeaver asynctask");
+
         }    
 	}
 	
@@ -489,7 +488,6 @@ public class ChatRoomActivity extends Activity {
                         adapter.add(rgmessageinfo.get(iMsgIndex));
                     }
                     
-                    //play sound here TODO
                     soundpool.play(iMessageBeep, .1f, .1f, 1, 0, 1f);
                 }    
 	};
