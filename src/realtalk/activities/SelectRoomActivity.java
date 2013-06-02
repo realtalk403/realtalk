@@ -55,7 +55,7 @@ import com.realtalk.R;
  */
 @SuppressLint("NewApi")
 public class SelectRoomActivity extends Activity {
-	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;  //TODO remove for final product
+	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;
 	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoJoined = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoUnjoined = new ArrayList<ChatRoomInfo>();
@@ -126,15 +126,6 @@ public class SelectRoomActivity extends Activity {
 		joinedAdapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoJoined, true);
 		listviewJoined.setAdapter(joinedAdapter);
 		
-		// REASON for commenting out location code: chatController will get updated indefinitely if location continously changes.
-		// Should meet up to agree on a convention or protocol regarding this.
-		// TODO
-		
-
-		//RIGHT NOW GPS IS HARD TO ENABLE ON THE EMULATOR
-		//IF YOU DON'T WANT TO DEAL WITH IT, UNCOMMENT THIS LINE:
-		//new RoomLoader(this, 0, 0, HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		
 		//location code:
 		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		final double radiusMeters = 500.0;
@@ -170,7 +161,6 @@ public class SelectRoomActivity extends Activity {
 						buttonCreateRoom.setEnabled(true);
 						buttonCreateRoom.setImageResource(R.drawable.createroom_icon);
 					}
-					//TODO stop always listening and updating?
 				}
 
 		        public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -217,15 +207,18 @@ public class SelectRoomActivity extends Activity {
 		//set title
 		alertDialogBuilder.setTitle(chatroominfo.stName());
 
-		//set up the checkbox
-		View viewCheckbox = View.inflate(this, R.layout.checkbox_anon, null);
+		//set up the checkbox only if not joined
+	    View viewCheckbox = View.inflate(this, R.layout.checkbox_anon, null);
 		//set dialog message
 		alertDialogBuilder
 			.setMessage(Html.fromHtml("<b>Description: </b> " +  chatroominfo.stDescription() + 
 									"<br/><br/><b>Active Users: </b> " + chatroominfo.numUsersGet() +
 									"<br/><br/><b>Creator: </b> " + chatroominfo.stCreator()))
-			.setView(viewCheckbox)
 			.setCancelable(true);
+		
+		if (!fJoined) {
+		    alertDialogBuilder.setView(viewCheckbox);
+		}
 		
 		alertDialogBuilder.setNegativeButton(stJoinView, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
@@ -268,10 +261,6 @@ public class SelectRoomActivity extends Activity {
 	public void onAnonCheckboxClicked(View view) {
 	    fAnon = ((CheckBox) view).isChecked();
 	}
-	
-//	private void LoadRooms(Location locationUser, double radiusMeters) {
-//		new RoomLoader(this, locationUser.getLatitude(), locationUser.getLongitude(), radiusMeters).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

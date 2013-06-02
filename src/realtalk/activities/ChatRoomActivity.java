@@ -69,6 +69,7 @@ public class ChatRoomActivity extends Activity {
 	private Boolean fAnon;
 	private SoundPool soundpool;
 	private int iMessageBeep = 0;
+	private boolean fDebug;
 	
 	/**
 	 * Sets up the chat room activity and loads the previous
@@ -83,12 +84,15 @@ public class ChatRoomActivity extends Activity {
 		
 		Bundle extras = getIntent().getExtras();
 		chatroominfo = extras.getParcelable("ROOM");
-		boolean fDebug = extras.getBoolean("DEBUG");
+		boolean fLocalDebug = extras.getBoolean("DEBUG");
 		
-		if(!fDebug)
+		if(!fLocalDebug) {
 			chatController = ChatController.getInstance();
-		else
+		    fDebug = false;   
+		} else {
 			chatController = ChatControllerStub.getInstance();
+			fDebug = true;
+		}
 		userinfo = chatController.getUser();
 
 		fAnon = extras.getBoolean("ANON", false);
@@ -238,13 +242,15 @@ public class ChatRoomActivity extends Activity {
                 progressdialog.dismiss();
             }
             
-            if (success == false) {
+            if (!success) {
             	Toast toast = Toast.makeText(getApplicationContext(), R.string.leave_room_failed, Toast.LENGTH_SHORT);
 				toast.show();
             } else {
-		        Intent itViewRooms = new Intent(ChatRoomActivity.this, SelectRoomActivity.class);
-		  		ChatRoomActivity.this.startActivity(itViewRooms);
-		  		ChatRoomActivity.this.finish();
+                if (!fDebug) {
+                    Intent itViewRooms = new Intent(ChatRoomActivity.this, SelectRoomActivity.class);
+		  		    ChatRoomActivity.this.startActivity(itViewRooms);
+		  		    ChatRoomActivity.this.finish();
+                }
             }
         }    
 	}

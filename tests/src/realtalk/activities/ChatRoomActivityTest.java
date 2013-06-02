@@ -33,20 +33,19 @@ import com.realtalk.R;
 	private Solo solo;
 	 
 	public ChatRoomActivityTest() {
-		super(ChatRoomActivity.class);
-		
-		ChatRoomInfo chatroominfo = new ChatRoomInfo("Test Room", "testroom", "a test room", 10.0, 10.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
-		ChatControllerStub.getInstance().fInitialize(new UserInfo("hazarij", "password", "aa"));
-		ChatControllerStub.getInstance().joinRoom(chatroominfo, false);
-		Intent it = new Intent();
-		it.putExtra("ROOM", chatroominfo);
-		it.putExtra("DEBUG", true);
-		setActivityIntent(it);
+		super(ChatRoomActivity.class);	
 	}
 	 
 	@Before
 	public void setUp() throws Exception {
-		solo = new Solo(getInstrumentation(), getActivity());
+	    ChatRoomInfo chatroominfo = new ChatRoomInfo("Test Room", "testroom", "a test room", 10.0, 10.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
+        ChatControllerStub.getInstance().fInitialize(new UserInfo("hazarij", "password", "aa"));
+        ChatControllerStub.getInstance().joinRoom(chatroominfo, false);
+        Intent it = new Intent();
+        it.putExtra("ROOM", chatroominfo);
+        it.putExtra("DEBUG", true);
+        setActivityIntent(it);
+        solo = new Solo(getInstrumentation(), getActivity());
 	}
 	
 	/**
@@ -98,5 +97,14 @@ import com.realtalk.R;
 		solo.enterText(edittextMessage, "bye!");
 		solo.clickOnButton("Send");
 		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
+	}
+	
+	/**
+	 * Tests the leave room button in debug mode.
+	 */
+	@Test
+	public void testLeaveRoom() {
+	    solo.clickOnButton("Leave Room");
+	    // This is simulated not to leave the activity but merely close it in debug mode.
 	}
 }
