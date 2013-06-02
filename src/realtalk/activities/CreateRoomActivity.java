@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 import com.realtalk.R;
 
+import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.RequestResultSet;
@@ -19,6 +20,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -29,7 +31,7 @@ import android.widget.Toast;
 @SuppressLint("NewApi")
 public class CreateRoomActivity extends Activity {
 	private ProgressDialog progressdialog;
-	private UserInfo userinfo;
+	private UserInfo u;
 	private double latitude;
 	private double longitude;
 	private boolean fDebugMode;
@@ -37,17 +39,27 @@ public class CreateRoomActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d("CORY", "in onCreate() of CreateRoomActivity");
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_create_room);
 		
+		Log.d("CORY", "content laid out");
+		
 		Bundle extras = getIntent().getExtras();
-		userinfo = extras.getParcelable("USER");
 		latitude = extras.getDouble("LATITUDE");
 		longitude = extras.getDouble("LONGITUDE");
 		
-		String stUser = userinfo.stUserName();
+		u = ChatController.getInstance().getUser();
+		String stUser = u.stUserName();
+
+		Log.d("CORY", "extracted bundle extras");
+		
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
+		
+		Log.d("CORY", "finished on create");
+
 	}
 
 	@Override
@@ -58,7 +70,7 @@ public class CreateRoomActivity extends Activity {
 	}
 	
 	public void addRoom(View view) {
-		new RoomCreator(userinfo, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new RoomCreator(u, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
 	/**
@@ -118,7 +130,7 @@ public class CreateRoomActivity extends Activity {
 			if (activity.fDebugMode) {
 				rrs = new RequestResultSet(true, "NO ERROR MESSAGE", "NO ERROR MESSAGE");
 			} else if (networkinfo != null && networkinfo.isConnected()) {
-				 ChatManager.rrsAddRoom(chatroominfo, userinfo);
+				 rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
 			} 
 			
 			return rrs;
