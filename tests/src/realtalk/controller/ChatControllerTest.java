@@ -2,7 +2,6 @@ package realtalk.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
@@ -19,19 +18,20 @@ import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 
 /**
+ * Mock Testing Component for Integration Testing.
  * White box tests for ChatController.
- * Not much can be done without using real user and room data,
- * so these tests are not comprehensive.
  * 
- * This also includes Mock Testing whereby the chatmanager is a mock object
- * so that predefined calls are sent to chat controller without needing to
- * query the server.
+ * This includes Mock Testing whereby the Chat Manager is a mock object set in the
+ * Chat Controller using EasyMock.
+ * 
+ * This is done so that the Chat Controller is tested in isolation of the server.
  * 
  * @author Jory Rice And Colin Kho
  */
 public class ChatControllerTest extends TestCase {
-
     private static final int TIMEOUT = 10000;
+    
+    // predefined variable for anonymous login.
     private static final boolean ANON_DEFAULT = false;
     private ChatController chatcontroller;
     
@@ -56,40 +56,34 @@ public class ChatControllerTest extends TestCase {
     private String stPassword3 = "twswds";
     private String stId3 = "09877654";
     
-    private UserInfo userinfo4;
-    private String stName4 = "jordan";
-    private String stPassword4 = "hazari";
-    private String stId4 = "01839239821";
-    
     /*
      * Test Rooms
      */
     
     private ChatRoomInfo chatroominfo1;
-    private String stRoomName1 = "TestNonexistantRoomname";
-    private String stRoomDesc1 = "TestNonexistantRoomdesc";
-    private String stRoomId1 = "TestNonexistantRoomid";
+    private static final String stRoomName1 = "TestNonexistantRoomname";
+    private static final String stRoomDesc1 = "TestNonexistantRoomdesc";
+    private static final String stRoomId1 = "TestNonexistantRoomid";
     
     private ChatRoomInfo chatroominfo2;
-    private String stRoomName2 = "Colin";
-    private String stRoomDesc2 = "Colins room";
-    private String stRoomId2 = "1232121312321321313";
+    private static final String stRoomName2 = "Colin";
+    private static final String stRoomDesc2 = "Colins room";
+    private static final String stRoomId2 = "1232121312321321313";
     
     private ChatRoomInfo chatroominfo3;
-    private String stRoomName3 = "brandons room";
-    private String stRoomDesc3 = "brandons room";
-    private String stRoomId3 = "1232121321";
+    private static final String stRoomName3 = "brandons room";
+    private static final String stRoomDesc3 = "brandons room";
+    private static final String stRoomId3 = "1232121321";
     private IChatManager mockChatManager;
     
     // Nearby Predefined Rooms
-    List<ChatRoomInfo> rgNearbyRooms = new ArrayList<ChatRoomInfo>();
+    private List<ChatRoomInfo> rgNearbyRooms = new ArrayList<ChatRoomInfo>();
     
     // ChatRoomResultSet Default
-    ChatRoomResultSet crrsDefault;
+    private ChatRoomResultSet crrsDefault;
     
     // Predefined Result Sets for Mock
-    RequestResultSet rrsMockSuccess = new RequestResultSet(true, "", "");
-    RequestResultSet rrsMockFailure = new RequestResultSet(false, "", "");
+    private RequestResultSet rrsMockSuccess = new RequestResultSet(true, "", "");
     
     // Test Messages
     private MessageInfo mi1;
@@ -121,14 +115,14 @@ public class ChatControllerTest extends TestCase {
     public static final long timestamp6 = 1000000000;
     
     // Message Lists
-    List<MessageInfo> mlist1 = new ArrayList<MessageInfo>();
-    List<MessageInfo> mlist2 = new ArrayList<MessageInfo>();
-    List<MessageInfo> mlist3 = new ArrayList<MessageInfo>();
+    private List<MessageInfo> mlist1 = new ArrayList<MessageInfo>();
+    private List<MessageInfo> mlist2 = new ArrayList<MessageInfo>();
+    private List<MessageInfo> mlist3 = new ArrayList<MessageInfo>();
     
     // Pull Message Result Sets
-    PullMessageResultSet pmrs1;
-    PullMessageResultSet pmrs2;
-    PullMessageResultSet pmrs3;
+    private PullMessageResultSet pmrs1;
+    private PullMessageResultSet pmrs2;
+    private PullMessageResultSet pmrs3;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -139,7 +133,6 @@ public class ChatControllerTest extends TestCase {
 		userinfo1 = new UserInfo(stName1, stPassword1, stId1);
 		userinfo2 = new UserInfo(stName2, stPassword2, stId2);
 		userinfo3 = new UserInfo(stName3, stPassword3, stId3);
-		userinfo4 = new UserInfo(stName4, stPassword4, stId4);
 		
 		// Initialize Test ChatRoomInfos
 		chatroominfo1 = new ChatRoomInfo(stRoomName1, stRoomId1, stRoomDesc1, 0, 0, stName1, 0, 0);
@@ -167,6 +160,10 @@ public class ChatControllerTest extends TestCase {
 	    pmrs2 = new PullMessageResultSet(true, mlist2, "", "");
 	    pmrs3 = new PullMessageResultSet(true, mlist3, "", "");
 	    
+	    // Create Mock Chat Manager.
+	    // By default it has these properties:
+	    // 1. It returns success when getting nearby rooms and indicates that chatroominfo1 is nearby.
+	    // 2. It returns success when getting chat logs for chatroominfo1, 2 and 3.
 		mockChatManager = EasyMock.createNiceMock(IChatManager.class);
 		rgNearbyRooms.add(chatroominfo1);
 		crrsDefault = new ChatRoomResultSet(true, rgNearbyRooms,  "", "");
@@ -179,63 +176,136 @@ public class ChatControllerTest extends TestCase {
 	/*
 	 * This method has to be called after the mock is set up. This initializes the chatcontroller after calling
 	 * replay on the mock chat manager.
+	 * 
+	 * As different tests require different expected values from the mock. Those values should be set first with
+	 * EasyMock.expect. After all that is done, this method MUST be called to initialize the test controller.
 	 */
-	private void replayAndInitialize() {
+	private void replayAndInitializeDefaultUser() {
 		EasyMock.replay(mockChatManager);
 		chatcontroller.setChatManager(mockChatManager);
 		chatcontroller.fInitialize(userinfo1);
 	}
-
+	
+	/*
+	 * Similar to the above method but instead initializes using a custom user
+	 */
+	private void replayAndInitializeCustomUser(UserInfo userinfo) {
+	    EasyMock.replay(mockChatManager);
+        chatcontroller.setChatManager(mockChatManager);
+        chatcontroller.fInitialize(userinfo);
+	}
+	
+	/**
+	 * Tears down the chatcontroller to be re-setup
+	 */
 	@After
 	public void tearDown() throws Exception {
 		super.tearDown();
 		chatcontroller.uninitialize();
 	}
 
+	/**
+	 * Simple test that gets the instance of the controller. Should never be null.
+	 */
 	@Test(timeout = TIMEOUT)
 	public void testGetInstance() {
 		assertTrue(chatcontroller != null);
 	}
 	
+	/**
+	 * After initialization, the user should already be set.
+	 */
 	@Test(timeout = TIMEOUT)
 	public void testGetUser() {
-		replayAndInitialize();
+		replayAndInitializeDefaultUser();
 		assertEquals(chatcontroller.getUser(), userinfo1);
 	}
-
+	
+	/**
+	 * Short Test testing the debug method for initializing without a need to refresh rooms
+	 *
+	 * Testing this for the chatcontroller stub.
+	 */
+	@Test(timeout = TIMEOUT)
+	public void testInitializeTestMethod() {
+	    chatcontroller.fInitializeTest(userinfo1);
+	    assertFalse(chatcontroller.getUser().equals(userinfo2));
+	}
+	
+	/**
+	 * Test that refresh returns a failure when server returns a failure.
+	 * 
+	 * The server here is mocked using a mock chat manager that returns a failure result set.
+	 *
+	 */
+	@Test(timeout = TIMEOUT)
+	public void testRefreshWithFailureOnGetUsers() {
+	    ChatRoomResultSet crrsFailure = new ChatRoomResultSet(false, new ArrayList<ChatRoomInfo>(),  "", "");
+	    EasyMock.expect(mockChatManager.crrsUsersChatrooms(userinfo3)).andReturn(crrsFailure);
+	    replayAndInitializeCustomUser(userinfo3);
+	    assertFalse(chatcontroller.fRefresh());
+	}
+	
+	/**
+	 * Test that refresh fails because it failed to retrieve chat logs.
+	 * 
+	 * The server here is mocked using a mock chat manager that returns a failure result set.
+	 */
+	@Test(timeout = TIMEOUT)
+	public void testRefreshWithFailureOnGetChatLogs() {
+	    // Recreate a custom room that has no default chat log result set returning true
+	    // instead its result set returns false.
+	    ChatRoomInfo cri4 = new ChatRoomInfo("Test4", "ITest", "Test test", 0, 0, "yestest", 0, 0);
+	    rgNearbyRooms.add(cri4);
+	    ChatRoomResultSet crrsSuccess = new ChatRoomResultSet(true, rgNearbyRooms,  "", "");
+	    EasyMock.expect(mockChatManager.crrsUsersChatrooms(userinfo3)).andReturn(crrsSuccess);	    
+	    
+	    // Since cri4 is not a default chat room set up in set-up, it should not return chat logs
+	    PullMessageResultSet pmrs4 = new PullMessageResultSet(false, "", "");
+	    EasyMock.expect(mockChatManager.pmrsChatLogGet(cri4)).andReturn(pmrs4);
+	    replayAndInitializeCustomUser(userinfo3);
+	    assertEquals(chatcontroller.getUser(), userinfo3);
+	    assertFalse(chatcontroller.fRefresh());
+	}
+	
+	/**
+	 * Tests if already joined.
+	 */
 	@Test(timeout = TIMEOUT)
 	public void testIsAlreadyJoined() {
-		replayAndInitialize();
+		replayAndInitializeDefaultUser();
 		assertTrue(chatcontroller.fIsAlreadyJoined(chatroominfo1));
 	}
 	
 	/**
-	 * Checks if the is already joined method returns the correct values.
-	 * 
-	 * @param rgcheckAgainst rooms that the controller should be joined in
+	 * Tests if not joined.
 	 */
-	private void joinRoomTest(List<ChatRoomInfo> rgcheckAgainst) {
-		
+	@Test(timeout = TIMEOUT)
+	public void testIsNotAlreadyJoined() {
+	    replayAndInitializeDefaultUser();
+	    assertTrue(!chatcontroller.fIsAlreadyJoined(chatroominfo3));
 	}
 	
 	@Test(timeout = TIMEOUT)
 	public void testJoinRoomUsingColinRoom() {
-		testJoinRoom(chatroominfo2);
+		testSuccessJoinRoom(chatroominfo2);
 	}
 	
 	@Test(timeout = TIMEOUT)
 	public void testJoinRoomUsingBrandonRoom() {
-		testJoinRoom(chatroominfo3);
+		testSuccessJoinRoom(chatroominfo3);
 	}
 	
 	/**
-	 * Tests joining a room on the chatcontroller.
+	 * Tests joining a room on the chatcontroller and later on checking that if we are in that room.
+	 * 
+	 * This sets up the mock chatmanager before hand to tell the controller that joining was successful.
 	 * 
 	 * @param chatroominfo
 	 */
-	private void testJoinRoom(ChatRoomInfo chatroominfo) {
+	private void testSuccessJoinRoom(ChatRoomInfo chatroominfo) {
 		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo, ANON_DEFAULT)).andReturn(rrsMockSuccess);
-		replayAndInitialize();
+		replayAndInitializeDefaultUser();
 		chatcontroller.joinRoom(chatroominfo, false);
 		assertTrue(chatcontroller.fIsAlreadyJoined(chatroominfo));
 	}
@@ -253,12 +323,16 @@ public class ChatControllerTest extends TestCase {
 	/**
 	 * Tests leaving a room that is already joined on chatcontroller.
 	 * 
+	 * This sets up the mock chat manager to return that leaving was successful. As this is a white box test,
+	 * we know that the leave method checks the internal map storing the chatroom when it deletes. So we test that
+	 * while mocking chat manager behaviour.
+	 * 
 	 * @param chatroominfo
 	 */
 	private void testLeaveRoom(ChatRoomInfo chatroominfo) {
 		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo, ANON_DEFAULT)).andReturn(rrsMockSuccess);
 		EasyMock.expect(mockChatManager.rrsLeaveRoom(userinfo1, chatroominfo)).andReturn(rrsMockSuccess);
-		replayAndInitialize();
+		replayAndInitializeDefaultUser();
 		chatcontroller.joinRoom(chatroominfo, false);
 		assertTrue(chatcontroller.leaveRoom(chatroominfo));
 	}
@@ -267,7 +341,7 @@ public class ChatControllerTest extends TestCase {
 	public void testGetRoomsOneRoom() {
 		List<ChatRoomInfo> rgcri = new ArrayList<ChatRoomInfo>();
 		rgcri.add(chatroominfo1);
-		replayAndInitialize();
+		replayAndInitializeDefaultUser();
 		testGetControllerRooms(rgcri);
 	}
 	
@@ -275,7 +349,7 @@ public class ChatControllerTest extends TestCase {
 	public void testGetRoomsTwoRooms() {
 		List<ChatRoomInfo> rgcri = new ArrayList<ChatRoomInfo>();
 		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo2, ANON_DEFAULT)).andReturn(rrsMockSuccess);
-		replayAndInitialize();
+		replayAndInitializeDefaultUser();
 		chatcontroller.joinRoom(chatroominfo2, false);
 		rgcri.add(chatroominfo1);
 		rgcri.add(chatroominfo2);
@@ -285,6 +359,8 @@ public class ChatControllerTest extends TestCase {
 	/**
 	 * Tests getting chat rooms in the controller.
 	 * 
+	 * Uses the mock chatmanager to simulate what the server returns for the rooms joined for the default user.
+	 * 
 	 * @param rgroomsToCheckAgainst rooms that the controller is supposed to have.
 	 * 
 	 */
@@ -293,5 +369,25 @@ public class ChatControllerTest extends TestCase {
 		for (ChatRoomInfo cri : rgcri) {
 			assertTrue(rgcri.contains(cri));
 		}
+	}
+	
+	/**
+	 * Tests null is returned if there is no recent location stored.
+	 */
+	@Test(timeout = TIMEOUT)
+	public void testNoRecentLocation() {
+	    replayAndInitializeDefaultUser();
+	    assertTrue(chatcontroller.getRecentLocation() == null);
+	}
+	
+	/**
+	 * Tests that correct messages are retrieved
+	 */
+	@Test(timeout = TIMEOUT)
+	public void testGetMessages() {
+	    replayAndInitializeCustomUser(userinfo1);
+	    List<MessageInfo> rgmi = chatcontroller.getMessagesFromChatRoom(stRoomId1);
+	    assertTrue(rgmi != null);
+	    assertTrue(rgmi.equals(mlist1));
 	}
 }

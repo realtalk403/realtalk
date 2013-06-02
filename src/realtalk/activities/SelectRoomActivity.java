@@ -40,8 +40,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -206,7 +204,6 @@ public class SelectRoomActivity extends Activity {
 	
 	private void getDetails(int position, boolean fJoined) {
 		final ChatRoomInfo chatroominfo;
-		final CheckBox checkboxAnon;
 		String stJoinView;
 		if(fJoined) {
 			chatroominfo = rgchatroominfoJoined.get(position);
@@ -222,8 +219,6 @@ public class SelectRoomActivity extends Activity {
 
 		//set up the checkbox
 		View viewCheckbox = View.inflate(this, R.layout.checkbox_anon, null);
-		checkboxAnon = (CheckBox)findViewById(R.id.anon);
-		
 		//set dialog message
 		alertDialogBuilder
 			.setMessage(Html.fromHtml("<b>Description: </b> " +  chatroominfo.stDescription() + 

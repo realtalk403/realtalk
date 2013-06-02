@@ -87,7 +87,7 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		EditText edittextPassword = (EditText) solo.getView(R.id.editPword);
 		solo.enterText(edittextPassword, "test");
 		solo.clickOnButton("Login");
-		solo.sleep(5000);
+		solo.waitForActivity(SelectRoomActivity.class, 30000);
 		solo.assertCurrentActivity("Check on current page activity", SelectRoomActivity.class);
 		deleteAccount();
 	} 

@@ -18,6 +18,14 @@ import com.realtalk.R;
 
 /**
  * Black Box Tests that test functionality of the Chatroom page
+ * Integration Testing for V1.0 using a Stub class.
+ * 
+ * This is to allow ChatRoom Activity to be tested in isolation from
+ * the server as Chat Controller makes calls to the server. As a Mock
+ * Object would be insufficient as we need a way to have a real time
+ * way of storing Chat Logs and displaying them. Hence a stub was the
+ * best way of doing this.
+ * 
  * @author Jordan Hazari
  *
  */
@@ -40,7 +48,10 @@ import com.realtalk.R;
 	public void setUp() throws Exception {
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
-		
+	
+	/**
+	 * Tests the buttons and text exists on the activity
+	 */
 	@Test
 	public void testButtonsAndTextDisplay() {
 		assertTrue(solo.searchButton("Send"));
@@ -48,6 +59,9 @@ import com.realtalk.R;
 		assertFalse(solo.searchButton("WRONG_BUTTON"));
 	}
 	
+	/**
+	 * This tests if the send button populates the controller and displays it on the screen
+	 */
 	@Test
 	public void testSendingMessages() {
 		int cMessageInfo = ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size();
@@ -55,7 +69,7 @@ import com.realtalk.R;
 		solo.enterText(edittextMessage, "test message");
 		solo.clickOnButton("Send");
 		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
-		
+		solo.sleep(10000);
 		assertTrue("Message did not send", ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size() == cMessageInfo+1);
 		solo.enterText(edittextMessage, "another message");
 		solo.clickOnButton("Send");

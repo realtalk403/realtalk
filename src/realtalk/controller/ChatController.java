@@ -105,7 +105,7 @@ public final class ChatController implements IChatController {
         // Clear the current chat model.
         chatModel = null;
         chatModel = new HallwayModel();
-        if (!crrs.fSucceeded()) {
+        if (crrs == null || !crrs.fSucceeded()) {
             return false;
         }    
         List<ChatRoomInfo> rgCri = crrs.rgcriGet();
@@ -277,6 +277,19 @@ public final class ChatController implements IChatController {
         return false;
     }
     
+    /**
+     * Posts a message to the chat server.
+     * 
+     * @param userinfo users info
+     * @param chatroominfo chat rooms info
+     * @param messageinfo messages info
+     * 
+     * @return RequestResultSet indicates if its successful or not.
+     */
+    public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo) {
+        return ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
+    }
+    
     /*
      * TESTING Methods
      */
@@ -298,9 +311,5 @@ public final class ChatController implements IChatController {
      */
     public void fInitializeTest(UserInfo userinfo) {
         this.userinfo = userinfo;
-    }
-    
-    public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo) {
-    	return ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
     }
 }
