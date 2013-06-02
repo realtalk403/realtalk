@@ -16,6 +16,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -187,76 +189,6 @@ public class LoginActivity extends Activity {
 	}
 	
 	/**
-	 * Called when user attempts to delete their account.
-	 * 
-	 * @param view
-	 */
-	public void removeUser(View view) {
-		EditText edittextUser = (EditText) findViewById(R.id.editQuery);
-	    EditText edittextPword = (EditText) findViewById(R.id.editPword);
-	    String stUsername = edittextUser.getText().toString();
-	    String stPword = edittextPword.getText().toString();
-		if(stUsername.trim().equals("") || stPword.trim().equals("")) {
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-			//set title
-			alertDialogBuilder.setTitle("Invalid input");
-			
-			//set dialog message
-			alertDialogBuilder
-				.setMessage("Please enter a username & password.")
-				.setCancelable(false);
-			
-			
-			alertDialogBuilder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					// User cancelled the dialog
-					dialog.cancel();
-				}
-			});
-			
-			//create alert dialog
-			AlertDialog alertdialogEmptyFields = alertDialogBuilder.create();
-			
-			//show alert dialog
-			alertdialogEmptyFields.show();
-		} else {
-			//confirmation pop up
-	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-			//set title
-			alertDialogBuilder.setTitle("Delete account");
-			
-			//set dialog message
-			alertDialogBuilder
-				.setMessage("Are you sure you want to delete this account?")
-				.setCancelable(false);
-			
-			alertDialogBuilder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					//close the dialog box if this button is clicked
-					EditText edittextUser = (EditText) findViewById(R.id.editQuery);
-				    EditText edittextPword = (EditText) findViewById(R.id.editPword);
-				    String stUsername = edittextUser.getText().toString();
-				    String stPword = edittextPword.getText().toString();
-				    new UserRemover(new UserInfo(stUsername, stPword, stRegisteredId), LoginActivity.this).execute();
-				}	
-			});
-			
-			alertDialogBuilder.setPositiveButton("No", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					// User cancelled the dialog
-					dialog.cancel();
-				}
-			});
-			
-			//create alert dialog
-			AlertDialog alertdialogDeleteAcc = alertDialogBuilder.create();
-			
-			//show alert dialog
-			alertdialogDeleteAcc.show();	
-		}
-	}
-	
-	/**
 	 * Method that starts an async task used to update the registration Id.
 	 * 
 	 * @param userinfo
@@ -273,19 +205,19 @@ public class LoginActivity extends Activity {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     String stResultCode = intent.getExtras().getString(GCMUtilities.RESULT_MESSAGE);
-                    CharSequence charsequenceText = "";
+                    int iText = 0;
                     if (stResultCode.equals(GCMUtilities.SUCCESS)) {
                         stRegisteredId = intent.getExtras().getString(GCMUtilities.GCM_REG_ID);
-                        charsequenceText = "Initialization Complete";
+                        iText = R.string.init_complete;
                     } else {
                         // Registration failed. Alert user and lock app asking them to try again later.
                         Button btnLogin = (Button) findViewById(R.id.loginButton);
                         btnLogin.setEnabled(false);
                         Button btnCreate = (Button) findViewById(R.id.createAccountBtn);
                         btnCreate.setEnabled(false);
-                        charsequenceText = "Server is down. Please try again later";
+                        iText = R.string.server_down;
                     }
-                    Toast toastRegistration = Toast.makeText(context, charsequenceText, Toast.LENGTH_SHORT);
+                    Toast toastRegistration = Toast.makeText(context, iText, Toast.LENGTH_SHORT);
                     toastRegistration.show();
                     progressdialog.dismiss();
                 }	    
@@ -316,112 +248,126 @@ public class LoginActivity extends Activity {
             progressdialog.show();
 	    }
 	    
+	    /**
+	     * @return result set with results of change, unless disconnected from the network, then null. 
+	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
             UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stRegisteredId);
-            ChatController.getInstance().fInitialize(loginUserinfo);
-            return ChatManager.rrsChangeID(userinfo, stRegisteredId);
+            
+            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+            
+			if (networkinfo != null && networkinfo.isConnected()) {
+				ChatController.getInstance().fInitialize(loginUserinfo);
+				return ChatManager.rrsChangeID(userinfo, stRegisteredId);
+			} else {
+				return null;
+			}
         }
 	    
         @Override
-        protected void onPostExecute(RequestResultSet requestresultset) {
+        protected void onPostExecute(RequestResultSet rrs) {
             progressdialog.dismiss();
-            if (requestresultset.getfSucceeded()) {                
+            if (rrs == null) {
+				Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
+				toast.show();
+            } else if (rrs.getfSucceeded()) {                
                 Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
                 activity.startActivity(itRoomSelect);
                 activity.finish();
             } else {
-                Toast serverToast = Toast.makeText(activity, "Server is down. Please try again later.", Toast.LENGTH_LONG);
+                Toast serverToast = Toast.makeText(activity, R.string.server_down, Toast.LENGTH_LONG); 
                 serverToast.show();
             }
         }
 	}
 	
-	/**
-	 * Async task to remove user from server.
-	 * 
-	 * @author Brandon
-	 *
-	 */
-	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
-		private UserInfo userinfo;
-		private Activity activity;
-		public UserRemover(UserInfo userinfo, Activity activity) {
-			this.userinfo = userinfo;
-			this.activity = activity;
-		}
-		
-	    @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressdialog = new ProgressDialog(LoginActivity.this);
-            progressdialog.setMessage("Loading user details. Please wait...");
-            progressdialog.setIndeterminate(false);
-            progressdialog.setCancelable(true);
-            progressdialog.show();
-        }
-	    
-        @Override
-        protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.rrsRemoveUser(userinfo);
-        }
-        
-        @Override
-        protected void onPostExecute(RequestResultSet requestresultset) {
-            progressdialog.dismiss();
-            if(!requestresultset.getfSucceeded()) {
-            	//invalid username or password
-            	
-            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertdialogbuilder.setTitle("Invalid fields");
-				
-				//set dialog message
-				alertdialogbuilder
-					.setMessage("Invalid username/password. Please try again.")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							dialog.cancel();
-						}	
-				});
-				
-				//create alert dialog
-				AlertDialog alertdialogBadPword = alertdialogbuilder.create();
-				
-				//show alert dialog
-				alertdialogBadPword.show();	
-            } else {
-            	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertDialogBuilder.setTitle("Account deleted");
-				
-				//set dialog message
-				alertDialogBuilder
-					.setMessage("Your account has been deleted.")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							dialog.cancel();
-						}	
-				});
-				
-				//create alert dialog
-				AlertDialog alertdialogAccDeleted = alertDialogBuilder.create();
-				
-				//show alert dialog
-				alertdialogAccDeleted.show();	
-				
-				TextView textviewUname = (TextView) findViewById(R.id.editQuery);
-	            textviewUname.setText("");
-            }
-            
-            TextView textviewPword = (TextView) findViewById(R.id.editPword);
-            textviewPword.setText("");
-        }
-	}
+//	/**
+//	 * Async task to remove user from server.
+//	 * 
+//	 * @author Brandon
+//	 *
+//	 */
+//	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
+//		private UserInfo userinfo;
+//		private Activity activity;
+//		public UserRemover(UserInfo userinfo, Activity activity) {
+//			this.userinfo = userinfo;
+//			this.activity = activity;
+//		}
+//		
+//	    @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            progressdialog = new ProgressDialog(LoginActivity.this);
+//            progressdialog.setMessage("Loading user details. Please wait...");
+//            progressdialog.setIndeterminate(false);
+//            progressdialog.setCancelable(true);
+//            progressdialog.show();
+//        }
+//	    
+//        @Override
+//        protected RequestResultSet doInBackground(String... params) {
+//        	return ChatManager.rrsRemoveUser(userinfo);
+//        }
+//        
+//        @Override
+//        protected void onPostExecute(RequestResultSet requestresultset) {
+//            progressdialog.dismiss();
+//            if(!requestresultset.getfSucceeded()) {
+//            	//invalid username or password
+//            	
+//            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
+//				//set title
+//				alertdialogbuilder.setTitle("Invalid fields");
+//				
+//				//set dialog message
+//				alertdialogbuilder
+//					.setMessage("Invalid username/password. Please try again.")
+//					.setCancelable(false)
+//					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+//						public void onClick(DialogInterface dialog, int id) {
+//							//close the dialog box if this button is clicked
+//							dialog.cancel();
+//						}	
+//				});
+//				
+//				//create alert dialog
+//				AlertDialog alertdialogBadPword = alertdialogbuilder.create();
+//				
+//				//show alert dialog
+//				alertdialogBadPword.show();	
+//            } else {
+//            	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+//				//set title
+//				alertDialogBuilder.setTitle("Account deleted");
+//				
+//				//set dialog message
+//				alertDialogBuilder
+//					.setMessage("Your account has been deleted.")
+//					.setCancelable(false)
+//					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+//						public void onClick(DialogInterface dialog, int id) {
+//							//close the dialog box if this button is clicked
+//							dialog.cancel();
+//						}	
+//				});
+//				
+//				//create alert dialog
+//				AlertDialog alertdialogAccDeleted = alertDialogBuilder.create();
+//				
+//				//show alert dialog
+//				alertdialogAccDeleted.show();	
+//				
+//				TextView textviewUname = (TextView) findViewById(R.id.editQuery);
+//	            textviewUname.setText("");
+//            }
+//            
+//            TextView textviewPword = (TextView) findViewById(R.id.editPword);
+//            textviewPword.setText("");
+//        }
+//	}
 	
 	/**
 	 * Authenticates a user in the database 
@@ -460,10 +406,19 @@ public class LoginActivity extends Activity {
 	    
 	    /**
 	     * Authenticates user in the database
+	     * 
+	     * @return rrs with results, or null if disconnected
 	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.rrsAuthenticateUser(userinfo);
+            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+            
+			if (networkinfo != null && networkinfo.isConnected()) {
+				return ChatManager.rrsAuthenticateUser(userinfo);
+			} else {
+				return null;
+			}
         }
         
         /**
@@ -472,10 +427,11 @@ public class LoginActivity extends Activity {
          */
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
-
             progressdialog.dismiss();
-            //invalid username/password
-            if(!requestresultset.getfSucceeded()) {
+            if (requestresultset == null) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
+				toast.show();
+            } else if(!requestresultset.getfSucceeded()) {
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
 				alertdialogbuilder.setTitle("Invalid fields");

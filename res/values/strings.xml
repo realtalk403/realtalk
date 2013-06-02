@@ -16,7 +16,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="create_account">Create Account</string>
     <string name="sign_up">Haven\'t signed up yet?</string>
-    <string name="ad">ADVERTISEMENT</string>
+    <string name="ad">ADVERTISEMENT!</string>
     <string name="message_hint">Enter message</string>
     <string name="send">Send</string>
     <string name="title_activity_select_room">SelectRoomActivity</string>
@@ -46,5 +46,15 @@
     <string name="new_user">New User</string>
     <string name="joined_rooms">Joined Rooms</string>
     <string name="unjoined_rooms">Other Nearby Rooms</string>
+    <string name="network_failed">Sorry, you are disconnected from the network.</string>
+    <string name="join_room_failed">Failed to join room. Please try again.</string>
+    <string name="leave_room_failed">Unable to log you out of the room</string>
+    <string name="server_error">Sorry, there has been a server error.</string>
+    <string name="server_down">The server is down. Please try again later.</string>
+    <string name="init_complete">Initialization complete</string>
     <string name="huskysoftlogo">HuskySoft</string>
+    <string name="turn_gps_on">Please turn on a location service providor (wifi/gps/cellular).</string>
+    <string name="gps_out_of_service">GPS is out of service.</string>
+    <string name="gps_unavailable">GPS is temporarily unavailable.</string>
+    <string name="leaving_room">Leaving room. Please wait...</string>
 </resources>

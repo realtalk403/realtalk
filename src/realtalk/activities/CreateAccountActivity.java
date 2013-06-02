@@ -6,14 +6,18 @@ import realtalk.util.UserInfo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.realtalk.R;
 
@@ -211,7 +215,14 @@ public class CreateAccountActivity extends Activity {
 	     */
         @Override
         protected RequestResultSet doInBackground(String... params) {
-        	return ChatManager.rrsAddUser(userinfo);
+            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+            
+			if (networkinfo != null && networkinfo.isConnected()) {
+				return ChatManager.rrsAddUser(userinfo);
+			} else {
+				return null;
+			}
         }
         
         /**
@@ -221,7 +232,10 @@ public class CreateAccountActivity extends Activity {
         @Override
         protected void onPostExecute(RequestResultSet requestresultset) {
             progressdialog.dismiss();
-            if(!requestresultset.getfSucceeded()) {
+            if (requestresultset == null) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
+				toast.show();
+            } else if(!requestresultset.getfSucceeded()) {
             	//user already exists pop up
             	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 				//set title
