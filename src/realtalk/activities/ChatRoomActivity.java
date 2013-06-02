@@ -13,7 +13,6 @@ import realtalk.util.ChatRoomInfo;
 import realtalk.util.CommonUtilities;
 import realtalk.util.Emoticonifier;
 import realtalk.util.MessageInfo;
-import realtalk.util.PullMessageResultSet;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 import android.annotation.TargetApi;
