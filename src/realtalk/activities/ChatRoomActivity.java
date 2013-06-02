@@ -74,7 +74,7 @@ public class ChatRoomActivity extends Activity {
 		chatroominfo = extras.getParcelable("ROOM");
 		boolean fDebug = extras.getBoolean("DEBUG");
 		
-		if(fDebug)
+		if(!fDebug)
 			chatController = ChatController.getInstance();
 		else
 			chatController = ChatControllerStub.getInstance();
@@ -159,7 +159,6 @@ public class ChatRoomActivity extends Activity {
 		
 		if (!stValue.equals("")) {
 			MessageInfo message = new MessageInfo (stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
-			
 			new MessageSender(message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			edittext.setText("");
 		}

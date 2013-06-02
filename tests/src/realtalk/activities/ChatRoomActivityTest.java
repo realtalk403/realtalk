@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import org.junit.Before;
 import org.junit.Test;
 
-import realtalk.controller.ChatController;
+import realtalk.controller.ChatControllerStub;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.UserInfo;
 import android.content.Intent;
@@ -24,9 +24,9 @@ public class ChatRoomActivityTest extends ActivityInstrumentationTestCase2<ChatR
 	public ChatRoomActivityTest() {
 		super(ChatRoomActivity.class);
 		
-		ChatController.getInstance().fInitializeTest(new UserInfo("testuser", "password", "id"));
-		
 		ChatRoomInfo chatroominfo = new ChatRoomInfo("Test Room", "testroom", "a test room", 10.0, 10.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
+		ChatControllerStub.getInstance().fInitialize(new UserInfo("hazarij", "password", "aa"));
+		ChatControllerStub.getInstance().joinRoom(chatroominfo);
 		Intent it = new Intent();
 		it.putExtra("ROOM", chatroominfo);
 		it.putExtra("DEBUG", true);
