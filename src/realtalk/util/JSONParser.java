@@ -74,8 +74,9 @@ public class JSONParser {
             e.printStackTrace();
         }
         
+        BufferedReader reader = null;
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
+            reader = new BufferedReader(new InputStreamReader(
                     inputstream, "iso-8859-1"), BUFFER_SIZE);
             StringBuilder stringbuilder = new StringBuilder();
             String line = null;
@@ -86,8 +87,16 @@ public class JSONParser {
                 inputstream.close();
             }
             stJson = stringbuilder.toString();
+            reader.close();
         } catch (Exception e) {
             Log.e("Buffer Error", "Error converting result " + e.toString());
+        } finally {
+        	try {
+        		if (reader != null)
+        			reader.close();
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}
         }
  
         // try parse the string to a JSON object
