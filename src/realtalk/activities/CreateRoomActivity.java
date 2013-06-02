@@ -1,6 +1,9 @@
+
 package realtalk.activities;
 
 import java.sql.Timestamp;
+
+import com.realtalk.R;
 
 import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
@@ -8,41 +11,55 @@ import realtalk.util.ChatRoomInfo;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 
-import com.realtalk.R;
-
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class CreateRoomActivity extends Activity {
 	private ProgressDialog progressdialog;
-	private UserInfo userinfo;
+	private UserInfo u;
 	private double latitude;
 	private double longitude;
+	private boolean fDebugMode;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d("CORY", "in onCreate() of CreateRoomActivity");
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_create_room);
 		
+		Log.d("CORY", "content laid out");
+		
 		Bundle extras = getIntent().getExtras();
-		userinfo = ChatController.getInstance().getUser();
 		latitude = extras.getDouble("LATITUDE");
 		longitude = extras.getDouble("LONGITUDE");
 		
-		String stUser = userinfo.stUserName();
+		u = ChatController.getInstance().getUser();
+		String stUser = u.stUserName();
+
+		Log.d("CORY", "extracted bundle extras");
+		
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
+		
+		Log.d("CORY", "finished on create");
+
 	}
 
 	@Override
@@ -53,7 +70,7 @@ public class CreateRoomActivity extends Activity {
 	}
 	
 	public void addRoom(View view) {
-		new RoomCreator(userinfo, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new RoomCreator(u, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
 	/**
@@ -91,6 +108,8 @@ public class CreateRoomActivity extends Activity {
 
 	    /**
 	     * Adds the room, or joins it if it already exists
+	     * 
+	     * @return rrs with results. rrs will contain false if server is down, and will be null if disconnected.
 	     */
 		@Override
 		protected RequestResultSet doInBackground(String... params) {
@@ -104,11 +123,16 @@ public class CreateRoomActivity extends Activity {
 			
 			ChatRoomInfo chatroominfo = new ChatRoomInfo(stRoomName, stRoomName, stDescription, latitude, longitude, stCreator, 0, new Timestamp(System.currentTimeMillis()));
 			
-			RequestResultSet rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
-			if (!rrs.getfSucceeded()) {
-			    // TODO shouldnt through this exception. Just alert user server is down
-				throw new RuntimeException("server error");
-			}
+			ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+			
+			RequestResultSet rrs = null;
+			if (activity.fDebugMode) {
+				rrs = new RequestResultSet(true, "NO ERROR MESSAGE", "NO ERROR MESSAGE");
+			} else if (networkinfo != null && networkinfo.isConnected()) {
+				 rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
+			} 
+			
 			return rrs;
 		}
 		
@@ -116,13 +140,32 @@ public class CreateRoomActivity extends Activity {
 		 * Closes the popup dialogue
 		 */
 		@Override
-        protected void onPostExecute(RequestResultSet requestresultset) {
+        protected void onPostExecute(RequestResultSet rrs) {
             progressdialog.dismiss();
             
-            Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
-    		activity.startActivity(itViewRooms);
-    		activity.finish();
+            if (rrs == null) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
+				toast.show();
+            } else if (!rrs.getfSucceeded()) {
+            	Toast toast = Toast.makeText(getApplicationContext(), R.string.server_error, Toast.LENGTH_LONG);
+            	toast.show();
+            } else {
+            	Intent itViewRooms = new Intent(activity, SelectRoomActivity.class);
+        		if (!activity.fDebugMode()) {
+        			activity.startActivity(itViewRooms);
+        		}
+        		activity.finish();
+            }
 		}
 	}
 
+	public boolean fDebugMode() {
+		return fDebugMode;
+	}
+	
+	public void setDebugMode() {
+		fDebugMode = true;
+	}
+	
 }
+
