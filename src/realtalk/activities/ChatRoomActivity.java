@@ -13,7 +13,6 @@ import realtalk.util.ChatRoomInfo;
 import realtalk.util.CommonUtilities;
 import realtalk.util.Emoticonifier;
 import realtalk.util.MessageInfo;
-import realtalk.util.PullMessageResultSet;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 import android.annotation.TargetApi;
@@ -66,6 +65,7 @@ public class ChatRoomActivity extends Activity {
 	private List<MessageInfo> rgmi = new ArrayList<MessageInfo>();
 	private MessageAdapter adapter;
 	private ChatController chatController = ChatController.getInstance();
+	private Boolean fAnon;
 	private SoundPool soundpool;
 	private int iMessageBeep = 0;
 	
@@ -83,6 +83,7 @@ public class ChatRoomActivity extends Activity {
 		Bundle extras = getIntent().getExtras();
 		userinfo = ChatController.getInstance().getUser();
 		chatroominfo = extras.getParcelable("ROOM");
+		fAnon = extras.getBoolean("ANON", false);
 		
 		String stUser = userinfo.stUserName();
 		String stRoom = chatroominfo.stName();
@@ -354,7 +355,7 @@ public class ChatRoomActivity extends Activity {
 				ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 	            if (networkinfo != null && networkinfo.isConnected()) {
-					return chatcontroller.joinRoom(chatroominfo);
+					return chatcontroller.joinRoom(chatroominfo, fAnon);
 				}
 	            return null;
 			}

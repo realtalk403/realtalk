@@ -102,6 +102,15 @@ public final class ChatManager {
     }
     
     /**
+     * 
+     * @param fAnon
+     * @return a parameter for anonymous login as a basic name value pair
+     */
+    private static NameValuePair paramAnonymous(boolean fAnon) {
+    	return new BasicNameValuePair(RequestParameters.PARAMETER_ANON, String.valueOf(fAnon));
+    }
+    
+    /**
      * @param rgparam         List of parameters to embed in the request
      * @param stUrl			The url to send the request to
      * @return A RequestResultSet containing the result of the request
@@ -259,9 +268,10 @@ public final class ChatManager {
      * @param userinfo		The user to join into the room
      * @return A resultset containing the result of the join
      */
-	public static RequestResultSet rrsJoinRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
+	public static RequestResultSet rrsJoinRoom(UserInfo userinfo, ChatRoomInfo chatroominfo, boolean fAnon) {
         List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
         rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
+        rgparams.add(paramAnonymous(fAnon));
 		return rrsPostRequest(rgparams, URL_JOIN_ROOM);
 	}
 	

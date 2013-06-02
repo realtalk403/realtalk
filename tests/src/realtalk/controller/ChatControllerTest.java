@@ -234,7 +234,7 @@ public class ChatControllerTest extends TestCase {
 	private void testJoinRoom(ChatRoomInfo chatroominfo) {
 		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo)).andReturn(rrsMockSuccess);
 		replayAndInitialize();
-		chatcontroller.joinRoom(chatroominfo);
+		chatcontroller.joinRoom(chatroominfo, false);
 		assertTrue(chatcontroller.fIsAlreadyJoined(chatroominfo));
 	}
 	
@@ -257,7 +257,7 @@ public class ChatControllerTest extends TestCase {
 		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo)).andReturn(rrsMockSuccess);
 		EasyMock.expect(mockChatManager.rrsLeaveRoom(userinfo1, chatroominfo)).andReturn(rrsMockSuccess);
 		replayAndInitialize();
-		chatcontroller.joinRoom(chatroominfo);
+		chatcontroller.joinRoom(chatroominfo, false);
 		assertTrue(chatcontroller.leaveRoom(chatroominfo));
 	}
 	
@@ -274,7 +274,7 @@ public class ChatControllerTest extends TestCase {
 		List<ChatRoomInfo> rgcri = new ArrayList<ChatRoomInfo>();
 		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo2)).andReturn(rrsMockSuccess);
 		replayAndInitialize();
-		chatcontroller.joinRoom(chatroominfo2);
+		chatcontroller.joinRoom(chatroominfo2, false);
 		rgcri.add(chatroominfo1);
 		rgcri.add(chatroominfo2);
 		testGetControllerRooms(rgcri);

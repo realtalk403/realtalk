@@ -2,10 +2,10 @@ package realtalk.activities;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.EditText;
 
-import realtalk.activities.LoginActivity;
 import com.jayway.android.robotium.solo.Solo;
 import com.realtalk.R;
 

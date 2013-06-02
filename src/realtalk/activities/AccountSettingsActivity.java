@@ -2,6 +2,7 @@ package realtalk.activities;
 
 import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
+import realtalk.util.CommonUtilities;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 import android.app.Activity;
@@ -142,7 +143,8 @@ public class AccountSettingsActivity extends Activity {
 			alertdialogBadPword.show();
 		} else {
 			String stUsername = sharedpreferencesLoginPrefs.getString("loggedin_username", null);
-			new PwordChanger(new UserInfo(stUsername, stOldPword, DEFAULT_ID), this, stNewPword).execute();
+			new PwordChanger(new UserInfo(stUsername, CommonUtilities.hash(stOldPword), DEFAULT_ID), 
+					this, CommonUtilities.hash(stNewPword)).execute();
 		}
 
 	}
