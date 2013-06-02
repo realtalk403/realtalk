@@ -112,9 +112,10 @@ public final class ChatControllerStub implements IChatController {
      * NOTE: This method should only be called in an async task.
      * 
      * @param chatroom ChatRoomInfo describing the room to join.
+     * @param fAnon whether the use is joining anonymously or not
      * @return True if succeeded, false if otherwise.
      */
-    public boolean joinRoom(ChatRoomInfo chatroom) {
+    public boolean joinRoom(ChatRoomInfo chatroom, boolean fAnon) {
     	rgcri.add(chatroom);
     	mpstid_rgmi.put(chatroom.stId(), new ArrayList<MessageInfo>());
         return true;

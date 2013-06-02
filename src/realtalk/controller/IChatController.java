@@ -82,9 +82,10 @@ public interface IChatController {
      * NOTE: This method should only be called in an async task.
      * 
      * @param chatroom ChatRoomInfo describing the room to join.
+     * @param fAnon whether the use is joining anonymously or not
      * @return True if succeeded, false if otherwise.
      */
-    public boolean joinRoom(ChatRoomInfo chatroom);
+    public boolean joinRoom(ChatRoomInfo chatroom, boolean fAnon);
     
     /**
      * Leaves the specified room from the chatcontroller. This is the same as saying the user leaves the room.

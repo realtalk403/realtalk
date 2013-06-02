@@ -55,6 +55,8 @@ public final class RequestParameters {
     public static final String PARAMETER_ROOM_CREATOR = "PARAMETER_ROOM_CREATOR";
     //num users in room
     public static final String PARAMETER_ROOM_NUM_USERS = "PARAMETER_ROOM_NUM_USERS";
+    // whether a user is anon or not
+    public static final String PARAMETER_ANON = "PARAMETER_ANON";
     
 	/**
 	 * Private contructor prevents this class from being instantiated.

@@ -54,6 +54,7 @@
     <string name="init_complete">Initialization complete</string>
     <string name="huskysoftlogo">HuskySoft</string>
     <string name="realtalk">RealTalk</string>
+    <string name="anon">Chat Anonymously</string>
     <string name="turn_gps_on">Please turn on a location service providor (wifi/gps/cellular).</string>
     <string name="gps_out_of_service">GPS is out of service.</string>
     <string name="gps_unavailable">GPS is temporarily unavailable.</string>

@@ -66,6 +66,7 @@ public class ChatRoomActivity extends Activity {
 	private List<MessageInfo> rgmi = new ArrayList<MessageInfo>();
 	private MessageAdapter adapter;
 	private IChatController chatController;
+	private Boolean fAnon;
 	private SoundPool soundpool;
 	private int iMessageBeep = 0;
 	
@@ -89,6 +90,8 @@ public class ChatRoomActivity extends Activity {
 		else
 			chatController = ChatControllerStub.getInstance();
 		userinfo = chatController.getUser();
+
+		fAnon = extras.getBoolean("ANON", false);
 		
 		String stUser = userinfo.stUserName();
 		String stRoom = chatroominfo.stName();
@@ -366,7 +369,7 @@ public class ChatRoomActivity extends Activity {
 				ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 	            if (networkinfo != null && networkinfo.isConnected()) {
-					return chatController.joinRoom(chatroominfo);
+					return chatController.joinRoom(chatroominfo, fAnon);
 				}
 	            return null;
 			}
