@@ -349,14 +349,14 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected Boolean doInBackground(String... params) {
-		    ChatController chatcontroller = ChatController.getInstance();
+			ChatController chatcontroller = ChatController.getInstance();
 			if (chatcontroller.fIsAlreadyJoined(chatroominfo)) {
 				return true;
 			} else {
 				ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 	            if (networkinfo != null && networkinfo.isConnected()) {
-					return chatcontroller.joinRoom(chatroominfo);
+					return chatcontroller.joinRoom(chatroominfo, fAnon);
 				}
 	            return null;
 			}

@@ -53,11 +53,6 @@ public final class CommonUtilities {
 	 * @return the hashed version of the string
 	 */
 	public static String hash(String st) {
-		//try {
-			return new String(Hex.encodeHex(DigestUtils.sha256(st)));
-//		} catch (Exception e) {
-//			return st;
-//		}
-//		//return st;
+		return new String(Hex.encodeHex(DigestUtils.sha256(st)));
 	}
 }
