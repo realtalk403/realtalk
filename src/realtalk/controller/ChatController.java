@@ -4,8 +4,11 @@
 package realtalk.controller;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.location.Location;
 
 import realtalk.model.HallwayModel;
 import realtalk.util.ChatManager;
@@ -26,6 +29,7 @@ import realtalk.util.UserInfo;
 public final class ChatController implements IChatController {
     private static ChatController instance = null;
     private HallwayModel chatModel;
+    private Location locationRecent;
     // Keeps track of the current user in the RealTalk application.
     // Set to null if user not set / logged out.
     private UserInfo userinfo;
@@ -47,6 +51,21 @@ public final class ChatController implements IChatController {
         }
         return instance;
     }
+    
+	@SuppressLint("NewApi")
+	@Override
+	public Location getRecentLocation() {
+		if (locationRecent == null)
+			return null;
+		if (locationRecent.getTime() - System.currentTimeMillis() < TimeUnit.MINUTES.convert(5, TimeUnit.MILLISECONDS))
+			return locationRecent;
+		return null;
+	}
+	
+	@Override
+	public void setRecentLocation(Location location) {
+		locationRecent = location;
+	}
     
     /**
      * This initializes the ChatController by loading all the rooms that the user is currently in
