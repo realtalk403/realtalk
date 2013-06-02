@@ -29,7 +29,7 @@ public class ChatRoomActivityTest extends ActivityInstrumentationTestCase2<ChatR
 		ChatRoomInfo chatroominfo = new ChatRoomInfo("Test Room", "testroom", "a test room", 10.0, 10.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
 		Intent it = new Intent();
 		it.putExtra("ROOM", chatroominfo);
-		it.putExtra("DEBUG", "true");
+		it.putExtra("DEBUG", true);
 		setActivityIntent(it);
 	}
 	 

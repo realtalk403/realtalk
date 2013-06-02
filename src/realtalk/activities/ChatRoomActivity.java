@@ -8,6 +8,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import realtalk.controller.ChatController;
+import realtalk.controller.ChatControllerStub;
+import realtalk.controller.IChatController;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.CommonUtilities;
 import realtalk.util.MessageInfo;
@@ -55,7 +57,7 @@ public class ChatRoomActivity extends Activity {
 	private ProgressDialog progressdialog;
 	private List<MessageInfo> rgmessageinfo = new ArrayList<MessageInfo>();
 	private MessageAdapter adapter;
-	private ChatController chatController;
+	private IChatController chatController;
 	
 	/**
 	 * Sets up the chat room activity and loads the previous
@@ -70,13 +72,12 @@ public class ChatRoomActivity extends Activity {
 		
 		Bundle extras = getIntent().getExtras();
 		chatroominfo = extras.getParcelable("ROOM");
-		String fDebug = extras.getString("DEBUG");
+		boolean fDebug = extras.getBoolean("DEBUG");
 		
-		if(fDebug.equals("true"))
+		if(fDebug)
 			chatController = ChatController.getInstance();
 		else
-			chatController = ChatController.getInstance();
-//			chatController = ChatControllerStub.getInstance();
+			chatController = ChatControllerStub.getInstance();
 		userinfo = chatController.getUser();
 		
 		String stUser = userinfo.stUserName();
