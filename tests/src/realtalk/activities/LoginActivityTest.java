@@ -74,7 +74,7 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		solo.clickOnMenuItem("Account Settings");
 		solo.clickOnButton("Click Here to Delete Account");
 		solo.clickOnButton("Yes");
-		solo.sleep(5000);
+		solo.sleep(30000);
 		solo.clickOnButton("Close");
 	}
 	
