@@ -1,6 +1,7 @@
 package realtalk.activities;
 
 import realtalk.util.ChatManager;
+import realtalk.util.CommonUtilities;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 import android.app.Activity;
@@ -168,7 +169,7 @@ public class CreateAccountActivity extends Activity {
 			//show alert dialog
 			alertdialogBadPword.show();
 		} else {
-			new UserAdder(new UserInfo(stUsername, stPword, DEFAULT_ID), this).execute();
+			new UserAdder(new UserInfo(stUsername, CommonUtilities.hash(stPword), DEFAULT_ID), this).execute();
 		}
 	}
 	

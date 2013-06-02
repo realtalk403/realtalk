@@ -20,7 +20,7 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 	public LoginActivityTest() {
 		super(LoginActivity.class);
 	}
-	 
+	
 	@Before
 	public void setUp() throws Exception {
 		solo = new Solo(getInstrumentation(), getActivity());

@@ -3,6 +3,7 @@ import com.google.android.gcm.GCMRegistrar;
 
 import realtalk.controller.ChatController;
 import realtalk.util.ChatManager;
+import realtalk.util.CommonUtilities;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 import realtalk.util.gcm.GCMUtilities;
@@ -98,7 +99,7 @@ public class LoginActivity extends Activity {
 		
 		//if user is already logged in, redirect to select room page
 		if(fLoggedIn) {
-			UserInfo userinfo = new UserInfo(stUsername, stPassword, stRegisteredId);
+			UserInfo userinfo = new UserInfo(stUsername, CommonUtilities.hash(stPassword), stRegisteredId);
 			updateRegId(userinfo);
 		} else {			
 			fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
@@ -181,7 +182,8 @@ public class LoginActivity extends Activity {
 	    		editorLoginPrefs.putString("savedPassword", null);
 	    		editorLoginPrefs.commit();
 	    	}
-	    	new Authenticator(new UserInfo(stUsername, stPword, stRegisteredId), this).execute();
+	    	new Authenticator(new UserInfo(stUsername, 
+	    			CommonUtilities.hash(stPword), stRegisteredId), this).execute();
 	    }
 	    
 	}
@@ -237,7 +239,8 @@ public class LoginActivity extends Activity {
 				    EditText edittextPword = (EditText) findViewById(R.id.editPword);
 				    String stUsername = edittextUser.getText().toString();
 				    String stPword = edittextPword.getText().toString();
-				    new UserRemover(new UserInfo(stUsername, stPword, stRegisteredId), LoginActivity.this).execute();
+				    new UserRemover(new UserInfo(stUsername, CommonUtilities.hash(stPword), stRegisteredId),
+				    		LoginActivity.this).execute();
 				}	
 			});
 			
