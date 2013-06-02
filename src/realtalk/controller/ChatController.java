@@ -241,4 +241,15 @@ public final class ChatController implements IChatController {
         }
         return false;
     }
+    
+    /**
+     * For testing purposes
+     */
+    public void fInitializeTest(UserInfo userinfo) {
+        this.userinfo = userinfo;
+    }
+    
+    public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo) {
+    	return ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
+    }
 }

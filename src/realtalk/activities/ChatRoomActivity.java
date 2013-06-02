@@ -8,7 +8,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import realtalk.controller.ChatController;
-import realtalk.util.ChatManager;
+import realtalk.controller.ChatControllerStub;
+import realtalk.controller.IChatController;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.CommonUtilities;
 import realtalk.util.Emoticonifier;
@@ -64,7 +65,7 @@ public class ChatRoomActivity extends Activity {
 	private ProgressDialog progressdialog;
 	private List<MessageInfo> rgmi = new ArrayList<MessageInfo>();
 	private MessageAdapter adapter;
-	private ChatController chatController = ChatController.getInstance();
+	private IChatController chatController;
 	private Boolean fAnon;
 	private SoundPool soundpool;
 	private int iMessageBeep = 0;
@@ -81,8 +82,15 @@ public class ChatRoomActivity extends Activity {
 		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		Bundle extras = getIntent().getExtras();
-		userinfo = ChatController.getInstance().getUser();
 		chatroominfo = extras.getParcelable("ROOM");
+		boolean fDebug = extras.getBoolean("DEBUG");
+		
+		if(!fDebug)
+			chatController = ChatController.getInstance();
+		else
+			chatController = ChatControllerStub.getInstance();
+		userinfo = chatController.getUser();
+
 		fAnon = extras.getBoolean("ANON", false);
 		
 		String stUser = userinfo.stUserName();
@@ -101,6 +109,20 @@ public class ChatRoomActivity extends Activity {
 		ListView listview = (ListView) findViewById(R.id.list);
 		adapter = new MessageAdapter(this, R.layout.message_item, rgmi);
 		listview.setAdapter(adapter);
+	}
+	
+	/**
+	 * Used for debugging
+	 */
+	public void populateAdapter(final List<MessageInfo> rgmessageinfo) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {   
+            	adapter.clear();
+        		for(MessageInfo messageinfo : rgmessageinfo)
+        			adapter.add(messageinfo);
+            }
+        });
 	}
 	
 	@Override
@@ -167,7 +189,6 @@ public class ChatRoomActivity extends Activity {
 		
 		if (!stValue.equals("")) {
 			MessageInfo message = new MessageInfo (stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
-			
 			new MessageSender(message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			edittext.setText("");
 		}
@@ -260,7 +281,7 @@ public class ChatRoomActivity extends Activity {
 			NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 			if (networkinfo != null && networkinfo.isConnected()) {
 				Log.d("connectivity", "Connected and attempting to post message");
-				RequestResultSet rrs =ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
+				RequestResultSet rrs = chatController.rrsPostMessage(userinfo, chatroominfo, messageinfo);
 				Log.d("connectivity", "Message posted");
 				return rrs;
 			} else {
@@ -348,14 +369,13 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected Boolean doInBackground(String... params) {
-			ChatController chatcontroller = ChatController.getInstance();
-			if (chatcontroller.fIsAlreadyJoined(chatroominfo)) {
+			if (chatController.fIsAlreadyJoined(chatroominfo)) {
 				return true;
 			} else {
 				ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 	            if (networkinfo != null && networkinfo.isConnected()) {
-					return chatcontroller.joinRoom(chatroominfo, fAnon);
+					return chatController.joinRoom(chatroominfo, fAnon);
 				}
 	            return null;
 			}

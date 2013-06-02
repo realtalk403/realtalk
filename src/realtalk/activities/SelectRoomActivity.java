@@ -88,8 +88,6 @@ public class SelectRoomActivity extends Activity {
 		String stUser = userinfo.stUserName();
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
-		TextView textviewUserTitle = (TextView) findViewById(R.id.selectRoomTitle);
-		textviewUserTitle.setText("RealTalk");
 
 		ListView listviewJoined = (ListView) findViewById(R.id.joined_list);
 		listviewJoined.setClickable(false);
@@ -104,6 +102,7 @@ public class SelectRoomActivity extends Activity {
             	ChatRoomInfo criSelected = rgchatroominfoJoined.get(position);
         		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		itStartChat.putExtra("ROOM", criSelected);
+        		itStartChat.putExtra("DEBUG", false);
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
             }
@@ -116,6 +115,7 @@ public class SelectRoomActivity extends Activity {
             	ChatRoomInfo criSelected = rgchatroominfoUnjoined.get(position);
         		Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		itStartChat.putExtra("ROOM", criSelected);
+        		itStartChat.putExtra("DEBUG", false);
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
             }
@@ -194,6 +194,12 @@ public class SelectRoomActivity extends Activity {
 		}
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		new Refresher().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+
 	private void loadRooms(Location location, double radiusMeters) {
 		new RoomLoader(this, location.getLatitude(), location.getLongitude(), HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
@@ -204,7 +210,7 @@ public class SelectRoomActivity extends Activity {
 		String stJoinView;
 		if(fJoined) {
 			chatroominfo = rgchatroominfoJoined.get(position);
-			stJoinView = "View";
+			stJoinView = "Enter";
 		} else {
 			chatroominfo = rgchatroominfoUnjoined.get(position);
 			stJoinView = "Join";
@@ -230,6 +236,7 @@ public class SelectRoomActivity extends Activity {
 			public void onClick(DialogInterface dialog, int id) {
 				Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		itStartChat.putExtra("ROOM", chatroominfo);
+        		itStartChat.putExtra("DEBUG", false);
         		itStartChat.putExtra("ANON", fAnon);
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
@@ -520,5 +527,14 @@ public class SelectRoomActivity extends Activity {
 		  		SelectRoomActivity.this.finish();
             }
         }    
+	}
+	
+	class Refresher extends AsyncTask<String, String, Boolean> {
+	    
+        @Override
+        protected Boolean doInBackground(String... params) {
+        	ChatController.getInstance().fRefresh();
+        	return true;
+        }
 	}
 }
