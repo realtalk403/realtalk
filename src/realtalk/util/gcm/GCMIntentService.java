@@ -16,7 +16,6 @@ import android.util.Log;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.realtalk.R;
 
-import realtalk.activities.ChatRoomActivity;
 import realtalk.activities.LoginActivity;
 import realtalk.controller.ChatController;
 import realtalk.util.MessageInfo;
@@ -54,8 +53,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     }
 
     @Override
-    protected void onUnregistered(Context context, String stRegId) {
-        // TODO        
+    protected void onUnregistered(Context context, String stRegId) {        
     }
     
     /**

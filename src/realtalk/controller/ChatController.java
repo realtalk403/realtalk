@@ -187,7 +187,12 @@ public final class ChatController implements IChatController {
      */
 
     public boolean joinRoom(ChatRoomInfo chatroom, boolean fAnon) {
-        RequestResultSet rrs = ChatManager.rrsJoinRoom(userinfo, chatroom, fAnon);
+        RequestResultSet rrs;
+        if (!debug) {
+            rrs = ChatManager.rrsJoinRoom(userinfo, chatroom, fAnon);
+        } else {
+            rrs = cm.rrsJoinRoom(userinfo, chatroom, fAnon);
+        }
         if (!rrs.getfSucceeded()) {
             return false;
         }

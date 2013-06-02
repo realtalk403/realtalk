@@ -18,8 +18,6 @@ import realtalk.util.PullMessageResultSet;
 import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 
-import android.test.AndroidTestCase;
-
 /**
  * White box tests for ChatController.
  * Not much can be done without using real user and room data,
@@ -34,6 +32,7 @@ import android.test.AndroidTestCase;
 public class ChatControllerTest extends TestCase {
 
     private static final int TIMEOUT = 10000;
+    private static final boolean ANON_DEFAULT = false;
     private ChatController chatcontroller;
     
     // Test the class using a user that doesn't exist.
@@ -174,8 +173,7 @@ public class ChatControllerTest extends TestCase {
 		EasyMock.expect(mockChatManager.crrsUsersChatrooms(userinfo1)).andReturn(crrsDefault);
 		EasyMock.expect(mockChatManager.pmrsChatLogGet(chatroominfo1)).andReturn(pmrs1);
 		EasyMock.expect(mockChatManager.pmrsChatLogGet(chatroominfo2)).andReturn(pmrs2);
-		EasyMock.expect(mockChatManager.pmrsChatLogGet(chatroominfo3)).andReturn(pmrs3);
-		
+		EasyMock.expect(mockChatManager.pmrsChatLogGet(chatroominfo3)).andReturn(pmrs3);		
 	}
 	
 	private void replayAndInitialize() {
@@ -232,7 +230,7 @@ public class ChatControllerTest extends TestCase {
 	 * @param chatroominfo
 	 */
 	private void testJoinRoom(ChatRoomInfo chatroominfo) {
-		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo)).andReturn(rrsMockSuccess);
+		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo, ANON_DEFAULT)).andReturn(rrsMockSuccess);
 		replayAndInitialize();
 		chatcontroller.joinRoom(chatroominfo, false);
 		assertTrue(chatcontroller.fIsAlreadyJoined(chatroominfo));
@@ -254,7 +252,7 @@ public class ChatControllerTest extends TestCase {
 	 * @param chatroominfo
 	 */
 	private void testLeaveRoom(ChatRoomInfo chatroominfo) {
-		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo)).andReturn(rrsMockSuccess);
+		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo, ANON_DEFAULT)).andReturn(rrsMockSuccess);
 		EasyMock.expect(mockChatManager.rrsLeaveRoom(userinfo1, chatroominfo)).andReturn(rrsMockSuccess);
 		replayAndInitialize();
 		chatcontroller.joinRoom(chatroominfo, false);
@@ -272,7 +270,7 @@ public class ChatControllerTest extends TestCase {
 	@Test(timeout = TIMEOUT)
 	public void testGetRoomsTwoRooms() {
 		List<ChatRoomInfo> rgcri = new ArrayList<ChatRoomInfo>();
-		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo2)).andReturn(rrsMockSuccess);
+		EasyMock.expect(mockChatManager.rrsJoinRoom(userinfo1, chatroominfo2, ANON_DEFAULT)).andReturn(rrsMockSuccess);
 		replayAndInitialize();
 		chatcontroller.joinRoom(chatroominfo2, false);
 		rgcri.add(chatroominfo1);
