@@ -16,7 +16,7 @@ import com.realtalk.R;
  */
 public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginActivity> {
 	private Solo solo;
-	 
+	  
 	public LoginActivityTest() {
 		super(LoginActivity.class);
 	}
@@ -68,6 +68,7 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		EditText edittextConfPassword = (EditText) solo.getView(R.id.conf_pword);
 		solo.enterText(edittextConfPassword, "test");
 		solo.clickOnButton("Create Account");
+		solo.sleep(30000);
 	} 
 	
 	public void deleteAccount() {
