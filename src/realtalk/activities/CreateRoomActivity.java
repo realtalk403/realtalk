@@ -17,8 +17,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
@@ -70,7 +72,57 @@ public class CreateRoomActivity extends Activity {
 	}
 	
 	public void addRoom(View view) {
-		new RoomCreator(u, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		EditText roomNameText = (EditText)findViewById(R.id.roomName);
+		String stRoomName = roomNameText.getText().toString();
+		
+		EditText roomDescription = (EditText)findViewById(R.id.description);
+		String stDescription = roomDescription.getText().toString();
+		
+		if(stRoomName.length() > 40) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid Field");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Room Name must not exceed 40 characters.")
+				.setCancelable(false)
+				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						//close the dialog box if this button is clicked
+						dialog.cancel();
+					}	
+			});
+			
+			//create alert dialog
+			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogBadPword.show();	
+		} else if (stDescription.length() > 100) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			//set title
+			alertDialogBuilder.setTitle("Invalid Field");
+			
+			//set dialog message
+			alertDialogBuilder
+				.setMessage("Room Description must not exceed 100 characters.")
+				.setCancelable(false)
+				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						//close the dialog box if this button is clicked
+						dialog.cancel();
+					}	
+			});
+			
+			//create alert dialog
+			AlertDialog alertdialogBadPword = alertDialogBuilder.create();
+			
+			//show alert dialog
+			alertdialogBadPword.show();	
+		} else {
+			new RoomCreator(u, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		}
 	}
 	
 	/**
