@@ -114,9 +114,15 @@ public class ChatRoomActivity extends Activity {
 	/**
 	 * Used for debugging
 	 */
-	public void populateAdapter(List<MessageInfo> rgmessageinfo) {
-		for(MessageInfo messageinfo : rgmessageinfo)
-			adapter.add(messageinfo);
+	public void populateAdapter(final List<MessageInfo> rgmessageinfo) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {   
+            	adapter.clear();
+        		for(MessageInfo messageinfo : rgmessageinfo)
+        			adapter.add(messageinfo);
+            }
+        });
 	}
 	
 	@Override

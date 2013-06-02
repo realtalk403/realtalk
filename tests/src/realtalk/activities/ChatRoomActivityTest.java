@@ -54,22 +54,35 @@ import com.realtalk.R;
 		AutoCompleteTextView edittextMessage = (AutoCompleteTextView) solo.getView(R.id.message);
 		solo.enterText(edittextMessage, "test message");
 		solo.clickOnButton("Send");
+		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
+		
 		assertTrue("Message did not send", ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size() == cMessageInfo+1);
 		solo.enterText(edittextMessage, "another message");
 		solo.clickOnButton("Send");
+		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
+		
 		solo.enterText(edittextMessage, "hello there");
 		solo.clickOnButton("Send");
+		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
+		
 		solo.enterText(edittextMessage, "hi!");
 		solo.clickOnButton("Send");
+		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
+		
 		solo.enterText(edittextMessage, "how are you?");
 		solo.clickOnButton("Send");
+		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
+		
 		solo.enterText(edittextMessage, "I'm pretty good, how have you been?");
 		solo.clickOnButton("Send");
+		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
+		
 		solo.enterText(edittextMessage, "great! see you later!");
 		solo.clickOnButton("Send");
+		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
+		
 		solo.enterText(edittextMessage, "bye!");
 		solo.clickOnButton("Send");
 		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
-		solo.sleep(10000);
 	}
 }
