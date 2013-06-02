@@ -50,8 +50,12 @@ public class CreateRoomActivity extends Activity {
 		Bundle extras = getIntent().getExtras();
 		latitude = extras.getDouble("LATITUDE");
 		longitude = extras.getDouble("LONGITUDE");
-		
-		u = ChatController.getInstance().getUser();
+		if (!extras.containsKey("DEBUG_MODE")) {
+			u = ChatController.getInstance().getUser();
+		} else {
+			u = new UserInfo("testname", "stPassword", "stRegistrationId");
+			setDebugMode();
+		}
 		String stUser = u.stUserName();
 
 		Log.d("CORY", "extracted bundle extras");
