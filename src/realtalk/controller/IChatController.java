@@ -3,6 +3,7 @@ package realtalk.controller;
 import java.util.List;
 
 import android.content.Context;
+import android.location.Location;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.MessageInfo;
 import realtalk.util.UserInfo;
@@ -18,6 +19,25 @@ public interface IChatController {
      * @return true if initialization succeeded, false if it failed.
      */
     public boolean fInitialize(UserInfo userinfo);
+    
+    /**
+     * Returns a location if the Controller has stored a recent location (less than five minutes old)
+     * 
+     * @return a location if there exists a stored recent location, null otherwise.
+     */
+    public Location getRecentLocation();
+    
+    /**
+     * Adds a recent location to the controller.
+     */
+    public void setRecentLocation(Location location);
+    
+    /**
+     * Gets the current user logged in.
+     * 
+     * @return UserInfo describing the current user. null if logged out.
+     */
+    public UserInfo getUser();
     
     /**
      * This method refreshes the chatrooms that the current instance user has joined.

@@ -131,6 +131,11 @@ public class SelectRoomActivity extends Activity {
 		//location code:
 		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		final double radiusMeters = 500.0;
+		
+		//load recent location first
+		if (ChatController.getInstance().getRecentLocation() != null)
+			loadRooms(ChatController.getInstance().getRecentLocation(), radiusMeters);
+		
 		Criteria criteria = new Criteria();
 		String stBestProvider = locationmanager.getBestProvider(criteria, true);
 		if (stBestProvider == null) {
@@ -148,6 +153,7 @@ public class SelectRoomActivity extends Activity {
 					//if new location data is not usable...
 					locationUser = location;
 					loadRooms(locationUser, radiusMeters);
+					ChatController.getInstance().setRecentLocation(locationUser);
 					locationCount++;
 					if (locationMostAccurate == null || locationMostAccurate.getAccuracy() >= locationUser.getAccuracy())
 						locationMostAccurate = locationUser;

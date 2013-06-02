@@ -12,6 +12,7 @@ import realtalk.util.ChatRoomInfo;
 import realtalk.util.MessageInfo;
 import realtalk.util.UserInfo;
 import android.content.Context;
+import android.location.Location;
 
 /**
  * Controller STUB
@@ -161,4 +162,16 @@ public final class ChatControllerStub implements IChatController {
         }
         return false;
     }
+
+	@Override
+	public Location getRecentLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setRecentLocation(Location location) {
+		// TODO Auto-generated method stub
+		
+	}
 }
