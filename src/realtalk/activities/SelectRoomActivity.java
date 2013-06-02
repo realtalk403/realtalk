@@ -39,6 +39,9 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -63,6 +66,7 @@ public class SelectRoomActivity extends Activity {
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
 	private Location locationUser;
+	private Boolean fAnon;
 
 	/**
 	 * Sets up the activity, and diplays a list of available rooms
@@ -77,6 +81,8 @@ public class SelectRoomActivity extends Activity {
 		
 		ImageView buttonCreateRoom = (ImageView) findViewById(R.id.createRoomId);
 		buttonCreateRoom.setEnabled(false);
+		
+		fAnon = false;
 		
 		UserInfo userinfo = ChatController.getInstance().getUser();
 		String stUser = userinfo.stUserName();
@@ -194,6 +200,7 @@ public class SelectRoomActivity extends Activity {
 	
 	private void getDetails(int position, boolean fJoined) {
 		final ChatRoomInfo chatroominfo;
+		final CheckBox checkboxAnon;
 		String stJoinView;
 		if(fJoined) {
 			chatroominfo = rgchatroominfoJoined.get(position);
@@ -206,18 +213,24 @@ public class SelectRoomActivity extends Activity {
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		//set title
 		alertDialogBuilder.setTitle(chatroominfo.stName());
+
+		//set up the checkbox
+		View viewCheckbox = View.inflate(this, R.layout.checkbox_anon, null);
+		checkboxAnon = (CheckBox)findViewById(R.id.anon);
 		
 		//set dialog message
 		alertDialogBuilder
 			.setMessage(Html.fromHtml("<b>Description: </b> " +  chatroominfo.stDescription() + 
 									"<br/><br/><b>Active Users: </b> " + chatroominfo.numUsersGet() +
 									"<br/><br/><b>Creator: </b> " + chatroominfo.stCreator()))
+			.setView(viewCheckbox)
 			.setCancelable(true);
 		
 		alertDialogBuilder.setNegativeButton(stJoinView, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				Intent itStartChat = new Intent(SelectRoomActivity.this, ChatRoomActivity.class);
         		itStartChat.putExtra("ROOM", chatroominfo);
+        		itStartChat.putExtra("ANON", fAnon);
         		SelectRoomActivity.this.startActivity(itStartChat);
         		SelectRoomActivity.this.finish();
 			}	
@@ -244,6 +257,14 @@ public class SelectRoomActivity extends Activity {
 		
 		//show alert dialog
 		alertdialogDeleteAcc.show();
+	}
+	
+	/**
+	 * This is called when the anonymous checkbox is clicked.
+	 * @param view the checkbox
+	 */
+	public void onAnonCheckboxClicked(View view) {
+	    fAnon = ((CheckBox) view).isChecked();
 	}
 	
 //	private void LoadRooms(Location locationUser, double radiusMeters) {
