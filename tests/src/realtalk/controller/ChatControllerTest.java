@@ -176,6 +176,10 @@ public class ChatControllerTest extends TestCase {
 		EasyMock.expect(mockChatManager.pmrsChatLogGet(chatroominfo3)).andReturn(pmrs3);		
 	}
 	
+	/*
+	 * This method has to be called after the mock is set up. This initializes the chatcontroller after calling
+	 * replay on the mock chat manager.
+	 */
 	private void replayAndInitialize() {
 		EasyMock.replay(mockChatManager);
 		chatcontroller.setChatManager(mockChatManager);

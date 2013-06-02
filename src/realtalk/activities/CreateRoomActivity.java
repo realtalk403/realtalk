@@ -1,4 +1,3 @@
-
 package realtalk.activities;
 
 import java.sql.Timestamp;
@@ -168,4 +167,3 @@ public class CreateRoomActivity extends Activity {
 	}
 	
 }
-
