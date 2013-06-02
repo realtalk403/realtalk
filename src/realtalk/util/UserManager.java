@@ -1,6 +1,3 @@
-/**
- * 
- */
 package realtalk.util;
 
 /**
@@ -11,19 +8,23 @@ package realtalk.util;
  * @author Colin Kho
  *
  */
-public class MockUserManager {
-	private MockUserManager userControllerSingleton = 
+public class UserManager {
+	private static UserManager userControllerSingleton = 
 			null;
 	
-	private MockUserManager() { }
+	protected UserManager() { }
 	
 	/**
 	 * Gets a singleton instance of the UserManager
 	 * 
 	 * @return current instance of UserManager
 	 */
-	public static MockUserManager getInstance() {
-		throw new UnsupportedOperationException();
+	public static UserManager getInstance() {
+		return userControllerSingleton;
+	}
+	
+	public static void setInstance(UserManager usermanager) {
+		userControllerSingleton = usermanager;
 	}
 	
 	public boolean fLogin(String name, String password) {

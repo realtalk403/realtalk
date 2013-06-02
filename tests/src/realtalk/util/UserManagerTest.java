@@ -22,7 +22,7 @@ import android.test.AndroidTestCase;
  */
 public class UserManagerTest extends AndroidTestCase {
 	private static final int TIMEOUT = 10000;
-	private MockUserManager uManager;
+	private UserManager uManager;
 	
 	private static final String LOGOUT_NAME = "";
 	private static final String LOGOUT_PWD = "";
@@ -35,22 +35,23 @@ public class UserManagerTest extends AndroidTestCase {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		uManager = MockUserManager.getInstance();
+		UserManager.setInstance(new StubUserManager());
+		uManager = UserManager.getInstance();
 	}
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@After
-	public void tearDown() throws Exception { 
+	public void tearDown() throws Exception {
 		
 	}
 
 	@Test(timeout = TIMEOUT)
 	public void testGetInstance() {
-		uManager = MockUserManager.getInstance();
+		uManager = UserManager.getInstance();
 		assertTrue("Testing get instance never returns null", uManager != null);
-		assertTrue("Testing getInstance gets correct class", uManager instanceof MockUserManager);
+		assertTrue("Testing getInstance gets correct class", uManager instanceof UserManager);
 	}
 	
 	@Test(timeout = TIMEOUT)
