@@ -10,8 +10,10 @@ import realtalk.util.ChatRoomInfo;
 import realtalk.util.UserInfo;
 import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
+import android.widget.AutoCompleteTextView;
 
 import com.jayway.android.robotium.solo.Solo;
+import com.realtalk.R;
 
 /**
  * Black Box Tests that test functionality of the Chatroom page
@@ -43,5 +45,30 @@ public class ChatRoomActivityTest extends ActivityInstrumentationTestCase2<ChatR
 		assertTrue(solo.searchButton("Send"));
 		assertTrue(solo.searchButton("Leave Room"));
 		assertFalse(solo.searchButton("WRONG_BUTTON"));
+	}
+	
+	@Test
+	public void testSendingMessages() {
+		int cMessageInfo = ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size();
+		AutoCompleteTextView edittextMessage = (AutoCompleteTextView) solo.getView(R.id.message);
+		solo.enterText(edittextMessage, "test message");
+		solo.clickOnButton("Send");
+		assertTrue("Message did not send", ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size() == cMessageInfo+1);
+		solo.enterText(edittextMessage, "another message");
+		solo.clickOnButton("Send");
+		solo.enterText(edittextMessage, "hello there");
+		solo.clickOnButton("Send");
+		solo.enterText(edittextMessage, "hi!");
+		solo.clickOnButton("Send");
+		solo.enterText(edittextMessage, "how are you?");
+		solo.clickOnButton("Send");
+		solo.enterText(edittextMessage, "I'm pretty good, how have you been?");
+		solo.clickOnButton("Send");
+		solo.enterText(edittextMessage, "great! see you later!");
+		solo.clickOnButton("Send");
+		solo.enterText(edittextMessage, "bye!");
+		solo.clickOnButton("Send");
+		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
+		solo.sleep(10000);
 	}
 }

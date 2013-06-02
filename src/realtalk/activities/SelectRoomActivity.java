@@ -187,13 +187,12 @@ public class SelectRoomActivity extends Activity {
 		}
 	}
 	
-//	public void onUserLeaveHint() {
-//		List<ChatRoomInfo> rgJoinedRooms = ChatController.getInstance().getChatRooms();
-//		for (ChatRoomInfo chatroominfo : rgJoinedRooms) {
-//			new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//		}
-//	}
-	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		new Refresher().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+
 	private void loadRooms(Location location, double radiusMeters) {
 		new RoomLoader(this, location.getLatitude(), location.getLongitude(), HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
@@ -501,5 +500,14 @@ public class SelectRoomActivity extends Activity {
 		  		SelectRoomActivity.this.finish();
             }
         }    
+	}
+	
+	class Refresher extends AsyncTask<String, String, Boolean> {
+	    
+        @Override
+        protected Boolean doInBackground(String... params) {
+        	ChatController.getInstance().fRefresh();
+        	return true;
+        }
 	}
 }

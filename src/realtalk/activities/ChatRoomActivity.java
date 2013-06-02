@@ -10,7 +10,6 @@ import java.util.TimeZone;
 import realtalk.controller.ChatController;
 import realtalk.controller.ChatControllerStub;
 import realtalk.controller.IChatController;
-import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.CommonUtilities;
 import realtalk.util.Emoticonifier;
@@ -107,6 +106,14 @@ public class ChatRoomActivity extends Activity {
 		ListView listview = (ListView) findViewById(R.id.list);
 		adapter = new MessageAdapter(this, R.layout.message_item, rgmi);
 		listview.setAdapter(adapter);
+	}
+	
+	/**
+	 * Used for debugging
+	 */
+	public void populateAdapter(List<MessageInfo> rgmessageinfo) {
+		for(MessageInfo messageinfo : rgmessageinfo)
+			adapter.add(messageinfo);
 	}
 	
 	@Override
@@ -265,7 +272,7 @@ public class ChatRoomActivity extends Activity {
 			NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 			if (networkinfo != null && networkinfo.isConnected()) {
 				Log.d("connectivity", "Connected and attempting to post message");
-				RequestResultSet rrs =ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
+				RequestResultSet rrs = chatController.rrsPostMessage(userinfo, chatroominfo, messageinfo);
 				Log.d("connectivity", "Message posted");
 				return rrs;
 			} else {
@@ -353,14 +360,13 @@ public class ChatRoomActivity extends Activity {
 	     */
 		@Override
 		protected Boolean doInBackground(String... params) {
-			ChatController chatcontroller = ChatController.getInstance();
-			if (chatcontroller.fIsAlreadyJoined(chatroominfo)) {
+			if (chatController.fIsAlreadyJoined(chatroominfo)) {
 				return true;
 			} else {
 				ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 	            if (networkinfo != null && networkinfo.isConnected()) {
-					return chatcontroller.joinRoom(chatroominfo);
+					return chatController.joinRoom(chatroominfo);
 				}
 	            return null;
 			}

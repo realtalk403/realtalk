@@ -6,6 +6,7 @@ import android.content.Context;
 import android.location.Location;
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.MessageInfo;
+import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 
 public interface IChatController {
@@ -106,4 +107,6 @@ public interface IChatController {
      * @return true if user is has already joined the chatroom and false if not.
      */
     public boolean fIsAlreadyJoined(ChatRoomInfo cri);
+    
+    public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo);
 }

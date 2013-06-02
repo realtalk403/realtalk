@@ -10,6 +10,7 @@ import java.util.Map;
 
 import realtalk.util.ChatRoomInfo;
 import realtalk.util.MessageInfo;
+import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 import android.content.Context;
 import android.location.Location;
@@ -173,5 +174,10 @@ public final class ChatControllerStub implements IChatController {
 	public void setRecentLocation(Location location) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo) {
+		mpstid_rgmi.get(chatroominfo.stId()).add(messageinfo);
+		return new RequestResultSet(true, null, null);
 	}
 }
