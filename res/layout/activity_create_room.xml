@@ -58,7 +58,6 @@
 	        android:id="@+id/roomName"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@+id/createRoomTitle"
 	        android:layout_marginTop="14dp"
 	        android:ems="10"
 	        android:hint="@string/room_name_hint"
