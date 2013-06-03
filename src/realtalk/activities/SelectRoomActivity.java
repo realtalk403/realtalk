@@ -329,15 +329,10 @@ public class SelectRoomActivity extends Activity {
 	}
 
 	public void createRoom(View view) {
-		Log.d("CORY", "in createRoom()");
 		Intent itCreateRoom = new Intent(this, CreateRoomActivity.class);
-		Log.d("CORY", "intent created");
 		itCreateRoom.putExtra("LATITUDE", locationUser.getLatitude());
-		Log.d("CORY", "latitude extra has been put");
 		itCreateRoom.putExtra("LONGITUDE", locationUser.getLongitude());
-		Log.d("CORY", "longitude extra has been put");
 		this.startActivity(itCreateRoom);
-		Log.d("CORY", "CreateRoomActivity started");
 	}
 
 	/**

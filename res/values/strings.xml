@@ -59,4 +59,5 @@
     <string name="gps_out_of_service">GPS is out of service.</string>
     <string name="gps_unavailable">GPS is temporarily unavailable.</string>
     <string name="leaving_room">Leaving room. Please wait...</string>
+    <string name="login_failed">Sorry, we failed to log you in.</string>
 </resources>
