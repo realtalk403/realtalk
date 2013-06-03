@@ -132,6 +132,19 @@ public class ChatRoomInfo implements Parcelable {
 		return new Timestamp(timestampCreated.getTime());
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+            return false;
+	    }
+        if (!(obj instanceof ChatRoomInfo)){
+            return false;
+        }
+        ChatRoomInfo criRhs = (ChatRoomInfo) obj;
+        return criRhs.stName().equals(stName) &&
+        	   criRhs.stId().equals(stId);
+	}
+	
     public int describeContents() {
         return 0;
     }

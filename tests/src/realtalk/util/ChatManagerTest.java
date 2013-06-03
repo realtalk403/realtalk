@@ -71,6 +71,7 @@ public class ChatManagerTest extends AndroidTestCase {
     	}
     }
     
+    @SuppressWarnings("deprecation")
     @Test(timeout = TIMEOUT)
     public void testPullRecentChatTest() {
     	ChatRoomResultSet crrs = ChatManager.crrsNearbyChatrooms(0, 0, 500.0);
