@@ -72,7 +72,11 @@
 	        android:layout_marginTop="14dp"
 	        android:ems="10"
 	        android:hint="@string/room_description_hint"
-	        android:inputType="text" />
+	        android:inputType="textMultiLine"
+	        android:singleLine="false"
+	        android:lines="3"
+	        android:scrollHorizontally="false"
+	        android:gravity="top|left" />
 
 	    <Button
 	        android:id="@+id/createRoomButton"

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package realtalk.controller;
 
 import java.util.List;
@@ -243,13 +240,20 @@ public final class ChatController implements IChatController {
     }
     
     /**
+     * Posts a message to a chatroom.
+     * 
+     * @param userinfo the user posting the message
+     * @param chatroominfo the chatroom the message is being posted to
+     * @param messageinfo the message being posted
+     */
+    public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo) {
+    	return ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
+    }
+    
+    /**
      * For testing purposes
      */
     public void fInitializeTest(UserInfo userinfo) {
         this.userinfo = userinfo;
-    }
-    
-    public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo) {
-    	return ChatManager.rrsPostMessage(userinfo, chatroominfo, messageinfo);
     }
 }

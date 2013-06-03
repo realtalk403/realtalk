@@ -194,16 +194,33 @@ public class SelectRoomActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Refresh the page on resume
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
 		new Refresher().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
+	/**
+	 * Loads the joined/available rooms to their respective lists
+	 * on the page.
+	 * 
+	 * @param location your current location
+	 * @param radiusMeters radius to search for rooms
+	 */
 	private void loadRooms(Location location, double radiusMeters) {
 		new RoomLoader(this, location.getLatitude(), location.getLongitude(), HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
+	/**
+	 * Displays the details of a room, and gives the option
+	 * to join/leave/chat anonomously
+	 * 
+	 * @param position the index of the lidt that was clicked
+	 * @param fJoined whether or not you are already joined in the room
+	 */
 	private void getDetails(int position, boolean fJoined) {
 		final ChatRoomInfo chatroominfo;
 		final CheckBox checkboxAnon;
@@ -273,10 +290,6 @@ public class SelectRoomActivity extends Activity {
 	public void onAnonCheckboxClicked(View view) {
 	    fAnon = ((CheckBox) view).isChecked();
 	}
-	
-//	private void LoadRooms(Location locationUser, double radiusMeters) {
-//		new RoomLoader(this, locationUser.getLatitude(), locationUser.getLongitude(), radiusMeters).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -303,10 +316,18 @@ public class SelectRoomActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Opens the account settings page.
+	 * Called when the "gear" icon is clicked.
+	 */
 	public void clickSettings(View view) {
 		startActivity(new Intent(this, AccountSettingsActivity.class));
 	}
 	
+	/**
+	 * Prompts the user if they want to log out, and does so if they 
+	 * choose "yes".  Called when the "door" icon is clicked.
+	 */
 	public void clickLogout(View view) {
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		//set title
@@ -344,6 +365,10 @@ public class SelectRoomActivity extends Activity {
 		
 	}
 
+	/**
+	 * Gets the user's current location and opens the create room page.
+	 * Called when the "green plus" icon is clicked.
+	 */
 	public void createRoom(View view) {
 		Intent itCreateRoom = new Intent(this, CreateRoomActivity.class);
 		itCreateRoom.putExtra("LATITUDE", locationUser.getLatitude());
@@ -424,6 +449,12 @@ public class SelectRoomActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Adapter for the lists of chatrooms.
+	 * 
+	 * @author Jordan Hazari
+	 *
+	 */
 	private class ChatRoomAdapter extends ArrayAdapter<ChatRoomInfo> {
 
 		private List<ChatRoomInfo> rgchatroominfo;
@@ -524,6 +555,12 @@ public class SelectRoomActivity extends Activity {
         }    
 	}
 	
+	/**
+	 * AsyncTask that refreshes the page.
+	 * 
+	 * @author Jordan Hazari
+	 *
+	 */
 	class Refresher extends AsyncTask<String, String, Boolean> {
 	    
         @Override

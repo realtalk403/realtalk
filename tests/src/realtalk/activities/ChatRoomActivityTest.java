@@ -17,13 +17,19 @@ import com.jayway.android.robotium.solo.Solo;
 import com.realtalk.R;
 
 /**
- * Black Box Tests that test functionality of the Chatroom page
+ * Black Box Tests that test functionality of the Chatroom page,
+ * using a "stub" controller class
+ * 
  * @author Jordan Hazari
  *
  */
 @SuppressLint("NewApi") public class ChatRoomActivityTest extends ActivityInstrumentationTestCase2<ChatRoomActivity> {
 	private Solo solo;
-	 
+	
+	/**
+	 * Sets up the test by initializing the "stub" controller
+	 * and providing all necessary information for a chatroom.
+	 */
 	public ChatRoomActivityTest() {
 		super(ChatRoomActivity.class);
 		
@@ -35,12 +41,19 @@ import com.realtalk.R;
 		it.putExtra("DEBUG", true);
 		setActivityIntent(it);
 	}
-	 
+	
+	/**
+	 * Robotium setup.
+	 */
 	@Before
 	public void setUp() throws Exception {
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
-		
+	
+	/**
+	 * A simple test to make sure the right buttons are on
+	 * the page.
+	 */
 	@Test
 	public void testButtonsAndTextDisplay() {
 		assertTrue(solo.searchButton("Send"));
@@ -48,6 +61,10 @@ import com.realtalk.R;
 		assertFalse(solo.searchButton("WRONG_BUTTON"));
 	}
 	
+	/**
+	 * A test to make sure messages can be sent
+	 * and displayed on the page.
+	 */
 	@Test
 	public void testSendingMessages() {
 		int cMessageInfo = ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size();
@@ -63,6 +80,11 @@ import com.realtalk.R;
 		sendMessage("bye!");
 	}
 	
+	/**
+	 * A helper method to send a message.
+	 * 
+	 * @param stMessage the message to send
+	 */
 	private void sendMessage(String stMessage) {
 		AutoCompleteTextView edittextMessage = (AutoCompleteTextView) solo.getView(R.id.message);
 		solo.enterText(edittextMessage, stMessage);
