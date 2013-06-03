@@ -68,6 +68,7 @@ import com.realtalk.R;
 	 */
 	@Test
 	public void testSendingMessages() {
+	    solo.sleep(10000);
 		int cMessageInfo = ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size();
 		sendMessage("test message");
 		solo.sleep(30000);
