@@ -1,10 +1,8 @@
 package realtalk.activities;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import realtalk.util.UserInfo;
 import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.EditText;
@@ -40,17 +38,17 @@ public class CreateRoomActivityTest extends ActivityInstrumentationTestCase2<Cre
 		solo = new Solo(getInstrumentation(), activity);
 	}
 
-	/**
-	 * Tests a successful room creation
-	 */
-	@Test
-	public void testCreateRoom() {
-		EditText edittextName = (EditText) solo.getView(R.id.roomName);
-		solo.enterText(edittextName, "TRTestTestTestRoom");
-		EditText edittextDesc = (EditText) solo.getView(R.id.description);
-		solo.enterText(edittextDesc, "This is a test room");
-		solo.clickOnButton("Create Room");
-	}
+//	/**
+//	 * Tests a successful room creation
+//	 */
+//	@Test
+//	public void testCreateRoom() {
+//		EditText edittextName = (EditText) solo.getView(R.id.roomName);
+//		solo.enterText(edittextName, "TRTestTestTestRoom");
+//		EditText edittextDesc = (EditText) solo.getView(R.id.description);
+//		solo.enterText(edittextDesc, "This is a test room");
+//		solo.clickOnButton("Create Room");
+//	}
 	
 	/**
 	 * Tests room creation without a description
