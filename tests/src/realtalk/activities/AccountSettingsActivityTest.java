@@ -12,6 +12,12 @@ import android.widget.EditText;
 import com.jayway.android.robotium.solo.Solo;
 import com.realtalk.R;
 
+/**
+ * Robotium test that tests the account settings activity.
+ * 
+ * @author Brandon
+ *
+ */
 public class AccountSettingsActivityTest extends ActivityInstrumentationTestCase2<AccountSettingsActivity> {
 	private Solo solo;
 	
@@ -25,13 +31,19 @@ public class AccountSettingsActivityTest extends ActivityInstrumentationTestCase
 		solo = new Solo(getInstrumentation(), getActivity());
 	}
 	
+	/**
+	 * tests controls are present
+	 */
 	@Test
 	public void testButtonsAndTextDisplay() {
 		assertTrue(solo.searchButton("Submit"));
 		assertTrue(solo.searchButton("Click Here to Delete Account"));
 		assertFalse(solo.searchButton("WRONG_BUTTON"));
 	}
-
+	
+	/**
+	 * Tests for an empty password and whether it is handled.
+	 */
 	@Test
 	public void testEmptyPassword() {
 		EditText edittextOld = (EditText) solo.getView(R.id.oldpword);
@@ -45,6 +57,9 @@ public class AccountSettingsActivityTest extends ActivityInstrumentationTestCase
 		solo.clickOnButton("Close");
 	} 
 	 
+	/**
+	 * Tests if non matching passwords is handled
+	 */
 	@Test
 	public void testNonMatchingPasswords() {
 		EditText edittextOld = (EditText) solo.getView(R.id.oldpword);
@@ -58,6 +73,9 @@ public class AccountSettingsActivityTest extends ActivityInstrumentationTestCase
 		solo.clickOnButton("Close");
 	}
 	
+	/**
+	 * Tests if password is too long.
+	 */
 	@Test
 	public void testPasswordTooLong() {
 		EditText edittextOld = (EditText) solo.getView(R.id.oldpword);
@@ -71,10 +89,12 @@ public class AccountSettingsActivityTest extends ActivityInstrumentationTestCase
 		solo.clickOnButton("Close");
 	}
 	
+	/**
+	 * Tests if delete is denied if fields are poorly formed
+	 */
 	@Test
 	public void testDenyingDeleteAccount() {
 		solo.clickOnButton("Click Here to Delete Account");
 		solo.clickOnButton("No");
 	}
-
 }
