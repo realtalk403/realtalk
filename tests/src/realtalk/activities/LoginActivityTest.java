@@ -32,8 +32,10 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		assertTrue(solo.searchButton("Create Account"));
 		assertFalse(solo.searchButton("WRONG_BUTTON"));
 	}
-	
-	   
+	 
+	/**
+	 * Tests when user enters empty username when logging in
+	 */
 	@Test
 	public void testEmptyUsername() {
 		EditText edittextUsername = (EditText) solo.getView(R.id.editQuery);
@@ -44,7 +46,10 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		assertTrue("Could not find the dialog", solo.searchText("Invalid input"));
 		solo.clickOnButton("Close");
 	}  
-	 
+	
+	/**
+	 * Tests when user enters empty password when logging in
+	 */
 	@Test
 	public void testEmptyPassword() {
 		EditText edittextUsername = (EditText) solo.getView(R.id.editQuery);
@@ -57,6 +62,9 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 	}
 	 
 	
+	/**
+	 * Sets up test account
+	 */
 	public void setUpAccount() {
 		solo.clickOnButton("Create Account");
 		solo.assertCurrentActivity("Check on current page activity", CreateAccountActivity.class);
@@ -70,6 +78,9 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		solo.sleep(5000);
 	} 
 	
+	/**
+	 * Deletes account
+	 */
 	public void deleteAccount() {
 		solo.clickOnMenuItem("Account Settings");
 		solo.clickOnButton("Click Here to Delete Account");
@@ -78,18 +89,11 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		solo.clickOnButton("Close");
 	}
 	
+	/**
+	 * Tests Creating an account, logging in, changing the password, and deleting the account
+	 */
 	@Test
 	public void testSuccessfulLogin() {
-//		setUpAccount();
-//		EditText edittextUsername = (EditText) solo.getView(R.id.editQuery);
-//		solo.enterText(edittextUsername, "ab3r5i9");
-//		EditText edittextPassword = (EditText) solo.getView(R.id.editPword);
-//		solo.enterText(edittextPassword, "test");
-//		solo.clickOnButton("Login");
-//		solo.sleep(5000);
-//		solo.assertCurrentActivity("Check on current page activity", SelectRoomActivity.class);
-//		deleteAccount();
-		
 		setUpAccount();
 		EditText edittextUsername = (EditText) solo.getView(R.id.editQuery);
 		solo.enterText(edittextUsername, "ab3r5i9");
@@ -112,6 +116,9 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		deleteAccount();
 	} 
 	
+	/**
+	 * Tests if users enter non-matching passwords in Create Account page
+	 */
 	@Test
 	public void testNonmatchingPasswords() {
 		solo.clickOnButton("Create Account");
@@ -128,6 +135,9 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		solo.goBack();
 	}
 	
+	/**
+	 * Tests if user enters empty fields in Create Account page
+	 */
 	@Test
 	public void testEmptyFields() {
 		solo.clickOnButton("Create Account");
@@ -144,6 +154,9 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		solo.goBack();
 	}
 	
+	/**
+	 * Tests if user tries to create an account with a space in the middle
+	 */
 	@Test
 	public void testQsernameWithSpace() {
 		solo.clickOnButton("Create Account");
@@ -160,6 +173,9 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		solo.goBack();
 	}
 	
+	/**
+	 * Tests if user tries to create an account with a username that's too long
+	 */
 	@Test
 	public void testQsernameTooLong() {
 		solo.clickOnButton("Create Account");
@@ -176,6 +192,9 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 		solo.goBack();
 	}  
 	
+	/**
+	 * Tests if user tries to create an account with a password that's too long
+	 */
 	@Test
 	public void testPasswordTooLong() {
 		solo.clickOnButton("Create Account");
