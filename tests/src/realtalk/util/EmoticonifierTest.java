@@ -2,6 +2,11 @@ package realtalk.util;
 
 import android.test.AndroidTestCase;
 
+/**
+ * @author Cory Shiraishi
+ *
+ * Tests for Emoticonifier
+ */
 public class EmoticonifierTest extends AndroidTestCase {
 
 	/**

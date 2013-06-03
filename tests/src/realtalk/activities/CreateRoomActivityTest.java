@@ -12,6 +12,11 @@ import android.widget.EditText;
 import com.jayway.android.robotium.solo.Solo;
 import com.realtalk.R;
 
+/**
+ * @author Cory Shiraishi
+ * 
+ * Tests for CreateRoomActivity
+ */
 public class CreateRoomActivityTest extends ActivityInstrumentationTestCase2<CreateRoomActivity> {
 
 	private Solo solo;
@@ -34,12 +39,10 @@ public class CreateRoomActivityTest extends ActivityInstrumentationTestCase2<Cre
 		activity.setDebugMode();
 		solo = new Solo(getInstrumentation(), activity);
 	}
-	
-	@After
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
 
+	/**
+	 * Tests a successful room creation
+	 */
 	@Test
 	public void testCreateRoom() {
 		EditText edittextName = (EditText) solo.getView(R.id.roomName);
@@ -49,12 +52,18 @@ public class CreateRoomActivityTest extends ActivityInstrumentationTestCase2<Cre
 		solo.clickOnButton("Create Room");
 	}
 	
+	/**
+	 * Tests room creation without a description
+	 */
 	@Test
 	public void testCreateRoomNoDescription() {
 		solo.enterText((EditText) solo.getView(R.id.roomName), "Another Test Room");
 		solo.clickOnButton("Create Room");
 	}
 	
+	/**
+	 * Tests room creation without a name
+	 */
 	@Test
 	public void testCreateRoomNoName() {
 		solo.enterText((EditText) solo.getView(R.id.description), "some description");
