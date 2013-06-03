@@ -92,8 +92,9 @@ public class JSONParser {
             Log.e("Buffer Error", "Error converting result " + e.toString());
         } finally {
         	try {
-        		if (reader != null)
+        		if (reader != null) {
         			reader.close();
+        		}
         	} catch (Exception e) {
         		e.printStackTrace();
         	}

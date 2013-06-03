@@ -19,26 +19,26 @@ public interface IChatController {
      * @param userinfo
      * @return true if initialization succeeded, false if it failed.
      */
-    public boolean fInitialize(UserInfo userinfo);
+    boolean fInitialize(UserInfo userinfo);
     
     /**
      * Returns a location if the Controller has stored a recent location (less than five minutes old)
      * 
      * @return a location if there exists a stored recent location, null otherwise.
      */
-    public Location getRecentLocation();
+    Location getRecentLocation();
     
     /**
      * Adds a recent location to the controller.
      */
-    public void setRecentLocation(Location location);
+    void setRecentLocation(Location location);
     
     /**
      * Gets the current user logged in.
      * 
      * @return UserInfo describing the current user. null if logged out.
      */
-    public UserInfo getUser();
+    UserInfo getUser();
     
     /**
      * This method refreshes the chatrooms that the current instance user has joined.
@@ -47,7 +47,7 @@ public interface IChatController {
      * 
      * @return True if refresh succeeded, false if otherwise.
      */
-    public boolean fRefresh();
+    boolean fRefresh();
     
     /**
      * Adds a new message to the room. It also broadcasts to the chatroom activity if visible about the 
@@ -57,7 +57,7 @@ public interface IChatController {
      * @param roomId   Rooms Id
      * @param context  Context used to send broadcast.
      */
-    public void addMessageToRoom(MessageInfo msginfo, String roomId, Context context);
+    void addMessageToRoom(MessageInfo msginfo, String roomId, Context context);
     
     /**
      * Returns an immutable list of messages that correspond to the given chatroom
@@ -65,7 +65,7 @@ public interface IChatController {
      * @param roomId The rooms Id to retrieve messages from.
      * @return List of messages in an immutable read only list.
      */
-    public List<MessageInfo> getMessagesFromChatRoom(String roomId);
+    List<MessageInfo> getMessagesFromChatRoom(String roomId);
     
     /**
      * Gets a list of chatroominfo that represent the current state of the rooms available.
@@ -73,7 +73,7 @@ public interface IChatController {
      * 
      * @return
      */
-    public List<ChatRoomInfo> getChatRooms();
+    List<ChatRoomInfo> getChatRooms();
     
     /**
      * Adds the specified room to the chatcontroller. This subsequently makes it load all the messages from the
@@ -85,7 +85,7 @@ public interface IChatController {
      * @param fAnon whether the use is joining anonymously or not
      * @return True if succeeded, false if otherwise.
      */
-    public boolean joinRoom(ChatRoomInfo chatroom, boolean fAnon);
+    boolean joinRoom(ChatRoomInfo chatroom, boolean fAnon);
     
     /**
      * Leaves the specified room from the chatcontroller. This is the same as saying the user leaves the room.
@@ -93,12 +93,12 @@ public interface IChatController {
      * @param chatroom
      * @return
      */
-    public boolean leaveRoom(ChatRoomInfo chatroom);
+    boolean leaveRoom(ChatRoomInfo chatroom);
     
     /**
      * This method is used to uninitialize the chat controller. This should be used when a user is logged out.
      */
-    public void uninitialize();
+    void uninitialize();
     
     /**
      * Checks to see if the chatroom is already present in the controller. This is
@@ -107,7 +107,7 @@ public interface IChatController {
      * @param cri ChatRoomInfo
      * @return true if user is has already joined the chatroom and false if not.
      */
-    public boolean fIsAlreadyJoined(ChatRoomInfo cri);
+    boolean fIsAlreadyJoined(ChatRoomInfo cri);
     
     /**
      * Posts a message to a chatroom.
@@ -116,5 +116,5 @@ public interface IChatController {
      * @param chatroominfo the chatroom the message is being posted to
      * @param messageinfo the message being posted
      */
-    public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo);
+    RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo);
 }

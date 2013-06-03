@@ -15,47 +15,49 @@ import com.realtalk.R;
  * @author Cory
  *
  */
-public class Emoticonifier {
+public final class Emoticonifier {
 	/*
 	 * Hungarian:
 	 * sbb = SpannableStringBuilder
 	 * 
 	 */
 	
-    private static final HashMap<String, Integer> mpstiEmoticons = new HashMap<String, Integer>();
+    private static final HashMap<String, Integer> MPSTIEMOTICONS = new HashMap<String, Integer>();
+    
+    private Emoticonifier() { }
     
     static {
-    	mpstiEmoticons.put("(<", R.drawable.realtalksmile);
-    	mpstiEmoticons.put(":)", R.drawable.smile);
-    	mpstiEmoticons.put(":]", R.drawable.smile);
-    	mpstiEmoticons.put(":D", R.drawable.biggrin);
-    	mpstiEmoticons.put("XP", R.drawable.bleh);
-    	mpstiEmoticons.put("Xp", R.drawable.bleh);
-    	mpstiEmoticons.put("xP", R.drawable.bleh);
-    	mpstiEmoticons.put("xp", R.drawable.bleh);
-    	mpstiEmoticons.put("</3", R.drawable.brokenheart);
-    	mpstiEmoticons.put("<\\3", R.drawable.brokenheart);
-    	mpstiEmoticons.put("8)", R.drawable.cool);
-    	mpstiEmoticons.put(":\\", R.drawable.dry);
-    	mpstiEmoticons.put(":/", R.drawable.dry);
-    	mpstiEmoticons.put("<3", R.drawable.heart);
-    	mpstiEmoticons.put("o_O", R.drawable.huh);
-    	mpstiEmoticons.put("O_o", R.drawable.huh);
-    	mpstiEmoticons.put("O.o", R.drawable.huh);
-    	mpstiEmoticons.put("o.O", R.drawable.huh);
-    	mpstiEmoticons.put("*lol*", R.drawable.lol);
-    	mpstiEmoticons.put("*haha*", R.drawable.lol);
-    	mpstiEmoticons.put(">:(", R.drawable.mad);
-    	mpstiEmoticons.put(":|", R.drawable.mellow);
-    	mpstiEmoticons.put(":l", R.drawable.mellow);
-    	mpstiEmoticons.put(":I", R.drawable.mellow);
-    	mpstiEmoticons.put(":O", R.drawable.ohmy);
-    	mpstiEmoticons.put(":o", R.drawable.ohmy);
-    	mpstiEmoticons.put(":(", R.drawable.sad);
-    	mpstiEmoticons.put(":P", R.drawable.tongue);
-    	mpstiEmoticons.put(":p", R.drawable.tongue);
-    	mpstiEmoticons.put(";)", R.drawable.wink);
-    	mpstiEmoticons.put(":'(", R.drawable.tear);
+    	MPSTIEMOTICONS.put("(<", R.drawable.realtalksmile);
+    	MPSTIEMOTICONS.put(":)", R.drawable.smile);
+    	MPSTIEMOTICONS.put(":]", R.drawable.smile);
+    	MPSTIEMOTICONS.put(":D", R.drawable.biggrin);
+    	MPSTIEMOTICONS.put("XP", R.drawable.bleh);
+    	MPSTIEMOTICONS.put("Xp", R.drawable.bleh);
+    	MPSTIEMOTICONS.put("xP", R.drawable.bleh);
+    	MPSTIEMOTICONS.put("xp", R.drawable.bleh);
+    	MPSTIEMOTICONS.put("</3", R.drawable.brokenheart);
+    	MPSTIEMOTICONS.put("<\\3", R.drawable.brokenheart);
+    	MPSTIEMOTICONS.put("8)", R.drawable.cool);
+    	MPSTIEMOTICONS.put(":\\", R.drawable.dry);
+    	MPSTIEMOTICONS.put(":/", R.drawable.dry);
+    	MPSTIEMOTICONS.put("<3", R.drawable.heart);
+    	MPSTIEMOTICONS.put("o_O", R.drawable.huh);
+    	MPSTIEMOTICONS.put("O_o", R.drawable.huh);
+    	MPSTIEMOTICONS.put("O.o", R.drawable.huh);
+    	MPSTIEMOTICONS.put("o.O", R.drawable.huh);
+    	MPSTIEMOTICONS.put("*lol*", R.drawable.lol);
+    	MPSTIEMOTICONS.put("*haha*", R.drawable.lol);
+    	MPSTIEMOTICONS.put(">:(", R.drawable.mad);
+    	MPSTIEMOTICONS.put(":|", R.drawable.mellow);
+    	MPSTIEMOTICONS.put(":l", R.drawable.mellow);
+    	MPSTIEMOTICONS.put(":I", R.drawable.mellow);
+    	MPSTIEMOTICONS.put(":O", R.drawable.ohmy);
+    	MPSTIEMOTICONS.put(":o", R.drawable.ohmy);
+    	MPSTIEMOTICONS.put(":(", R.drawable.sad);
+    	MPSTIEMOTICONS.put(":P", R.drawable.tongue);
+    	MPSTIEMOTICONS.put(":p", R.drawable.tongue);
+    	MPSTIEMOTICONS.put(";)", R.drawable.wink);
+    	MPSTIEMOTICONS.put(":'(", R.drawable.tear);
     	
     }
     
@@ -63,7 +65,7 @@ public class Emoticonifier {
     	SpannableStringBuilder sbb = new SpannableStringBuilder(text);
     	for (int i = 0; i < sbb.length(); i++) {
 
-    		for (Entry<String, Integer> entry : mpstiEmoticons.entrySet()) {
+    		for (Entry<String, Integer> entry : MPSTIEMOTICONS.entrySet()) {
     			int ilength = entry.getKey().length();
     			if (i + ilength > sbb.length()) {
     				continue;

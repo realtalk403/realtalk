@@ -145,6 +145,11 @@ public class ChatRoomInfo implements Parcelable {
         	   criRhs.stId().equals(stId);
 	}
 	
+	@Override
+	public int hashCode() {
+	    return stId.hashCode();
+	}
+	
     public int describeContents() {
         return 0;
     }

@@ -30,6 +30,8 @@ import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class CreateRoomActivity extends Activity {
+    private static final int DESCLENGTH = 100;
+    private static final int ROOMNAMELENGTH = 40;
 	private ProgressDialog progressdialog;
 	private UserInfo u;
 	private double latitude;
@@ -74,7 +76,7 @@ public class CreateRoomActivity extends Activity {
 		EditText roomDescription = (EditText)findViewById(R.id.description);
 		String stDescription = roomDescription.getText().toString();
 		
-		if(stRoomName.length() > 40) {
+		if(stRoomName.length() > ROOMNAMELENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
 			alertDialogBuilder.setTitle("Invalid Field");
@@ -95,7 +97,7 @@ public class CreateRoomActivity extends Activity {
 			
 			//show alert dialog
 			alertdialogBadPword.show();	
-		} else if (stDescription.length() > 100) {
+		} else if (stDescription.length() > DESCLENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
 			alertDialogBuilder.setTitle("Invalid Field");

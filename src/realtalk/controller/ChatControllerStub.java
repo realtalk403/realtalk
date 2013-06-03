@@ -23,13 +23,14 @@ import android.location.Location;
  */
 public final class ChatControllerStub implements IChatController {
     private static ChatControllerStub instance = null;
-    List<ChatRoomInfo> rgcri = new ArrayList<ChatRoomInfo>();
-    Map<String, List<MessageInfo>> mpstid_rgmi;
+    private List<ChatRoomInfo> rgcri;
+    private Map<String, List<MessageInfo>> mpstidRgmi;
     private UserInfo userinfo;
     
     private ChatControllerStub() {
         this.userinfo = null;
-        mpstid_rgmi = new HashMap<String, List<MessageInfo>>();
+        mpstidRgmi = new HashMap<String, List<MessageInfo>>();
+        rgcri = new ArrayList<ChatRoomInfo>();
     }
     
     /**
@@ -79,9 +80,8 @@ public final class ChatControllerStub implements IChatController {
      * @param context  Context used to send broadcast.
      */
     public void addMessageToRoom(MessageInfo msginfo, String roomId, Context context) {
-    	if (mpstid_rgmi.containsKey(roomId))
-    	{
-    		mpstid_rgmi.get(roomId).add(msginfo);
+    	if (mpstidRgmi.containsKey(roomId)) {
+    		mpstidRgmi.get(roomId).add(msginfo);
     	}
     }
     
@@ -92,7 +92,7 @@ public final class ChatControllerStub implements IChatController {
      * @return List of messages in an immutable read only list.
      */
     public List<MessageInfo> getMessagesFromChatRoom(String roomId) {
-        return mpstid_rgmi.get(roomId);
+        return mpstidRgmi.get(roomId);
     }
     
     /**
@@ -117,7 +117,7 @@ public final class ChatControllerStub implements IChatController {
      */
     public boolean joinRoom(ChatRoomInfo chatroom, boolean fAnon) {
     	rgcri.add(chatroom);
-    	mpstid_rgmi.put(chatroom.stId(), new ArrayList<MessageInfo>());
+    	mpstidRgmi.put(chatroom.stId(), new ArrayList<MessageInfo>());
         return true;
     }
     
@@ -128,7 +128,7 @@ public final class ChatControllerStub implements IChatController {
      * @return
      */
     public boolean leaveRoom(ChatRoomInfo chatroom) {
-    	return mpstid_rgmi.remove(chatroom.stId()) != null;
+    	return mpstidRgmi.remove(chatroom.stId()) != null;
     }
     
     /**
@@ -145,7 +145,7 @@ public final class ChatControllerStub implements IChatController {
      */
     public void uninitialize() {
         userinfo = null;
-        mpstid_rgmi = new HashMap<String, List<MessageInfo>>();
+        mpstidRgmi = new HashMap<String, List<MessageInfo>>();
         rgcri = new ArrayList<ChatRoomInfo>();
     }
     
@@ -185,7 +185,7 @@ public final class ChatControllerStub implements IChatController {
      * @param messageinfo the message being posted
      */
 	public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo) {
-		mpstid_rgmi.get(chatroominfo.stId()).add(messageinfo);
+		mpstidRgmi.get(chatroominfo.stId()).add(messageinfo);
 		return new RequestResultSet(true, null, null);
 	}
 }
