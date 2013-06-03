@@ -40,27 +40,25 @@ public class CreateRoomActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d("CORY", "in onCreate() of CreateRoomActivity");
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_create_room);
 		
-		Log.d("CORY", "content laid out");
 		
 		Bundle extras = getIntent().getExtras();
 		latitude = extras.getDouble("LATITUDE");
 		longitude = extras.getDouble("LONGITUDE");
-		
-		u = ChatController.getInstance().getUser();
-		String stUser = u.stUserName();
-
-		Log.d("CORY", "extracted bundle extras");
+		if (!extras.containsKey("DEBUG_MODE")) {
+			u = ChatController.getInstance().getUser();
+		} else {
+			u = new UserInfo("testname", "stPassword", "stRegistrationId");
+			setDebugMode();
+		}
+		String stUser = u.stUserName();		
 		
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.userTitle);
 		textviewRoomTitle.setText(stUser);
 		
-		Log.d("CORY", "finished on create");
-
 	}
 
 	@Override

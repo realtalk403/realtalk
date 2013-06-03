@@ -279,7 +279,7 @@ public class LoginActivity extends Activity {
                 activity.startActivity(itRoomSelect);
                 activity.finish();
             } else {
-                Toast serverToast = Toast.makeText(activity, R.string.server_down, Toast.LENGTH_LONG); 
+                Toast serverToast = Toast.makeText(activity, R.string.login_failed, Toast.LENGTH_LONG); 
                 serverToast.show();
             }
         }
