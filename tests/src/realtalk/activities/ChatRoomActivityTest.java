@@ -69,6 +69,7 @@ import com.realtalk.R;
 	public void testSendingMessages() {
 		int cMessageInfo = ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size();
 		sendMessage("test message");
+		solo.sleep(30000);
 		assertTrue("Message did not send", ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size() == cMessageInfo+1);
 		
 		sendMessage("another message");
