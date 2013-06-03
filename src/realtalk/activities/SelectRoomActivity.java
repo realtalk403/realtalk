@@ -130,19 +130,20 @@ public class SelectRoomActivity extends Activity {
 		final double radiusMeters = 500.0;
 		
 		//load recent location first
-		if (ChatController.getInstance().getRecentLocation() != null)
+		if (ChatController.getInstance().getRecentLocation() != null) {
 			loadRooms(ChatController.getInstance().getRecentLocation(), radiusMeters);
+		}
 		
 		Criteria criteria = new Criteria();
 		String stBestProvider = locationmanager.getBestProvider(criteria, true);
 		if (stBestProvider == null) {
 			//no location providers, must ask user to enable a provider
 			Toast.makeText(getApplicationContext(), R.string.turn_gps_on, Toast.LENGTH_SHORT).show();
-		}
-		else {
+		} else {
 			// Define a listener that responds to location updates
 			LocationListener locationListener = new LocationListener() {
-				Location locationMostAccurate = null;
+			    private static final int LOCATION_COUNT = 5;
+				private Location locationMostAccurate = null;
 				private int locationCount = 0;
 				public void onLocationChanged(Location location) {
 					
@@ -152,10 +153,10 @@ public class SelectRoomActivity extends Activity {
 					loadRooms(locationUser, radiusMeters);
 					ChatController.getInstance().setRecentLocation(locationUser);
 					locationCount++;
-					if (locationMostAccurate == null || locationMostAccurate.getAccuracy() >= locationUser.getAccuracy())
+					if (locationMostAccurate == null || locationMostAccurate.getAccuracy() >= locationUser.getAccuracy()) {
 						locationMostAccurate = locationUser;
-					if (locationCount >= 5)
-					{
+					}
+					if (locationCount >= LOCATION_COUNT) {
 						ImageView buttonCreateRoom = (ImageView) findViewById(R.id.createRoomId);
 						buttonCreateRoom.setEnabled(true);
 						buttonCreateRoom.setImageResource(R.drawable.createroom_icon);
@@ -164,12 +165,14 @@ public class SelectRoomActivity extends Activity {
 
 		        public void onStatusChanged(String provider, int status, Bundle extras) {
 		            switch (status) {
-		            case LocationProvider.OUT_OF_SERVICE:
-		            	Toast.makeText(getApplicationContext(), R.string.gps_out_of_service, Toast.LENGTH_SHORT).show();
-		                break;
-		            case LocationProvider.TEMPORARILY_UNAVAILABLE:
-		            	Toast.makeText(getApplicationContext(), R.string.gps_unavailable, Toast.LENGTH_SHORT).show();
-		                break;
+    		            case LocationProvider.OUT_OF_SERVICE:
+    		            	Toast.makeText(getApplicationContext(), R.string.gps_out_of_service, Toast.LENGTH_SHORT).show();
+    		                break;
+    		            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+    		            	Toast.makeText(getApplicationContext(), R.string.gps_unavailable, Toast.LENGTH_SHORT).show();
+    		                break;
+		                default: 
+		                    break;
 		            }
 		        }
 				public void onProviderEnabled(String provider) {}
@@ -497,7 +500,7 @@ public class SelectRoomActivity extends Activity {
 	 */
 	class RoomLeaver extends AsyncTask<String, String, Boolean> {
 	    private ChatRoomInfo chatroominfo;
-	    ProgressDialog progressdialog;
+	    private ProgressDialog progressdialog;
 	    public RoomLeaver(ChatRoomInfo roominfo) {
 	        chatroominfo = roominfo;
 	    }
@@ -531,7 +534,7 @@ public class SelectRoomActivity extends Activity {
                 progressdialog.dismiss();
             }
             
-            if (success == false) {
+            if (!success) {
             	Toast toast = Toast.makeText(getApplicationContext(), R.string.leave_room_failed, Toast.LENGTH_SHORT);
 				toast.show();
             } else {

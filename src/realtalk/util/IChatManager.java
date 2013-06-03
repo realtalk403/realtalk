@@ -10,8 +10,8 @@ package realtalk.util;
  *
  */
 public interface IChatManager {
-	public RequestResultSet rrsJoinRoom(UserInfo userinfo, ChatRoomInfo chatroominfo, boolean fAnon);
-	public ChatRoomResultSet crrsUsersChatrooms(UserInfo userinfo);
-	public RequestResultSet rrsLeaveRoom(UserInfo userinfo, ChatRoomInfo chatroominfo);
-	public PullMessageResultSet pmrsChatLogGet(ChatRoomInfo chatroominfo);
+	RequestResultSet rrsJoinRoom(UserInfo userinfo, ChatRoomInfo chatroominfo, boolean fAnon);
+	ChatRoomResultSet crrsUsersChatrooms(UserInfo userinfo);
+	RequestResultSet rrsLeaveRoom(UserInfo userinfo, ChatRoomInfo chatroominfo);
+	PullMessageResultSet pmrsChatLogGet(ChatRoomInfo chatroominfo);
 }

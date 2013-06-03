@@ -25,6 +25,7 @@ import realtalk.util.UserInfo;
  *
  */
 public final class ChatController implements IChatController {
+    private static final int RECENTLOCTIME = 5;
     private static ChatController instance = null;
     private HallwayModel chatModel;
     private Location locationRecent;
@@ -59,10 +60,13 @@ public final class ChatController implements IChatController {
 	@SuppressLint("NewApi")
 	@Override
 	public Location getRecentLocation() {
-		if (locationRecent == null)
+		if (locationRecent == null) {
 			return null;
-		if (locationRecent.getTime() - System.currentTimeMillis() < TimeUnit.MINUTES.convert(5, TimeUnit.MILLISECONDS))
+		}
+		if (locationRecent.getTime() - System.currentTimeMillis() < 
+		        TimeUnit.MINUTES.convert(RECENTLOCTIME, TimeUnit.MILLISECONDS)) {
 			return locationRecent;
+		}
 		return null;
 	}
 	

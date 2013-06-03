@@ -57,6 +57,7 @@ import com.realtalk.R;
 	 */
 	@Test
 	public void testButtonsAndTextDisplay() {
+	    solo.sleep(10000);
 		assertTrue(solo.searchButton("Send"));
 		assertTrue(solo.searchButton("Leave Room"));
 		assertFalse(solo.searchButton("WRONG_BUTTON"));
@@ -69,6 +70,7 @@ import com.realtalk.R;
 	public void testSendingMessages() {
 		int cMessageInfo = ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size();
 		sendMessage("test message");
+		solo.sleep(30000);
 		assertTrue("Message did not send", ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size() == cMessageInfo+1);
 		
 		sendMessage("another message");

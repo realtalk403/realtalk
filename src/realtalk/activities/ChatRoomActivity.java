@@ -60,6 +60,13 @@ import com.realtalk.R;
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ChatRoomActivity extends Activity {
+    // Sound constants
+    private static final float LEFT_VOL = .1f;
+    private static final float RIGHT_VOL = .1f;
+    private static final float RATE = 1f;
+    private static final int PRIORITY = 1;
+    private static final int LOOP = 0;
+    
 	private ChatRoomInfo chatroominfo;
 	private UserInfo userinfo;
 	private ProgressDialog progressdialog;
@@ -447,7 +454,7 @@ public class ChatRoomActivity extends Activity {
                         adapter.add(rgmessageinfo.get(iMsgIndex));
                     }
                     
-                    soundpool.play(iMessageBeep, .1f, .1f, 1, 0, 1f);
+                    soundpool.play(iMessageBeep, LEFT_VOL, RIGHT_VOL, PRIORITY, LOOP, RATE);
                 }    
 	};
 	
@@ -459,8 +466,9 @@ public class ChatRoomActivity extends Activity {
             @Override
             public void run() {   
             	adapter.clear();
-        		for(MessageInfo messageinfo : rgmessageinfo)
+        		for(MessageInfo messageinfo : rgmessageinfo) {
         			adapter.add(messageinfo);
+        		}
             }
         });
 	}
