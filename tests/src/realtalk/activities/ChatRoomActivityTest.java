@@ -57,6 +57,7 @@ import com.realtalk.R;
 	 */
 	@Test
 	public void testButtonsAndTextDisplay() {
+	    solo.sleep(10000);
 		assertTrue(solo.searchButton("Send"));
 		assertTrue(solo.searchButton("Leave Room"));
 		assertFalse(solo.searchButton("WRONG_BUTTON"));
