@@ -17,10 +17,6 @@ import com.jayway.android.robotium.solo.Solo;
 import com.realtalk.R;
 
 /**
-<<<<<<< HEAD
- * Black Box Tests that test functionality of the Chatroom page,
- * using a "stub" controller class
-=======
  * Black Box Tests that test functionality of the Chatroom page
  * Integration Testing for V1.0 using a Stub class.
  * 
@@ -29,7 +25,6 @@ import com.realtalk.R;
  * Object would be insufficient as we need a way to have a real time
  * way of storing Chat Logs and displaying them. Hence a stub was the
  * best way of doing this.
->>>>>>> d39cc85a3ad19daa048985c4e7570848383d37f6
  * 
  * @author Jordan Hazari
  *
@@ -37,16 +32,13 @@ import com.realtalk.R;
 @SuppressLint("NewApi") public class ChatRoomActivityTest extends ActivityInstrumentationTestCase2<ChatRoomActivity> {
 	private Solo solo;
 	
-	/**
-	 * Sets up the test by initializing the "stub" controller
-	 * and providing all necessary information for a chatroom.
-	 */
 	public ChatRoomActivityTest() {
 		super(ChatRoomActivity.class);	
 	}
 	
 	/**
-	 * Robotium setup.
+	 * Sets up the test by initializing the "stub" controller
+	 * and providing all necessary information for a chatroom.
 	 */
 	@Before
 	public void setUp() throws Exception {
@@ -61,12 +53,7 @@ import com.realtalk.R;
 	}
 	
 	/**
-<<<<<<< HEAD
-	 * A simple test to make sure the right buttons are on
-	 * the page.
-=======
 	 * Tests the buttons and text exists on the activity
->>>>>>> d39cc85a3ad19daa048985c4e7570848383d37f6
 	 */
 	@Test
 	public void testButtonsAndTextDisplay() {
@@ -76,25 +63,12 @@ import com.realtalk.R;
 	}
 	
 	/**
-<<<<<<< HEAD
-	 * A test to make sure messages can be sent
-	 * and displayed on the page.
-=======
 	 * This tests if the send button populates the controller and displays it on the screen
->>>>>>> d39cc85a3ad19daa048985c4e7570848383d37f6
 	 */
 	@Test
 	public void testSendingMessages() {
 		int cMessageInfo = ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size();
-<<<<<<< HEAD
 		sendMessage("test message");
-=======
-		AutoCompleteTextView edittextMessage = (AutoCompleteTextView) solo.getView(R.id.message);
-		solo.enterText(edittextMessage, "test message");
-		solo.clickOnButton("Send");
-		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
-		solo.sleep(10000);
->>>>>>> d39cc85a3ad19daa048985c4e7570848383d37f6
 		assertTrue("Message did not send", ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size() == cMessageInfo+1);
 		
 		sendMessage("another message");
