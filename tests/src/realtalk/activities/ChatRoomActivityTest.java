@@ -31,11 +31,15 @@ import com.realtalk.R;
  */
 @SuppressLint("NewApi") public class ChatRoomActivityTest extends ActivityInstrumentationTestCase2<ChatRoomActivity> {
 	private Solo solo;
-	 
+	
 	public ChatRoomActivityTest() {
 		super(ChatRoomActivity.class);	
 	}
-	 
+	
+	/**
+	 * Sets up the test by initializing the "stub" controller
+	 * and providing all necessary information for a chatroom.
+	 */
 	@Before
 	public void setUp() throws Exception {
 	    ChatRoomInfo chatroominfo = new ChatRoomInfo("Test Room", "testroom", "a test room", 10.0, 10.0, "hazarij", 1, new Timestamp(System.currentTimeMillis()));
@@ -64,37 +68,26 @@ import com.realtalk.R;
 	@Test
 	public void testSendingMessages() {
 		int cMessageInfo = ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size();
-		AutoCompleteTextView edittextMessage = (AutoCompleteTextView) solo.getView(R.id.message);
-		solo.enterText(edittextMessage, "test message");
-		solo.clickOnButton("Send");
-		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
-		solo.sleep(10000);
+		sendMessage("test message");
 		assertTrue("Message did not send", ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size() == cMessageInfo+1);
-		solo.enterText(edittextMessage, "another message");
-		solo.clickOnButton("Send");
-		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
 		
-		solo.enterText(edittextMessage, "hello there");
-		solo.clickOnButton("Send");
-		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
-		
-		solo.enterText(edittextMessage, "hi!");
-		solo.clickOnButton("Send");
-		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
-		
-		solo.enterText(edittextMessage, "how are you?");
-		solo.clickOnButton("Send");
-		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
-		
-		solo.enterText(edittextMessage, "I'm pretty good, how have you been?");
-		solo.clickOnButton("Send");
-		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
-		
-		solo.enterText(edittextMessage, "great! see you later!");
-		solo.clickOnButton("Send");
-		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
-		
-		solo.enterText(edittextMessage, "bye!");
+		sendMessage("another message");
+		sendMessage("hello there");
+		sendMessage("hi!");
+		sendMessage("how are you?");
+		sendMessage("I'm pretty good, how have you been?");
+		sendMessage("great! see you later!");
+		sendMessage("bye!");
+	}
+	
+	/**
+	 * A helper method to send a message.
+	 * 
+	 * @param stMessage the message to send
+	 */
+	private void sendMessage(String stMessage) {
+		AutoCompleteTextView edittextMessage = (AutoCompleteTextView) solo.getView(R.id.message);
+		solo.enterText(edittextMessage, stMessage);
 		solo.clickOnButton("Send");
 		getActivity().populateAdapter(ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom"));
 	}

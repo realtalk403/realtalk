@@ -109,5 +109,12 @@ public interface IChatController {
      */
     public boolean fIsAlreadyJoined(ChatRoomInfo cri);
     
+    /**
+     * Posts a message to a chatroom.
+     * 
+     * @param userinfo the user posting the message
+     * @param chatroominfo the chatroom the message is being posted to
+     * @param messageinfo the message being posted
+     */
     public RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo messageinfo);
 }

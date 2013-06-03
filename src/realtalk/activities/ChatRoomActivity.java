@@ -115,20 +115,6 @@ public class ChatRoomActivity extends Activity {
 		listview.setAdapter(adapter);
 	}
 	
-	/**
-	 * Used for debugging
-	 */
-	public void populateAdapter(final List<MessageInfo> rgmessageinfo) {
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {   
-            	adapter.clear();
-        		for(MessageInfo messageinfo : rgmessageinfo)
-        			adapter.add(messageinfo);
-            }
-        });
-	}
-	
 	@Override
 	protected void onStart() {
 	    super.onStart();
@@ -464,4 +450,18 @@ public class ChatRoomActivity extends Activity {
                     soundpool.play(iMessageBeep, .1f, .1f, 1, 0, 1f);
                 }    
 	};
+	
+	/**
+	 * Used for debugging
+	 */
+	public void populateAdapter(final List<MessageInfo> rgmessageinfo) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {   
+            	adapter.clear();
+        		for(MessageInfo messageinfo : rgmessageinfo)
+        			adapter.add(messageinfo);
+            }
+        });
+	}
 }

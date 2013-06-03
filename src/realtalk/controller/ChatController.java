@@ -1,6 +1,3 @@
-/**
- * 
- */
 package realtalk.controller;
 
 import java.util.List;
@@ -306,6 +303,7 @@ public final class ChatController implements IChatController {
     public void setChatManager(IChatManager cm) {
     	this.cm = cm;
     }
+    
     /**
      * For testing purposes
      */
