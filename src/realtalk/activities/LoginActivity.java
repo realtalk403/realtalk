@@ -1,10 +1,9 @@
 package realtalk.activities;
 import com.google.android.gcm.GCMRegistrar;
 
-import realtalk.controller.ChatController;
-import realtalk.util.ChatManager;
+import realtalk.asynctasks.Authenticator;
+import realtalk.asynctasks.UpdateRegId;
 import realtalk.util.CommonUtilities;
-import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 import realtalk.util.gcm.GCMUtilities;
 import android.app.Activity;
@@ -17,9 +16,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -27,7 +23,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.realtalk.R;
@@ -39,11 +34,11 @@ import com.realtalk.R;
  */
 public class LoginActivity extends Activity {
     
-	private String stRegisteredId = "";
-    private ProgressDialog progressdialog;
+	public String stRegisteredId = "";
+    public ProgressDialog progressdialog;
     private CheckBox checkboxRememberMe;
     private SharedPreferences sharedpreferencesLoginPrefs;
-    private Editor editorLoginPrefs;
+    public Editor editorLoginPrefs;
     private Boolean fRememberMe;
     private EditText edittextUser;
     private EditText edittextPword;
@@ -184,7 +179,7 @@ public class LoginActivity extends Activity {
 	    		editorLoginPrefs.putString("savedPassword", null);
 	    		editorLoginPrefs.commit();
 	    	}
-	    	new Authenticator(new UserInfo(stUsername, 
+	    	new Authenticator(this, new UserInfo(stUsername, 
 	    			CommonUtilities.hash(stPword), stRegisteredId), this).execute();
 	    }
 	    
@@ -196,7 +191,7 @@ public class LoginActivity extends Activity {
 	 * @param userinfo
 	 */
 	public void updateRegId(UserInfo userinfo) {
-	    new UpdateRegId(userinfo, this).execute();
+	    new UpdateRegId(this, userinfo, this).execute();
 	}
 	
 	/**
@@ -224,166 +219,4 @@ public class LoginActivity extends Activity {
                     progressdialog.dismiss();
                 }	    
 	};
-	
-	/**
-	 * Updates the user to have the correct registration ID each time he/she logs in
-	 * 
-	 * @author Colin Kho
-	 *
-	 */
-	class UpdateRegId extends AsyncTask<String, String, RequestResultSet> {
-	    private UserInfo userinfo;
-	    private Activity activity;
-	    
-	    public UpdateRegId(UserInfo userinfo, Activity activity) {
-	        this.userinfo = userinfo;
-	        this.activity = activity;
-	    }
-	    
-	    @Override
-	    protected void onPreExecute() {
-	        super.onPreExecute();
-	        progressdialog = new ProgressDialog(LoginActivity.this);
-            progressdialog.setMessage("Updating Server. Please wait...");
-            progressdialog.setIndeterminate(false);
-            progressdialog.setCancelable(true);
-            progressdialog.show();
-	    }
-	    
-	    /**
-	     * @return result set with results of change, unless disconnected from the network, then null. 
-	     */
-        @Override
-        protected RequestResultSet doInBackground(String... params) {
-            UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stRegisteredId);
-            
-            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
-            
-			if (networkinfo != null && networkinfo.isConnected()) {
-				ChatController.getInstance().fInitialize(loginUserinfo);
-				return ChatManager.rrsChangeID(userinfo, stRegisteredId);
-			} else {
-				return null;
-			}
-        }
-	    
-        @Override
-        protected void onPostExecute(RequestResultSet rrs) {
-            progressdialog.dismiss();
-            if (rrs == null) {
-				Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
-				toast.show();
-            } else if (rrs.getfSucceeded()) {                
-                Intent itRoomSelect = new Intent(activity, SelectRoomActivity.class);
-                activity.startActivity(itRoomSelect);
-                activity.finish();
-            } else {
-                Toast serverToast = Toast.makeText(activity, R.string.login_failed, Toast.LENGTH_LONG); 
-                serverToast.show();
-            }
-        }
-	}
-	
-	/**
-	 * Authenticates a user in the database 
-	 * 
-	 * @author Brandon
-	 *
-	 */
-	class Authenticator extends AsyncTask<String, String, RequestResultSet> {
-		private UserInfo userinfo;
-		private Activity activity;
-		
-		/**
-		 * Constructs an Authenticator object
-		 * 
-		 * @param userinfo user to be authenticated
-		 * @param activity the activity context
-		 */
-		public Authenticator(UserInfo userinfo, Activity activity) {
-			this.userinfo = userinfo;
-			this.activity = activity;
-		}
-		
-		/**
-		 * Pop up dialog while user is being authenticated 
-		 * 
-		 */
-	    @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressdialog = new ProgressDialog(LoginActivity.this);
-            progressdialog.setMessage("Loading user details. Please wait...");
-            progressdialog.setIndeterminate(false);
-            progressdialog.setCancelable(true);
-            progressdialog.show();
-        }
-	    
-	    /**
-	     * Authenticates user in the database
-	     * 
-	     * @return rrs with results, or null if disconnected
-	     */
-        @Override
-        protected RequestResultSet doInBackground(String... params) {
-            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
-            
-			if (networkinfo != null && networkinfo.isConnected()) {
-				return ChatManager.rrsAuthenticateUser(userinfo);
-			} else {
-				return null;
-			}
-        }
-        
-        /**
-         * Prompts user if their username/password were incorrect.  Otherwise, redirects
-         * to the Select Rooms activity.
-         */
-        @Override
-        protected void onPostExecute(RequestResultSet requestresultset) {
-            progressdialog.dismiss();
-            if (requestresultset == null) {
-            	Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
-				toast.show();
-            } else if(!requestresultset.getfSucceeded()) {
-            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertdialogbuilder.setTitle("Invalid fields");
-				
-				//set dialog message
-				alertdialogbuilder
-					.setMessage("Invalid username/password. Please try again.")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							dialog.cancel();
-						}	
-				});
-				
-				//create alert dialog
-				AlertDialog alertdialogBadPword = alertdialogbuilder.create();
-				
-				//show alert dialog
-				alertdialogBadPword.show();	
-				
-				TextView textviewPword = (TextView) findViewById(R.id.editPword);
-	            textviewPword.setText("");
-            } else {           	
-                String username = userinfo.stUserName();
-                String password = userinfo.stPassword();
-        		
-        		//for when we have a logout button, so that pressing back on the rooms page 
-        		//doesn't take you back to the login screen, but rather exits the app.
-        		editorLoginPrefs.putBoolean("loggedIn", true);
-	    		editorLoginPrefs.putString("loggedin_username", username);
-	    		editorLoginPrefs.putString("loggedin_password", password);
-	    		editorLoginPrefs.commit();
-	    		
-	    		LoginActivity.this.updateRegId(new UserInfo(username, password, stRegisteredId));  
-            }
-        }
-	}
 }
