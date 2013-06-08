@@ -51,11 +51,11 @@ public class RoomCreator extends AsyncTask<String, String, RequestResultSet> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        this.createRoomActivity.progressdialog = new ProgressDialog(this.createRoomActivity);
-        this.createRoomActivity.progressdialog.setMessage("Creating room. Please wait...");
-        this.createRoomActivity.progressdialog.setIndeterminate(false);
-        this.createRoomActivity.progressdialog.setCancelable(true);
-        this.createRoomActivity.progressdialog.show();
+        this.createRoomActivity.setProgressdialog(new ProgressDialog(this.createRoomActivity));
+        this.createRoomActivity.getProgressdialog().setMessage("Creating room. Please wait...");
+        this.createRoomActivity.getProgressdialog().setIndeterminate(false);
+        this.createRoomActivity.getProgressdialog().setCancelable(true);
+        this.createRoomActivity.getProgressdialog().show();
     }
 
     /**
@@ -73,13 +73,14 @@ public class RoomCreator extends AsyncTask<String, String, RequestResultSet> {
 		
 		String stCreator = userinfo.stUserName();
 		
-		ChatRoomInfo chatroominfo = new ChatRoomInfo(stRoomName, stRoomName, stDescription, this.createRoomActivity.latitude, this.createRoomActivity.longitude, stCreator, 0, new Timestamp(System.currentTimeMillis()));
+		ChatRoomInfo chatroominfo = new ChatRoomInfo(stRoomName, stRoomName, stDescription, this.createRoomActivity.getLatitude(), 
+		        this.createRoomActivity.getLongitude(), stCreator, 0, new Timestamp(System.currentTimeMillis()));
 		
 		ConnectivityManager connectivitymanager = (ConnectivityManager) this.createRoomActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 		
 		RequestResultSet rrs = null;
-		if (activity.fDebugMode) {
+		if (activity.isfDebugMode()) {
 			rrs = new RequestResultSet(true, "NO ERROR MESSAGE", "NO ERROR MESSAGE");
 		} else if (networkinfo != null && networkinfo.isConnected()) {
 			 rrs = ChatManager.rrsAddRoom(chatroominfo, userinfo);
@@ -93,7 +94,7 @@ public class RoomCreator extends AsyncTask<String, String, RequestResultSet> {
 	 */
 	@Override
     protected void onPostExecute(RequestResultSet rrs) {
-        this.createRoomActivity.progressdialog.dismiss();
+        this.createRoomActivity.getProgressdialog().dismiss();
         
         if (rrs == null) {
         	Toast toast = Toast.makeText(this.createRoomActivity.getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);

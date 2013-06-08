@@ -52,11 +52,12 @@ import com.realtalk.R;
 @SuppressLint("NewApi")
 public class SelectRoomActivity extends Activity {
 	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;
-	public List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
+	// Instantiated here because onCreate is not the "real" constructor
+	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoJoined = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoUnjoined = new ArrayList<ChatRoomInfo>();
-	public ChatRoomAdapter unJoinedAdapter;
-	public ChatRoomAdapter joinedAdapter;
+	private ChatRoomAdapter unJoinedAdapter;
+	private ChatRoomAdapter joinedAdapter;
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
 	private Location locationUser;
@@ -116,11 +117,11 @@ public class SelectRoomActivity extends Activity {
         });
 
 		// Binding resources Array to ListAdapter
-		unJoinedAdapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoUnjoined, false);
-		listviewUnjoined.setAdapter(unJoinedAdapter);
+		setUnJoinedAdapter(new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoUnjoined, false));
+		listviewUnjoined.setAdapter(getUnJoinedAdapter());
 		
-		joinedAdapter = new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoJoined, true);
-		listviewJoined.setAdapter(joinedAdapter);
+		setJoinedAdapter(new ChatRoomAdapter(this, R.layout.message_item, rgchatroominfoJoined, true));
+		listviewJoined.setAdapter(getJoinedAdapter());
 		
 		//location code:
 		LocationManager locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -364,6 +365,48 @@ public class SelectRoomActivity extends Activity {
 	}
 
 	/**
+     * @return the unJoinedAdapter
+     */
+    public ChatRoomAdapter getUnJoinedAdapter() {
+        return unJoinedAdapter;
+    }
+
+    /**
+     * @param unJoinedAdapter the unJoinedAdapter to set
+     */
+    public void setUnJoinedAdapter(ChatRoomAdapter unJoinedAdapter) {
+        this.unJoinedAdapter = unJoinedAdapter;
+    }
+
+    /**
+     * @return the joinedAdapter
+     */
+    public ChatRoomAdapter getJoinedAdapter() {
+        return joinedAdapter;
+    }
+
+    /**
+     * @param joinedAdapter the joinedAdapter to set
+     */
+    public void setJoinedAdapter(ChatRoomAdapter joinedAdapter) {
+        this.joinedAdapter = joinedAdapter;
+    }
+
+    /**
+     * @return the rgchatroominfo
+     */
+    public List<ChatRoomInfo> getRgchatroominfo() {
+        return rgchatroominfo;
+    }
+
+    /**
+     * @param rgchatroominfo the rgchatroominfo to set
+     */
+    public void setRgchatroominfo(List<ChatRoomInfo> rgchatroominfo) {
+        this.rgchatroominfo = rgchatroominfo;
+    }
+
+    /**
 	 * Adapter for the lists of chatrooms.
 	 * 
 	 * @author Jordan Hazari

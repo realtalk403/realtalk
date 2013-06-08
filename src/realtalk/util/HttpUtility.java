@@ -14,7 +14,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-public class HttpUtility {
+public final class HttpUtility {
 	/**
 	 * This method makes a Get Request given a list of params and retrieves the response
 	 * from the server. It returns the response as an inputStream.
@@ -24,7 +24,7 @@ public class HttpUtility {
 	 * @return          InputStream containing the response.
 	 * @throws IOException Error with reading stream.
 	 * @throws UnsupportedOperationException Unable to retrieve from URL
-	 * @throws ClientProtocolException Clients URL or Params are wrong.
+	 * @throws org.apache.http.client.ClientProtocolException Clients URL or Params are wrong.
 	 */
 	public static InputStream sendGetRequest(String stUrl, List<NameValuePair> rgparams) 
 			throws IOException, UnsupportedOperationException, ClientProtocolException {
@@ -47,7 +47,7 @@ public class HttpUtility {
 	 * @return         InputStream that contains server's response
 	 * @throws IOException Error with reading stream.
 	 * @throws UnsupportedOperationException Unable to retrieve from URL
-	 * @throws ClientProtocolException Clients URL or Params are wrong.
+	 * @throws org.apache.http.client.ClientProtocolException Clients URL or Params are wrong.
 	 */
 	public static InputStream sendPostRequest(String stUrl, List<NameValuePair> rgparams) 
 			throws IOException, UnsupportedOperationException, ClientProtocolException {
@@ -58,5 +58,12 @@ public class HttpUtility {
         HttpResponse httpresponse = httpclient.execute(httppost);
         HttpEntity httpentity = httpresponse.getEntity();
         return httpentity.getContent();
+	}
+	
+	/*
+	 * Private Constructor that throws an error if it is used. Also this disallows the public constructor.
+	 */
+	private HttpUtility() {
+	    throw new UnsupportedOperationException("Http Utility class should never be constructed");
 	}
 }

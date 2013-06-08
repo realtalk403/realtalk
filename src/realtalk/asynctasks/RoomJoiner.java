@@ -30,7 +30,7 @@ public class RoomJoiner extends AsyncTask<String, String, Boolean> {
 	 * Constructs a RoomCreator object
 	 * 
 	 * @param chatroominfo the room to create/join
-	 * @param chatRoomActivity TODO
+	 * @param chatRoomActivity
 	 */
 	public RoomJoiner(ChatRoomActivity chatRoomActivity, Activity activity, ChatRoomInfo chatroominfo) {
 		this.chatRoomActivity = chatRoomActivity;
@@ -44,12 +44,12 @@ public class RoomJoiner extends AsyncTask<String, String, Boolean> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        this.chatRoomActivity.progressdialog = new ProgressDialog(this.chatRoomActivity);
-        this.chatRoomActivity.progressdialog.setMessage("Entering room. Please wait...");
-        this.chatRoomActivity.progressdialog.setIndeterminate(false);
-        this.chatRoomActivity.progressdialog.setCancelable(true);
-        this.chatRoomActivity.progressdialog.setCanceledOnTouchOutside(false);
-        this.chatRoomActivity.progressdialog.show();
+        this.chatRoomActivity.setProgressdialog(new ProgressDialog(this.chatRoomActivity));
+        this.chatRoomActivity.getProgressdialog().setMessage("Entering room. Please wait...");
+        this.chatRoomActivity.getProgressdialog().setIndeterminate(false);
+        this.chatRoomActivity.getProgressdialog().setCancelable(true);
+        this.chatRoomActivity.getProgressdialog().setCanceledOnTouchOutside(false);
+        this.chatRoomActivity.getProgressdialog().show();
     }
 
     /**
@@ -58,13 +58,13 @@ public class RoomJoiner extends AsyncTask<String, String, Boolean> {
      */
 	@Override
 	protected Boolean doInBackground(String... params) {
-		if (this.chatRoomActivity.chatController.fIsAlreadyJoined(chatroominfo)) {
+		if (this.chatRoomActivity.getChatController().fIsAlreadyJoined(chatroominfo)) {
 			return true;
 		} else {
 			ConnectivityManager connectivitymanager = (ConnectivityManager) this.chatRoomActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
             if (networkinfo != null && networkinfo.isConnected()) {
-				return this.chatRoomActivity.chatController.joinRoom(chatroominfo, this.chatRoomActivity.fAnon);
+				return this.chatRoomActivity.getChatController().joinRoom(chatroominfo, this.chatRoomActivity.getfAnon());
 			}
             return null;
 		}
@@ -75,7 +75,7 @@ public class RoomJoiner extends AsyncTask<String, String, Boolean> {
 	 */
 	@Override
     protected void onPostExecute(Boolean success) {
-        this.chatRoomActivity.progressdialog.dismiss();
+        this.chatRoomActivity.getProgressdialog().dismiss();
         if (success == null) {
         	Toast toast = Toast.makeText(this.chatRoomActivity.getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
 			toast.show();

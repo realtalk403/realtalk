@@ -52,11 +52,11 @@ public class UserRemover extends AsyncTask<String, String, RequestResultSet> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        this.accountSettingsActivity.progressdialog = new ProgressDialog(this.accountSettingsActivity);
-        this.accountSettingsActivity.progressdialog.setMessage("Loading user details. Please wait...");
-        this.accountSettingsActivity.progressdialog.setIndeterminate(false);
-        this.accountSettingsActivity.progressdialog.setCancelable(true);
-        this.accountSettingsActivity.progressdialog.show();
+        this.accountSettingsActivity.setProgressdialog(new ProgressDialog(this.accountSettingsActivity));
+        this.accountSettingsActivity.getProgressdialog().setMessage("Loading user details. Please wait...");
+        this.accountSettingsActivity.getProgressdialog().setIndeterminate(false);
+        this.accountSettingsActivity.getProgressdialog().setCancelable(true);
+        this.accountSettingsActivity.getProgressdialog().show();
     }
     
     /**
@@ -81,15 +81,15 @@ public class UserRemover extends AsyncTask<String, String, RequestResultSet> {
      */
     @Override
     protected void onPostExecute(RequestResultSet rrs) {
-    	this.accountSettingsActivity.progressdialog.dismiss();
+    	this.accountSettingsActivity.getProgressdialog().dismiss();
     	if (rrs == null) {
     		Toast toast = Toast.makeText(this.accountSettingsActivity.getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
 			toast.show();
     	} else if(rrs.getfSucceeded()) {
-        	this.accountSettingsActivity.editorLoginPrefs.clear();
-        	this.accountSettingsActivity.editorLoginPrefs.commit();
+        	this.accountSettingsActivity.getEditorLoginPrefs().clear();
+        	this.accountSettingsActivity.getEditorLoginPrefs().commit();
         	
-            this.accountSettingsActivity.progressdialog.dismiss();
+            this.accountSettingsActivity.getProgressdialog().dismiss();
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
 			//set title
 			alertDialogBuilder.setTitle("Account deleted");

@@ -51,11 +51,11 @@ public class UserAdder extends AsyncTask<String, String, RequestResultSet> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        this.createAccountActivity.progressdialog = new ProgressDialog(this.createAccountActivity);
-        this.createAccountActivity.progressdialog.setMessage("Loading user details. Please wait...");
-        this.createAccountActivity.progressdialog.setIndeterminate(false);
-        this.createAccountActivity.progressdialog.setCancelable(true);
-        this.createAccountActivity.progressdialog.show();
+        this.createAccountActivity.setProgressdialog(new ProgressDialog(this.createAccountActivity));
+        this.createAccountActivity.getProgressdialog().setMessage("Loading user details. Please wait...");
+        this.createAccountActivity.getProgressdialog().setIndeterminate(false);
+        this.createAccountActivity.getProgressdialog().setCancelable(true);
+        this.createAccountActivity.getProgressdialog().show();
     }
     
     /**
@@ -79,7 +79,7 @@ public class UserAdder extends AsyncTask<String, String, RequestResultSet> {
      */
     @Override
     protected void onPostExecute(RequestResultSet requestresultset) {
-        this.createAccountActivity.progressdialog.dismiss();
+        this.createAccountActivity.getProgressdialog().dismiss();
         if (requestresultset == null) {
         	Toast toast = Toast.makeText(this.createAccountActivity.getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
 			toast.show();
