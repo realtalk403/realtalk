@@ -110,4 +110,52 @@ public class JSONParser {
         // return JSON String
         return jsonobject;
     }
+    
+    /**
+     * This method takes in an InputStream that contains JSON data and returns
+     * a JSON object representing that data.
+     * 
+     * @param inputstream Stream containing JSON data
+     * @return json data as a JSONObject
+     * @throws JSONException If stream does not contain valid JSON
+     * @throws IOException   If an error was encountered parsing the JSON.
+     */
+    public static JSONObject parseStream(InputStream inputstream) 
+    		throws JSONException, IOException {
+    	if (inputstream == null) {
+    		return null;
+    	}
+    	BufferedReader reader = null;
+    	String stJson = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(
+                    inputstream, "iso-8859-1"), BUFFER_SIZE);
+            StringBuilder stringbuilder = new StringBuilder();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                stringbuilder.append(line + "\n");
+            }
+            if (inputstream != null) {
+                inputstream.close();
+            }
+            stJson = stringbuilder.toString();
+            reader.close();
+        } catch (IOException e) {
+            Log.e("Buffer Error", "Error converting result " + e.toString());
+        } finally {
+        	try {
+        		if (reader != null) {
+        			reader.close();
+        		}
+        	} catch (Exception e) {
+        		Log.e("Reader Closing Error", e.toString());
+        		e.printStackTrace();
+        	}
+        }
+ 
+        // try parse the string to a JSON object
+        JSONObject jsonobject = new JSONObject(stJson);
+        // return JSON String
+        return jsonobject;
+    }
 }
