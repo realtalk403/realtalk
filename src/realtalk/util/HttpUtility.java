@@ -14,6 +14,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+/**
+ * Utility class used for making POST or GET requests to a given Url.
+ * 
+ * @author Colin Kho
+ *
+ */
 public final class HttpUtility {
 	/**
 	 * This method makes a Get Request given a list of params and retrieves the response
