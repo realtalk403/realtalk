@@ -1,24 +1,17 @@
 package realtalk.activities;
 
-import realtalk.util.ChatManager;
+import realtalk.asynctasks.UserAdder;
 import realtalk.util.CommonUtilities;
-import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.realtalk.R;
 
@@ -33,7 +26,7 @@ public class CreateAccountActivity extends Activity {
 	private static final String DEFAULT_ID = "someID";
 	private static final int USERNAME_MAX_LENGTH = 20;
 	private static final int PASSWORD_MAX_LENGTH = 20;
-	private ProgressDialog progressdialog;
+	public ProgressDialog progressdialog;
 	
 	/**
 	 * Sets up the activity
@@ -173,97 +166,7 @@ public class CreateAccountActivity extends Activity {
 			//show alert dialog
 			alertdialogBadPword.show();
 		} else {
-			new UserAdder(new UserInfo(stUsername, CommonUtilities.hash(stPword), DEFAULT_ID), this).execute();
+			new UserAdder(this, new UserInfo(stUsername, CommonUtilities.hash(stPword), DEFAULT_ID), this).execute();
 		}
-	}
-	
-	/**
-	 * Adds a user to the database
-	 * 
-	 * @author Brandon Lee
-	 *
-	 */
-	class UserAdder extends AsyncTask<String, String, RequestResultSet> {
-		private UserInfo userinfo;
-		private Activity activity;
-		
-		/**
-		 * Constructs a UserAdder object
-		 * 
-		 * @param user	the user to add
-		 * @param activity	the activity context
-		 */
-		public UserAdder(UserInfo user, Activity activity) {
-			this.userinfo = user;
-			this.activity = activity;
-		}
-		
-		/**
-		 * Displays a popup dialogue while adding the user
-		 */
-	    @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressdialog = new ProgressDialog(CreateAccountActivity.this);
-            progressdialog.setMessage("Loading user details. Please wait...");
-            progressdialog.setIndeterminate(false);
-            progressdialog.setCancelable(true);
-            progressdialog.show();
-        }
-	    
-	    /**
-	     * Adds a user to the database
-	     */
-        @Override
-        protected RequestResultSet doInBackground(String... params) {
-            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
-            
-			if (networkinfo != null && networkinfo.isConnected()) {
-				return ChatManager.rrsAddUser(userinfo);
-			} else {
-				return null;
-			}
-        }
-        
-        /**
-         * Closes the dialogue, and lets the user know if they have input
-         * invalid fields, or if their desired username already exists
-         */
-        @Override
-        protected void onPostExecute(RequestResultSet requestresultset) {
-            progressdialog.dismiss();
-            if (requestresultset == null) {
-            	Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
-				toast.show();
-            } else if(!requestresultset.getfSucceeded()) {
-            	//user already exists pop up
-            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertdialogbuilder.setTitle("Invalid fields");
-				
-				//set dialog message
-				alertdialogbuilder
-					.setMessage("Username already exists.  Please choose another username.")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							dialog.cancel();
-						}	
-				});
-				
-				//create alert dialog
-				AlertDialog alertdialogBadUname = alertdialogbuilder.create();
-				
-				//show alert dialog
-				alertdialogBadUname.show();	
-            } else {
-            	//redirect back to LoginActivity if successful
-            	Intent createAcc = new Intent(activity, LoginActivity.class);
-				activity.startActivity(createAcc);
-				activity.finish();
-            } 
-        }
 	}
 }

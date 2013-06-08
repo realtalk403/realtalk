@@ -4,15 +4,14 @@ package realtalk.activities;
 import java.util.ArrayList;
 import java.util.List;
 
+import realtalk.asynctasks.RoomLeaverFromRoomList;
+import realtalk.asynctasks.RoomLoader;
 import realtalk.controller.ChatController;
-import realtalk.util.ChatManager;
 import realtalk.util.ChatRoomInfo;
-import realtalk.util.ChatRoomResultSet;
 import realtalk.util.UserInfo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,8 +22,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -55,11 +52,11 @@ import com.realtalk.R;
 @SuppressLint("NewApi")
 public class SelectRoomActivity extends Activity {
 	private static final double HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED = 500.0;
-	private List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
+	public List<ChatRoomInfo> rgchatroominfo = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoJoined = new ArrayList<ChatRoomInfo>();
 	private List<ChatRoomInfo> rgchatroominfoUnjoined = new ArrayList<ChatRoomInfo>();
-	private ChatRoomAdapter unJoinedAdapter;
-	private ChatRoomAdapter joinedAdapter;
+	public ChatRoomAdapter unJoinedAdapter;
+	public ChatRoomAdapter joinedAdapter;
 	private SharedPreferences sharedpreferencesLoginPrefs;
 	private Editor editorLoginPrefs;
 	private Location locationUser;
@@ -201,7 +198,7 @@ public class SelectRoomActivity extends Activity {
 	 * @param radiusMeters radius to search for rooms
 	 */
 	private void loadRooms(Location location, double radiusMeters) {
-		new RoomLoader(this, location.getLatitude(), location.getLongitude(), HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new RoomLoader(this, this, location.getLatitude(), location.getLongitude(), HACKED_GPS_DISTANCE_CONSTANT_TO_BE_REMOVED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
 	/**
@@ -260,7 +257,7 @@ public class SelectRoomActivity extends Activity {
 		if(fJoined) {	
 			alertDialogBuilder.setNeutralButton("Leave", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-					new RoomLeaver(chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+					new RoomLeaverFromRoomList(SelectRoomActivity.this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 					dialog.cancel();
 				}
 			});
@@ -367,85 +364,12 @@ public class SelectRoomActivity extends Activity {
 	}
 
 	/**
-	 * Retrieves the user's available chatrooms and initializes the ChatController
-	 * 
-	 * @author Jordan Hazari
-	 *
-	 */
-	class RoomLoader extends AsyncTask<String, String, ChatRoomResultSet> {
-		private SelectRoomActivity selectroomactivity;
-		private double radiusMeters;
-		private double latitude;
-		private double longitude;
-
-		/**
-		 * Constructs a RoomLoader object
-		 * 
-		 * @param selectroomroomactivity the activity context
-		 */
-		public RoomLoader(SelectRoomActivity selectroomactivity, 
-		        double latitude, double longitude, double radiusMeters) {
-			this.selectroomactivity = selectroomactivity;
-			this.longitude = longitude;
-			this.latitude = latitude;
-			this.radiusMeters = radiusMeters;
-		}
-
-		/**
-		 * Retrieves and displays the available rooms
-		 * 
-		 * @return null if application is disconnected from the network
-		 */
-		@Override
-		protected ChatRoomResultSet doInBackground(String... params) {			
-			ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
-            
-			if (networkinfo == null || !networkinfo.isConnected()) {
-				Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_SHORT);
-				toast.show();
-				return null;
-			}
-			
-//		    ChatController.getInstance().fRefresh();
-			ChatRoomResultSet crrsNear = ChatManager.crrsNearbyChatrooms
-					(latitude, longitude, radiusMeters);
-
-			rgchatroominfo = crrsNear.rgcriGet();
-
-			selectroomactivity.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					unJoinedAdapter.clear();
-					joinedAdapter.clear();
-
-					for (int i = 0; i < rgchatroominfo.size(); i++) {
-						if (!ChatController.getInstance().fIsAlreadyJoined(rgchatroominfo.get(i))) {
-							unJoinedAdapter.add(rgchatroominfo.get(i));
-						}
-//						} else {
-//							joinedAdapter.add(rgchatroominfo.get(i));
-//						}
-					}
-					
-					List<ChatRoomInfo> rgJoinedRooms = ChatController.getInstance().getChatRooms();
-					for (int i = 0; i < rgJoinedRooms.size(); i++) {
-						joinedAdapter.add(rgJoinedRooms.get(i));
-					}
-				}
-			});
-
-			return crrsNear;
-		}
-	}
-
-	/**
 	 * Adapter for the lists of chatrooms.
 	 * 
 	 * @author Jordan Hazari
 	 *
 	 */
-	private class ChatRoomAdapter extends ArrayAdapter<ChatRoomInfo> {
+	public class ChatRoomAdapter extends ArrayAdapter<ChatRoomInfo> {
 
 		private List<ChatRoomInfo> rgchatroominfo;
 		private boolean fJoined;
@@ -490,59 +414,6 @@ public class SelectRoomActivity extends Activity {
 			}
 			return view;
 		}
-	}
-	
-	/**
-	 * AsyncTask that leaves the room.
-	 * 
-	 * @author Colin Kho
-	 *
-	 */
-	class RoomLeaver extends AsyncTask<String, String, Boolean> {
-	    private ChatRoomInfo chatroominfo;
-	    private ProgressDialog progressdialog;
-	    public RoomLeaver(ChatRoomInfo roominfo) {
-	        chatroominfo = roominfo;
-	    }
-	    
-	    @Override
-	    protected void onPreExecute() {
-	        super.onPreExecute();
-            progressdialog = new ProgressDialog(SelectRoomActivity.this);
-            progressdialog.setMessage("Leaving room. Please wait...");
-            progressdialog.setIndeterminate(false);
-            progressdialog.setCancelable(true);
-            progressdialog.show();
-	    }
-	    
-        @Override
-        protected Boolean doInBackground(String... params) {
-            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
-            
-			if (networkinfo != null && networkinfo.isConnected()) {
-	            Boolean leaveRoomSuccess = ChatController.getInstance().leaveRoom(chatroominfo);
-	            return leaveRoomSuccess;
-			} else {
-				return false;
-			}
-        }
-        
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (progressdialog != null) {
-                progressdialog.dismiss();
-            }
-            
-            if (!success) {
-            	Toast toast = Toast.makeText(getApplicationContext(), R.string.leave_room_failed, Toast.LENGTH_SHORT);
-				toast.show();
-            } else {
-		        Intent itViewRooms = new Intent(SelectRoomActivity.this, SelectRoomActivity.class);
-		  		SelectRoomActivity.this.startActivity(itViewRooms);
-		  		SelectRoomActivity.this.finish();
-            }
-        }    
 	}
 	
 	/**
