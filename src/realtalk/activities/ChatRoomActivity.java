@@ -192,7 +192,6 @@ public class ChatRoomActivity extends Activity {
 	}
 	
 	public class MessageAdapter extends ArrayAdapter<MessageInfo> {
-
         private List<MessageInfo> rgmi;
         
         public MessageAdapter(Context context, int textViewResourceId, List<MessageInfo> rgmessageinfo) {

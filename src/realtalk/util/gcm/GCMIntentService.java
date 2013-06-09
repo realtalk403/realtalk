@@ -1,5 +1,7 @@
 package realtalk.util.gcm;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -64,12 +66,19 @@ public class GCMIntentService extends GCMBaseIntentService {
      */
     private void handleMessage(Context context, Intent intent) {
         Log.v("GCMIntentService", "Handling Message");
-        String stSender = intent.getStringExtra(RequestParameters.PARAMETER_MESSAGE_SENDER);
+        String stBody = "";
+        String stSender = "";
+        try {
+            stSender = URLDecoder.decode(intent.getStringExtra(RequestParameters.PARAMETER_MESSAGE_SENDER), "UTF-8");
+			stBody = URLDecoder.decode(intent.getStringExtra(RequestParameters.PARAMETER_MESSAGE_BODY), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
         String stTimestamp = intent.getStringExtra(RequestParameters.PARAMETER_MESSAGE_TIMESTAMP);
-        String stBody = intent.getStringExtra(RequestParameters.PARAMETER_MESSAGE_BODY);
         String stRoomName = intent.getStringExtra(RequestParameters.PARAMETER_ROOM_NAME);
         String stRoomId = intent.getStringExtra(RequestParameters.PARAMETER_ROOM_ID);
         long timestamp = Long.parseLong(stTimestamp);
+        Log.d("realtalk", "msg body = " + stBody);
         
         // Display the message in the room, and send a notification
         // if the user is not currently using the app (RealTalk is not on the screen).
