@@ -220,8 +220,8 @@ public class ChatRoomActivity extends Activity {
                 	textviewTop.setText(stTopText, BufferType.SPANNABLE);
                 }
                 if (textviewBottom != null) {
-                	SimpleDateFormat simpledateformat = new SimpleDateFormat("hh:mm a, M/dd/yyyy", Locale.US);
-                	simpledateformat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
+                	SimpleDateFormat simpledateformat = new SimpleDateFormat("hh:mm a, M/dd/yyyy", Locale.getDefault());
+                	simpledateformat.setTimeZone(TimeZone.getDefault());
                     textviewBottom.setText("\t" + simpledateformat.format(mi.timestampGet()));
                 }
             }
