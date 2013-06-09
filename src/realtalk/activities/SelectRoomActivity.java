@@ -214,10 +214,10 @@ public class SelectRoomActivity extends Activity {
 		String stJoinView;
 		if(fJoined) {
 			chatroominfo = rgchatroominfoJoined.get(position);
-			stJoinView = "Enter";
+			stJoinView = getResources().getString(R.string.enter);
 		} else {
 			chatroominfo = rgchatroominfoUnjoined.get(position);
-			stJoinView = "Join";
+			stJoinView = getResources().getString(R.string.join);
 		}
 		
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -228,9 +228,9 @@ public class SelectRoomActivity extends Activity {
 	    View viewCheckbox = View.inflate(this, R.layout.checkbox_anon, null);
 		//set dialog message
 		alertDialogBuilder
-			.setMessage(Html.fromHtml("<b>Description: </b> " +  chatroominfo.stDescription() + 
-									"<br/><br/><b>Active Users: </b> " + chatroominfo.numUsersGet() +
-									"<br/><br/><b>Creator: </b> " + chatroominfo.stCreator()))
+			.setMessage(Html.fromHtml("<b>" + getResources().getString(R.string.desc) + ": </b> " +  chatroominfo.stDescription() + 
+									"<br/><br/><b>" + getResources().getString(R.string.active_users) + ": </b> " + chatroominfo.numUsersGet() +
+									"<br/><br/><b>" + getResources().getString(R.string.creator) + ": </b> " + chatroominfo.stCreator()))
 			.setCancelable(true);
 		
 		if (!fJoined) {
@@ -248,7 +248,7 @@ public class SelectRoomActivity extends Activity {
 			}	
 		});
 		
-		alertDialogBuilder.setPositiveButton("Back", new DialogInterface.OnClickListener() {
+		alertDialogBuilder.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				// User cancelled the dialog
 				dialog.cancel();
@@ -256,7 +256,7 @@ public class SelectRoomActivity extends Activity {
 		});
 		
 		if(fJoined) {	
-			alertDialogBuilder.setNeutralButton("Leave", new DialogInterface.OnClickListener() {
+			alertDialogBuilder.setNeutralButton(R.string.leave, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					new RoomLeaverFromRoomList(SelectRoomActivity.this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 					dialog.cancel();
@@ -319,14 +319,14 @@ public class SelectRoomActivity extends Activity {
 	public void clickLogout(View view) {
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		//set title
-		alertDialogBuilder.setTitle("Log Out");
+		alertDialogBuilder.setTitle(R.string.logout);
 		
 		//set dialog message
 		alertDialogBuilder
-			.setMessage("Are you sure you want to log out?")
+			.setMessage(R.string.confirm_logout)
 			.setCancelable(true);
 		
-		alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				editorLoginPrefs.putBoolean("loggedIn", false);
 				editorLoginPrefs.putString("loggedin_username", null);
@@ -338,7 +338,7 @@ public class SelectRoomActivity extends Activity {
 			}	
 		});
 		
-		alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+		alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				// User cancelled the dialog
 				dialog.cancel();
@@ -447,7 +447,7 @@ public class SelectRoomActivity extends Activity {
 					textviewTop.setText(chatroominfo.stName());
 				}
 				if(textviewBottom != null) {
-					textviewBottom.setText("\t" + chatroominfo.numUsersGet() + " users");
+					textviewBottom.setText("\t" + chatroominfo.numUsersGet() + " " + getResources().getString(R.string.users));
 				}
 				if(button != null) {
 					button.setTag(position);
