@@ -75,8 +75,12 @@ public class ChatRoomModel {
 		for (int i = rgmi.size()-1; i >= 0; i--) {
 			
 			//If mi is later than or at the same time as rgmi[i]
-			if (mi.compareTo(rgmi.get(i)) >= 0) {
+			MessageInfo miOther = rgmi.get(i);
+			if (mi.compareTo(miOther) > 0) {
 				rgmi.add(i+1, mi);
+				return;
+			} else if (mi.compareTo(miOther) == 0 && mi.stBody().equals(miOther.stBody()) && mi.stSender().equals(miOther.stSender())) {
+				//It's a duplicate, so ignore it and return now
 				return;
 			}
 		}
