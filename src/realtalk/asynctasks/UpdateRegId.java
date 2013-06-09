@@ -41,7 +41,7 @@ public class UpdateRegId extends AsyncTask<String, String, RequestResultSet> {
     protected void onPreExecute() {
         super.onPreExecute();
         this.loginActivity.setProgressdialog(new ProgressDialog(this.loginActivity));
-        this.loginActivity.getProgressdialog().setMessage("Updating Server. Please wait...");
+        this.loginActivity.getProgressdialog().setMessage(loginActivity.getResources().getString(R.string.updating_server));
         this.loginActivity.getProgressdialog().setIndeterminate(false);
         this.loginActivity.getProgressdialog().setCancelable(true);
         this.loginActivity.getProgressdialog().show();

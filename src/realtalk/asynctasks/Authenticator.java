@@ -52,7 +52,7 @@ public class Authenticator extends AsyncTask<String, String, RequestResultSet> {
     protected void onPreExecute() {
         super.onPreExecute();
         this.loginActivity.setProgressdialog(new ProgressDialog(this.loginActivity));
-        this.loginActivity.getProgressdialog().setMessage("Loading user details. Please wait...");
+        this.loginActivity.getProgressdialog().setMessage(loginActivity.getResources().getString(R.string.load_user_details));
         this.loginActivity.getProgressdialog().setIndeterminate(false);
         this.loginActivity.getProgressdialog().setCancelable(true);
         this.loginActivity.getProgressdialog().show();
@@ -88,13 +88,13 @@ public class Authenticator extends AsyncTask<String, String, RequestResultSet> {
         } else if(!requestresultset.getfSucceeded()) {
         	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 			//set title
-			alertdialogbuilder.setTitle("Invalid fields");
+			alertdialogbuilder.setTitle(R.string.invalid_fields);
 			
 			//set dialog message
 			alertdialogbuilder
-				.setMessage("Invalid username/password. Please try again.")
+				.setMessage(R.string.invalid_uname_pword)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();

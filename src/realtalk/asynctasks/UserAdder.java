@@ -52,7 +52,7 @@ public class UserAdder extends AsyncTask<String, String, RequestResultSet> {
     protected void onPreExecute() {
         super.onPreExecute();
         this.createAccountActivity.setProgressdialog(new ProgressDialog(this.createAccountActivity));
-        this.createAccountActivity.getProgressdialog().setMessage("Loading user details. Please wait...");
+        this.createAccountActivity.getProgressdialog().setMessage(createAccountActivity.getResources().getString(R.string.load_user_details));
         this.createAccountActivity.getProgressdialog().setIndeterminate(false);
         this.createAccountActivity.getProgressdialog().setCancelable(true);
         this.createAccountActivity.getProgressdialog().show();
@@ -87,13 +87,13 @@ public class UserAdder extends AsyncTask<String, String, RequestResultSet> {
         	//user already exists pop up
         	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 			//set title
-			alertdialogbuilder.setTitle("Invalid fields");
+			alertdialogbuilder.setTitle(R.string.invalid_fields);
 			
 			//set dialog message
 			alertdialogbuilder
-				.setMessage("Username already exists.  Please choose another username.")
+				.setMessage(R.string.uname_exists)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();

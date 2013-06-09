@@ -65,8 +65,9 @@ public class LoginActivity extends Activity {
 		if (stRegId.equals("")) {
 		    // Register device for the first time.
 		    // Wait for registration result to complete.
+
 		    setProgressdialog(new ProgressDialog(LoginActivity.this));
-            getProgressdialog().setMessage("Initializing RealTalk resources for the first time. Please wait.....");
+            getProgressdialog().setMessage(getResources().getString(R.string.init));
             getProgressdialog().setIndeterminate(false);
             getProgressdialog().setCancelable(true);
             getProgressdialog().show();
@@ -146,14 +147,14 @@ public class LoginActivity extends Activity {
 	    if(stUsername.trim().equals("") || stPword.trim().equals("")) {	    	
 	    	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
-			alertdialogbuilder.setTitle("Invalid input");
+			alertdialogbuilder.setTitle(R.string.invalid_input);
 			
 			//set dialog message
 			alertdialogbuilder
-				.setMessage("Please enter a username & password.")
+				.setMessage(R.string.enter_info)
 				.setCancelable(false);
 			
-			alertdialogbuilder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+			alertdialogbuilder.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					// User cancelled the dialog
 					dialog.cancel();

@@ -52,7 +52,7 @@ public class RoomCreator extends AsyncTask<String, String, RequestResultSet> {
     protected void onPreExecute() {
         super.onPreExecute();
         this.createRoomActivity.setProgressdialog(new ProgressDialog(this.createRoomActivity));
-        this.createRoomActivity.getProgressdialog().setMessage("Creating room. Please wait...");
+        this.createRoomActivity.getProgressdialog().setMessage(createRoomActivity.getResources().getString(R.string.creating_room));
         this.createRoomActivity.getProgressdialog().setIndeterminate(false);
         this.createRoomActivity.getProgressdialog().setCancelable(true);
         this.createRoomActivity.getProgressdialog().show();
