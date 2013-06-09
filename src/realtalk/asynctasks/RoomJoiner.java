@@ -45,7 +45,7 @@ public class RoomJoiner extends AsyncTask<String, String, Boolean> {
     protected void onPreExecute() {
         super.onPreExecute();
         this.chatRoomActivity.progressdialog = new ProgressDialog(this.chatRoomActivity);
-        this.chatRoomActivity.progressdialog.setMessage("Entering room. Please wait...");
+        this.chatRoomActivity.progressdialog.setMessage(chatRoomActivity.getResources().getString(R.string.entering_room));
         this.chatRoomActivity.progressdialog.setIndeterminate(false);
         this.chatRoomActivity.progressdialog.setCancelable(true);
         this.chatRoomActivity.progressdialog.setCanceledOnTouchOutside(false);

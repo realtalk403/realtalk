@@ -71,13 +71,13 @@ public class CreateRoomActivity extends Activity {
 		if(stRoomName.length() > ROOMNAMELENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
-			alertDialogBuilder.setTitle("Invalid Field");
+			alertDialogBuilder.setTitle(R.string.invalid_field);
 			
 			//set dialog message
 			alertDialogBuilder
-				.setMessage("Room Name must not exceed 40 characters.")
+				.setMessage(R.string.long_room_name)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();
@@ -92,13 +92,13 @@ public class CreateRoomActivity extends Activity {
 		} else if (stDescription.length() > DESCLENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
-			alertDialogBuilder.setTitle("Invalid Field");
+			alertDialogBuilder.setTitle(R.string.invalid_field);
 			
 			//set dialog message
 			alertDialogBuilder
-				.setMessage("Room Description must not exceed 100 characters.")
+				.setMessage(R.string.long_room_desc)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();

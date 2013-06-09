@@ -63,13 +63,13 @@ public class CreateAccountActivity extends Activity {
 		if(stPword.equals("") || stUsername.trim().equals("") || stConf.equals("")) {
 			AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
-			alertdialogbuilder.setTitle("Invalid fields");
+			alertdialogbuilder.setTitle(R.string.invalid_fields);
 			
 			//set dialog message
 			alertdialogbuilder
-				.setMessage("Please fill in all of the fields.")
+				.setMessage(R.string.fill_fields)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();
@@ -84,13 +84,13 @@ public class CreateAccountActivity extends Activity {
 		} else if(!stPword.equals(stConf)) {	//if the password doesn't match the confirmation password
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
-			alertDialogBuilder.setTitle("Invalid fields");
+			alertDialogBuilder.setTitle(R.string.invalid_fields);
 			
 			//set dialog message
 			alertDialogBuilder
-				.setMessage("Passwords do not match.  Please try again.")
+				.setMessage(R.string.pword_mismatch)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();
@@ -105,13 +105,13 @@ public class CreateAccountActivity extends Activity {
 		} else if(stUsername.indexOf(" ") != -1) { //username has a space in it
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
-			alertDialogBuilder.setTitle("Invalid username");
+			alertDialogBuilder.setTitle(R.string.invalid_uname);
 			
 			//set dialog message
 			alertDialogBuilder
-				.setMessage("Username may not contain spaces.  Please try again.")
+				.setMessage(R.string.uname_spaces)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();
@@ -126,13 +126,13 @@ public class CreateAccountActivity extends Activity {
 		} else if(stUsername.length() > USERNAME_MAX_LENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
-			alertDialogBuilder.setTitle("Invalid Username");
+			alertDialogBuilder.setTitle(R.string.invalid_uname);
 			
 			//set dialog message
 			alertDialogBuilder
-				.setMessage("Username must not exceed 20 characters.  Please try again.")
+				.setMessage(R.string.long_uname)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();
@@ -147,13 +147,13 @@ public class CreateAccountActivity extends Activity {
 		} else if(stPword.length() > PASSWORD_MAX_LENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
-			alertDialogBuilder.setTitle("Invalid Password");
+			alertDialogBuilder.setTitle(R.string.invalid_pword);
 			
 			//set dialog message
 			alertDialogBuilder
-				.setMessage("Password must not exceed 20 characters.  Please try again.")
+				.setMessage(R.string.long_pword)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();

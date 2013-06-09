@@ -74,13 +74,13 @@ public class AccountSettingsActivity extends Activity {
 		if(stNewPword.trim().equals("") || stOldPword.trim().equals("") || stConfPword.trim().equals("")) {
 			AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
-			alertdialogbuilder.setTitle("Invalid fields");
+			alertdialogbuilder.setTitle(R.string.invalid_fields);
 
 			//set dialog message
 			alertdialogbuilder
-			.setMessage("Please fill in all of the fields.")
+			.setMessage(R.string.fill_fields)
 			.setCancelable(false)
-			.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+			.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					//close the dialog box if this button is clicked
 					dialog.cancel();
@@ -95,13 +95,13 @@ public class AccountSettingsActivity extends Activity {
 		} else if(!stNewPword.equals(stConfPword)) {
 			AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(this);
 			//set title
-			alertdialogbuilder.setTitle("Invalid input");
+			alertdialogbuilder.setTitle(R.string.invalid_input);
 
 			//set dialog message
 			alertdialogbuilder
-			.setMessage("New Password and Confirmation Password do not match.  Please try again.")
+			.setMessage(R.string.pword_mismatch)
 			.setCancelable(false)
-			.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+			.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					//close the dialog box if this button is clicked
 					dialog.cancel();
@@ -116,13 +116,13 @@ public class AccountSettingsActivity extends Activity {
 		} else if(stNewPword.length() > MAX_PASSWORD_LENGTH) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 			//set title
-			alertDialogBuilder.setTitle("Invalid Password");
+			alertDialogBuilder.setTitle(R.string.invalid_pword);
 
 			//set dialog message
 			alertDialogBuilder
-			.setMessage("Password must not exceed 20 characters.  Please try again.")
+			.setMessage(R.string.long_pword)
 			.setCancelable(false)
-			.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+			.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					//close the dialog box if this button is clicked
 					dialog.cancel();
@@ -152,14 +152,14 @@ public class AccountSettingsActivity extends Activity {
 		//confirmation pop up
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		//set title
-		alertDialogBuilder.setTitle("Delete account");
+		alertDialogBuilder.setTitle(R.string.delete_account);
 		
 		//set dialog message
 		alertDialogBuilder
-			.setMessage("Are you sure you want to delete your account?")
+			.setMessage(R.string.confirm_delete)
 			.setCancelable(false);
 		
-		alertDialogBuilder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+		alertDialogBuilder.setNegativeButton(R.string.yes, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				String stUsername = sharedpreferencesLoginPrefs.getString("loggedin_username", null);
 				String stPassword = sharedpreferencesLoginPrefs.getString("loggedin_password", null);
@@ -167,7 +167,7 @@ public class AccountSettingsActivity extends Activity {
 			}	
 		});
 		
-		alertDialogBuilder.setPositiveButton("No", new DialogInterface.OnClickListener() {
+		alertDialogBuilder.setPositiveButton(R.string.no, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				// User cancelled the dialog
 				dialog.cancel();

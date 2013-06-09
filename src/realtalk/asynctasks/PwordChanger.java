@@ -54,7 +54,7 @@ public class PwordChanger extends AsyncTask<String, String, RequestResultSet> {
     protected void onPreExecute() {
         super.onPreExecute();
         this.accountSettingsActivity.progressdialog = new ProgressDialog(this.accountSettingsActivity);
-        this.accountSettingsActivity.progressdialog.setMessage("Loading user details. Please wait...");
+        this.accountSettingsActivity.progressdialog.setMessage(accountSettingsActivity.getResources().getString(R.string.load_user_details));
         this.accountSettingsActivity.progressdialog.setIndeterminate(false);
         this.accountSettingsActivity.progressdialog.setCancelable(true);
         this.accountSettingsActivity.progressdialog.show();
@@ -99,13 +99,13 @@ public class PwordChanger extends AsyncTask<String, String, RequestResultSet> {
         	//invalid password pop up
         	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 			//set title
-			alertdialogbuilder.setTitle("Invalid fields");
+			alertdialogbuilder.setTitle(R.string.invalid_fields);
 			
 			//set dialog message
 			alertdialogbuilder
-				.setMessage("Old password incorrect.  Please try again.")
+				.setMessage(R.string.old_pword_incorrect)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();
@@ -124,13 +124,13 @@ public class PwordChanger extends AsyncTask<String, String, RequestResultSet> {
         	//password change successful pop up
         	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
 			//set title
-			alertdialogbuilder.setTitle("Password Changed");
+			alertdialogbuilder.setTitle(R.string.pword_changed_title);
 			
 			//set dialog message
 			alertdialogbuilder
-				.setMessage("Password changed.")
+				.setMessage(R.string.pword_changed)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						TextView textviewNewPword = (TextView) PwordChanger.this.accountSettingsActivity.findViewById(R.id.newpword);

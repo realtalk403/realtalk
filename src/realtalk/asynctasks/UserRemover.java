@@ -53,7 +53,7 @@ public class UserRemover extends AsyncTask<String, String, RequestResultSet> {
     protected void onPreExecute() {
         super.onPreExecute();
         this.accountSettingsActivity.progressdialog = new ProgressDialog(this.accountSettingsActivity);
-        this.accountSettingsActivity.progressdialog.setMessage("Loading user details. Please wait...");
+        this.accountSettingsActivity.progressdialog.setMessage(accountSettingsActivity.getResources().getString(R.string.load_user_details));
         this.accountSettingsActivity.progressdialog.setIndeterminate(false);
         this.accountSettingsActivity.progressdialog.setCancelable(true);
         this.accountSettingsActivity.progressdialog.show();
@@ -92,13 +92,13 @@ public class UserRemover extends AsyncTask<String, String, RequestResultSet> {
             this.accountSettingsActivity.progressdialog.dismiss();
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
 			//set title
-			alertDialogBuilder.setTitle("Account deleted");
+			alertDialogBuilder.setTitle(R.string.account_deleted_title);
 			
 			//set dialog message
 			alertDialogBuilder
-				.setMessage("Your account has been deleted.")
+				.setMessage(R.string.account_deleted)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();
@@ -120,13 +120,13 @@ public class UserRemover extends AsyncTask<String, String, RequestResultSet> {
     	} else {
     		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
 			//set title
-			alertDialogBuilder.setTitle("Account not deleted");
+			alertDialogBuilder.setTitle(R.string.account_not_deleted_title);
 			
 			//set dialog message
 			alertDialogBuilder
-				.setMessage("Error.  Your account has not been deleted.")
+				.setMessage(R.string.account_not_deleted)
 				.setCancelable(false)
-				.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						//close the dialog box if this button is clicked
 						dialog.cancel();

@@ -35,7 +35,7 @@ public class RoomLeaverFromRoomList extends AsyncTask<String, String, Boolean> {
     protected void onPreExecute() {
         super.onPreExecute();
         progressdialog = new ProgressDialog(this.selectRoomActivity);
-        progressdialog.setMessage("Leaving room. Please wait...");
+        progressdialog.setMessage(selectRoomActivity.getResources().getString(R.string.leaving_room));
         progressdialog.setIndeterminate(false);
         progressdialog.setCancelable(true);
         progressdialog.show();
