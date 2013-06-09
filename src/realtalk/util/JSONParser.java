@@ -22,6 +22,7 @@ public final class JSONParser {
     /*
      * Private constructor to disable default public one
      */
+
     private JSONParser() {
         throw new UnsupportedOperationException();
     }

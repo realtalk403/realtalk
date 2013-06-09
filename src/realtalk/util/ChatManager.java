@@ -1,5 +1,8 @@
 package realtalk.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
@@ -97,23 +100,25 @@ public final class ChatManager {
     /**
      * @param messageinfo         Message info object
      * @return the list of parameters as basic name value pairs
+     * @throws UnsupportedEncodingException 
      */
-    private static List<NameValuePair> rgparamsMessageInfo(MessageInfo messageinfo) {
+    private static List<NameValuePair> rgparamsMessageInfo(MessageInfo messageinfo) throws UnsupportedEncodingException {
         List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_TIMESTAMP, Long.valueOf(messageinfo.timestampGet().getTime()).toString()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_BODY, messageinfo.stBody()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_SENDER, messageinfo.stSender()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_BODY, URLEncoder.encode(messageinfo.stBody(), "UTF-8")));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_MESSAGE_SENDER, URLEncoder.encode(messageinfo.stSender(), "UTF-8")));
         return rgparams;
     }
     
     /**
      * @param userinfo         User info object
      * @return the list of parameters as basic name value pairs
+     * @throws UnsupportedEncodingException 
      */
-    private static List<NameValuePair> rgparamsUserBasicInfo(UserInfo userinfo) {
+    private static List<NameValuePair> rgparamsUserBasicInfo(UserInfo userinfo) throws UnsupportedEncodingException {
         List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_REG_ID, userinfo.stRegistrationId()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, userinfo.stUserName()));
+		rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER, URLEncoder.encode(userinfo.stUserName(), "UTF-8")));
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_PWORD, userinfo.stPassword()));
         return rgparams;
     }
@@ -121,12 +126,13 @@ public final class ChatManager {
     /**
      * @param chatroominfo         Chat room info object
      * @return the list of parameters as basic name value pairs
+     * @throws UnsupportedEncodingException 
      */
-    private static List<NameValuePair> rgparamsChatRoomBasicInfo(ChatRoomInfo chatroominfo) {
+    private static List<NameValuePair> rgparamsChatRoomBasicInfo(ChatRoomInfo chatroominfo) throws UnsupportedEncodingException {
         List<NameValuePair> rgparams = new ArrayList<NameValuePair>();
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_NAME, chatroominfo.stName()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_NAME, URLEncoder.encode(chatroominfo.stName(), "UTF_8")));
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_ID, chatroominfo.stId()));
-        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_DESCRIPTION, chatroominfo.stDescription()));
+        rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_ROOM_DESCRIPTION, URLEncoder.encode(chatroominfo.stDescription(), "UTF-8")));
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER_LATITUDE, Double.valueOf(chatroominfo.getLatitude()).toString()));
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_USER_LONGITUDE, Double.valueOf(chatroominfo.getLongitude()).toString()));
         return rgparams;
@@ -161,6 +167,7 @@ public final class ChatManager {
      * @return A RequestResultSet containing the result of the request
      */
     private static RequestResultSet rrsPostRequest(List<NameValuePair> rgparam, String stUrl) {
+
 		JSONObject json = makeRequest(stUrl, rgparam);
         try {
         	boolean fSucceeded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
@@ -191,12 +198,12 @@ public final class ChatManager {
         		JSONArray rgroom = json.getJSONArray(RequestParameters.PARAMETER_ROOM_ROOMS);
         		for (int i = 0; i < rgroom.length(); i++) {
         			JSONObject jsonobject = rgroom.getJSONObject(i);
-        			String stName = jsonobject.getString(RequestParameters.PARAMETER_ROOM_NAME);
+        			String stName = URLDecoder.decode(jsonobject.getString(RequestParameters.PARAMETER_ROOM_NAME), "UTF-8");
         			String stId = jsonobject.getString(RequestParameters.PARAMETER_ROOM_ID);
-        			String stDescription = jsonobject.getString(RequestParameters.PARAMETER_ROOM_DESCRIPTION);
+        			String stDescription = URLDecoder.decode(jsonobject.getString(RequestParameters.PARAMETER_ROOM_DESCRIPTION), "UTF-8");
         			double latitude = jsonobject.getDouble(RequestParameters.PARAMETER_ROOM_LATITUDE);
         			double longitude = jsonobject.getDouble(RequestParameters.PARAMETER_ROOM_LONGITUDE);
-        			String stCreator = jsonobject.getString(RequestParameters.PARAMETER_ROOM_CREATOR);
+        			String stCreator = URLDecoder.decode(jsonobject.getString(RequestParameters.PARAMETER_ROOM_CREATOR), "UTF-8");
         			int numUsers = jsonobject.getInt(RequestParameters.PARAMETER_ROOM_NUM_USERS);
         			long ticks = jsonobject.getLong(RequestParameters.PARAMETER_TIMESTAMP);
         			rgchatroominfo.add(new ChatRoomInfo(stName, stId, stDescription, latitude, longitude, stCreator, numUsers, new Timestamp(ticks)));
@@ -207,6 +214,9 @@ public final class ChatManager {
         			ResponseParameters.RESPONSE_MESSAGE_ERROR);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+        catch (UnsupportedEncodingException e) {
+        	e.printStackTrace();
         }
         //if all else fails, return generic error code and message
     	return new ChatRoomResultSet(false, "REQUEST FAILED", "REQUEST FAILED");
@@ -226,9 +236,9 @@ public final class ChatManager {
         		JSONArray rgmessage = json.getJSONArray(RequestParameters.PARAMETER_MESSAGE_MESSAGES);
         		for (int i = 0; i < rgmessage.length(); i++) {
         			JSONObject jsonobject = rgmessage.getJSONObject(i);
-        			String stBody = jsonobject.getString(RequestParameters.PARAMETER_MESSAGE_BODY);
+        			String stBody = URLDecoder.decode(jsonobject.getString(RequestParameters.PARAMETER_MESSAGE_BODY), "UTF-8");
         			long ticks = jsonobject.getLong(RequestParameters.PARAMETER_MESSAGE_TIMESTAMP);
-        			String stSender = jsonobject.getString(RequestParameters.PARAMETER_MESSAGE_SENDER);
+        			String stSender = URLDecoder.decode(jsonobject.getString(RequestParameters.PARAMETER_MESSAGE_SENDER), "UTF-8");
         			rgmessageinfo.add(new MessageInfo(stBody, stSender, ticks));
         		}
         		return new PullMessageResultSet(true, rgmessageinfo, "NO ERROR CODE", "NO ERROR MESSAGE");
@@ -238,6 +248,8 @@ public final class ChatManager {
             		json.getString(ResponseParameters.PARAMETER_ERROR_MSG));
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+        	e.printStackTrace();
         }
         //if all else fails, return generic error code and message
     	return new PullMessageResultSet(false, "REQUEST FAILED", "REQUEST FAILED");
@@ -248,7 +260,12 @@ public final class ChatManager {
      * @return A resultset containing the result of the authentication
      */
 	public static RequestResultSet rrsAuthenticateUser(UserInfo userinfo) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsUserBasicInfo(userinfo);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
         return rrsPostRequest(rgparams, URL_AUTHENTICATE);
 	}
 	
@@ -257,7 +274,12 @@ public final class ChatManager {
      * @return A resultset containing the result of the addition
      */
 	public static RequestResultSet rrsAddUser(UserInfo userinfo) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsUserBasicInfo(userinfo);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
         return rrsPostRequest(rgparams, URL_ADD_USER);
 	}
 	
@@ -266,7 +288,12 @@ public final class ChatManager {
      * @return A resultset containing the result of the removal
      */
 	public static RequestResultSet rrsRemoveUser(UserInfo userinfo) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsUserBasicInfo(userinfo);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
         return rrsPostRequest(rgparams, URL_REMOVE_USER);
 	}
 	
@@ -276,7 +303,12 @@ public final class ChatManager {
      * @return A resultset containing the result of the change
      */
 	public static RequestResultSet rrsChangePassword(UserInfo userinfo, String stPasswordNew) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsUserBasicInfo(userinfo);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_PWORD, stPasswordNew));
         return rrsPostRequest(rgparams, URL_CHANGE_PASSWORD);
 	}
@@ -287,7 +319,12 @@ public final class ChatManager {
      * @return A resultset containing the result of the change
      */
 	public static RequestResultSet rrsChangeID(UserInfo userinfo, String stIdNew) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsUserBasicInfo(userinfo);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
         rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_NEW_REG_ID, stIdNew));
         return rrsPostRequest(rgparams, URL_CHANGE_ID);
 	}
@@ -298,8 +335,13 @@ public final class ChatManager {
      * @return A resultset containing the result of the addition
      */
 	public static RequestResultSet rrsAddRoom(ChatRoomInfo chatroominfo, UserInfo userinfo) {
-        List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
-        rgparams.addAll(rgparamsUserBasicInfo(userinfo));
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
+	        rgparams.addAll(rgparamsUserBasicInfo(userinfo));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		return rrsPostRequest(rgparams, URL_ADD_ROOM);
 	}
 	
@@ -309,9 +351,14 @@ public final class ChatManager {
      * @return A resultset containing the result of the join
      */
 	public static RequestResultSet rrsJoinRoom(UserInfo userinfo, ChatRoomInfo chatroominfo, boolean fAnon) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
-        rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
-        rgparams.add(paramAnonymous(fAnon));
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsUserBasicInfo(userinfo);
+	        rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
+	        rgparams.add(paramAnonymous(fAnon));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		return rrsPostRequest(rgparams, URL_JOIN_ROOM);
 	}
 	
@@ -321,8 +368,13 @@ public final class ChatManager {
      * @return A resultset containing the result of the leave
      */
 	public static RequestResultSet rrsLeaveRoom(UserInfo userinfo, ChatRoomInfo chatroominfo) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
-        rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsUserBasicInfo(userinfo);
+	        rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		return rrsPostRequest(rgparams, URL_LEAVE_ROOM);
 	}
 	
@@ -332,9 +384,14 @@ public final class ChatManager {
      * @return A resultset containing the result of the post
      */
 	public static RequestResultSet rrsPostMessage(UserInfo userinfo, ChatRoomInfo chatroominfo, MessageInfo message) {
-        List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
-        rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
-        rgparams.addAll(rgparamsMessageInfo(message));
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsUserBasicInfo(userinfo);
+	        rgparams.addAll(rgparamsChatRoomBasicInfo(chatroominfo));
+	        rgparams.addAll(rgparamsMessageInfo(message));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		return rrsPostRequest(rgparams, URL_POST_MESSAGE);
 	}
 	
@@ -343,7 +400,12 @@ public final class ChatManager {
      * @return A resultset containing the result of the pull
      */
 	public static PullMessageResultSet pmrsChatLogGet(ChatRoomInfo chatroominfo) {
-        List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
+        List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		return pmrsPostRequest(rgparams, URL_GET_ALL_MESSAGES);
 	}
 	
@@ -369,7 +431,12 @@ public final class ChatManager {
 			e.printStackTrace();
 			return new PullMessageResultSet(false, "ERROR_INVALID_TIMESTAMP", "ERROR_MESSAGE_PARSING_ERROR");
 		}
-		List<NameValuePair> rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
+		List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsChatRoomBasicInfo(chatroominfo);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		rgparams.add(new BasicNameValuePair(RequestParameters.PARAMETER_TIMESTAMP, stTimestamp));
 		return pmrsPostRequest(rgparams, URL_GET_RECENT_MESSAGES);
 	}
@@ -398,7 +465,12 @@ public final class ChatManager {
      *                     it holds a list of ChatRoomInfo objects describing the user's rooms.
 	 */
 	public static ChatRoomResultSet crrsUsersChatrooms(UserInfo userinfo) {
-	    List<NameValuePair> rgparams = rgparamsUserBasicInfo(userinfo);
+	    List<NameValuePair> rgparams = null;
+		try {
+			rgparams = rgparamsUserBasicInfo(userinfo);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	    return crrsPostRequest(rgparams, URL_GET_USERS_ROOMS);
 	}
 }
