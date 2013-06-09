@@ -51,7 +51,7 @@ public class MessageSender extends AsyncTask<String, String, RequestResultSet> {
 		NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 		if (networkinfo != null && networkinfo.isConnected()) {
 			Log.d("connectivity", "Connected and attempting to post message");
-			RequestResultSet rrs = this.chatRoomActivity.chatController.rrsPostMessage(this.chatRoomActivity.userinfo, chatroominfo, messageinfo);
+			RequestResultSet rrs = this.chatRoomActivity.getChatController().rrsPostMessage(this.chatRoomActivity.getUserinfo(), chatroominfo, messageinfo);
 			Log.d("connectivity", "Message posted");
 			return rrs;
 		} else {

@@ -24,11 +24,11 @@ import android.widget.TextView;
 public class CreateRoomActivity extends Activity {
     private static final int DESCLENGTH = 100;
     private static final int ROOMNAMELENGTH = 40;
-	public ProgressDialog progressdialog;
+	private ProgressDialog progressdialog;
 	private UserInfo u;
-	public double latitude;
-	public double longitude;
-	public boolean fDebugMode;
+	private double latitude;
+	private double longitude;
+	private boolean fDebugMode;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +39,8 @@ public class CreateRoomActivity extends Activity {
 		
 		
 		Bundle extras = getIntent().getExtras();
-		latitude = extras.getDouble("LATITUDE");
-		longitude = extras.getDouble("LONGITUDE");
+		setLatitude(extras.getDouble("LATITUDE"));
+		setLongitude(extras.getDouble("LONGITUDE"));
 		if (!extras.containsKey("DEBUG_MODE")) {
 			u = ChatController.getInstance().getUser();
 		} else {
@@ -115,12 +115,75 @@ public class CreateRoomActivity extends Activity {
 		}
 	}
 	
+	/*
+	 * This method gets the debug mode status of the activity.
+	 * 
+	 */
 	public boolean fDebugMode() {
-		return fDebugMode;
+		return isfDebugMode();
 	}
 	
+	/*
+	 * Debug Mode methods. This sets the activity in debug mode. 
+	 */
 	public void setDebugMode() {
-		fDebugMode = true;
+		setfDebugMode(true);
 	}
+
+    /**
+     * @return the progressdialog
+     */
+    public ProgressDialog getProgressdialog() {
+        return progressdialog;
+    }
+
+    /**
+     * @param progressdialog the progressdialog to set
+     */
+    public void setProgressdialog(ProgressDialog progressdialog) {
+        this.progressdialog = progressdialog;
+    }
+
+    /**
+     * @return the fDebugMode
+     */
+    public boolean isfDebugMode() {
+        return fDebugMode;
+    }
+
+    /**
+     * @param fDebugMode the fDebugMode to set
+     */
+    public void setfDebugMode(boolean fDebugMode) {
+        this.fDebugMode = fDebugMode;
+    }
+
+    /**
+     * @return the latitude
+     */
+    public double getLatitude() {
+        return latitude;
+    }
+
+    /**
+     * @param latitude the latitude to set
+     */
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    /**
+     * @return the longitude
+     */
+    public double getLongitude() {
+        return longitude;
+    }
+
+    /**
+     * @param longitude the longitude to set
+     */
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 	
 }

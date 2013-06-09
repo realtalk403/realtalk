@@ -40,11 +40,11 @@ public class UpdateRegId extends AsyncTask<String, String, RequestResultSet> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        this.loginActivity.progressdialog = new ProgressDialog(this.loginActivity);
-        this.loginActivity.progressdialog.setMessage(loginActivity.getResources().getString(R.string.updating_server));
-        this.loginActivity.progressdialog.setIndeterminate(false);
-        this.loginActivity.progressdialog.setCancelable(true);
-        this.loginActivity.progressdialog.show();
+        this.loginActivity.setProgressdialog(new ProgressDialog(this.loginActivity));
+        this.loginActivity.getProgressdialog().setMessage(loginActivity.getResources().getString(R.string.updating_server));
+        this.loginActivity.getProgressdialog().setIndeterminate(false);
+        this.loginActivity.getProgressdialog().setCancelable(true);
+        this.loginActivity.getProgressdialog().show();
     }
     
     /**
@@ -52,14 +52,14 @@ public class UpdateRegId extends AsyncTask<String, String, RequestResultSet> {
      */
     @Override
     protected RequestResultSet doInBackground(String... params) {
-        UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), this.loginActivity.stRegisteredId);
+        UserInfo loginUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), this.loginActivity.getStRegisteredId());
         
         ConnectivityManager connectivitymanager = (ConnectivityManager) this.loginActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
         
 		if (networkinfo != null && networkinfo.isConnected()) {
 			ChatController.getInstance().fInitialize(loginUserinfo);
-			return ChatManager.rrsChangeID(userinfo, this.loginActivity.stRegisteredId);
+			return ChatManager.rrsChangeID(userinfo, this.loginActivity.getStRegisteredId());
 		} else {
 			return null;
 		}
@@ -67,7 +67,7 @@ public class UpdateRegId extends AsyncTask<String, String, RequestResultSet> {
     
     @Override
     protected void onPostExecute(RequestResultSet rrs) {
-        this.loginActivity.progressdialog.dismiss();
+        this.loginActivity.getProgressdialog().dismiss();
         if (rrs == null) {
 			Toast toast = Toast.makeText(this.loginActivity.getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
 			toast.show();

@@ -28,9 +28,9 @@ import com.realtalk.R;
 public class AccountSettingsActivity extends Activity {
 	private static final String DEFAULT_ID = "someID";
 	private static final int MAX_PASSWORD_LENGTH = 20;
-	public ProgressDialog progressdialog;
+	private ProgressDialog progressdialog;
     private SharedPreferences sharedpreferencesLoginPrefs;
-    public Editor editorLoginPrefs;
+    private Editor editorLoginPrefs;
 
 	/**
 	 * Sets up activity
@@ -180,6 +180,34 @@ public class AccountSettingsActivity extends Activity {
 		//show alert dialog
 		alertdialogDeleteAcc.show();
 	}
+
+    /**
+     * @return the progressdialog
+     */
+    public ProgressDialog getProgressdialog() {
+        return progressdialog;
+    }
+
+    /**
+     * @param progressdialog the progressdialog to set
+     */
+    public void setProgressdialog(ProgressDialog progressdialog) {
+        this.progressdialog = progressdialog;
+    }
+
+    /**
+     * @return the editorLoginPrefs
+     */
+    public Editor getEditorLoginPrefs() {
+        return editorLoginPrefs;
+    }
+
+    /**
+     * @param editorLoginPrefs the editorLoginPrefs to set
+     */
+    public void setEditorLoginPrefs(Editor editorLoginPrefs) {
+        this.editorLoginPrefs = editorLoginPrefs;
+    }
 }
 
 

@@ -36,7 +36,7 @@ public class Authenticator extends AsyncTask<String, String, RequestResultSet> {
 	 * 
 	 * @param userinfo user to be authenticated
 	 * @param activity the activity context
-	 * @param loginActivity TODO
+	 * @param loginActivity
 	 */
 	public Authenticator(LoginActivity loginActivity, UserInfo userinfo, Activity activity) {
 		this.loginActivity = loginActivity;
@@ -51,11 +51,11 @@ public class Authenticator extends AsyncTask<String, String, RequestResultSet> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        this.loginActivity.progressdialog = new ProgressDialog(this.loginActivity);
-        this.loginActivity.progressdialog.setMessage(loginActivity.getResources().getString(R.string.load_user_details));
-        this.loginActivity.progressdialog.setIndeterminate(false);
-        this.loginActivity.progressdialog.setCancelable(true);
-        this.loginActivity.progressdialog.show();
+        this.loginActivity.setProgressdialog(new ProgressDialog(this.loginActivity));
+        this.loginActivity.getProgressdialog().setMessage(loginActivity.getResources().getString(R.string.load_user_details));
+        this.loginActivity.getProgressdialog().setIndeterminate(false);
+        this.loginActivity.getProgressdialog().setCancelable(true);
+        this.loginActivity.getProgressdialog().show();
     }
     
     /**
@@ -81,7 +81,7 @@ public class Authenticator extends AsyncTask<String, String, RequestResultSet> {
      */
     @Override
     protected void onPostExecute(RequestResultSet requestresultset) {
-        this.loginActivity.progressdialog.dismiss();
+        this.loginActivity.getProgressdialog().dismiss();
         if (requestresultset == null) {
         	Toast toast = Toast.makeText(this.loginActivity.getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
 			toast.show();
@@ -115,12 +115,12 @@ public class Authenticator extends AsyncTask<String, String, RequestResultSet> {
     		
     		//for when we have a logout button, so that pressing back on the rooms page 
     		//doesn't take you back to the login screen, but rather exits the app.
-    		this.loginActivity.editorLoginPrefs.putBoolean("loggedIn", true);
-    		this.loginActivity.editorLoginPrefs.putString("loggedin_username", username);
-    		this.loginActivity.editorLoginPrefs.putString("loggedin_password", password);
-    		this.loginActivity.editorLoginPrefs.commit();
+    		this.loginActivity.getEditorLoginPrefs().putBoolean("loggedIn", true);
+    		this.loginActivity.getEditorLoginPrefs().putString("loggedin_username", username);
+    		this.loginActivity.getEditorLoginPrefs().putString("loggedin_password", password);
+    		this.loginActivity.getEditorLoginPrefs().commit();
     		
-    		this.loginActivity.updateRegId(new UserInfo(username, password, this.loginActivity.stRegisteredId));  
+    		this.loginActivity.updateRegId(new UserInfo(username, password, this.loginActivity.getStRegisteredId()));  
         }
     }
 }

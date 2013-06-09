@@ -68,15 +68,15 @@ public class ChatRoomActivity extends Activity {
     private static final int LOOP = 0;
     
 	private ChatRoomInfo chatroominfo;
-	public UserInfo userinfo;
-	public ProgressDialog progressdialog;
-	public List<MessageInfo> rgmi = new ArrayList<MessageInfo>();
-	public MessageAdapter adapter;
-	public IChatController chatController;
-	public Boolean fAnon;
+	private UserInfo userinfo;
+	private ProgressDialog progressdialog;
+	private List<MessageInfo> rgmi = new ArrayList<MessageInfo>();
+	private MessageAdapter adapter;
+	private IChatController chatController;
+	private Boolean fAnon;
 	private SoundPool soundpool;
 	private int iMessageBeep = 0;
-	public boolean fDebug;
+	private boolean fDebug;
 	
 	/**
 	 * Sets up the chat room activity and loads the previous
@@ -94,17 +94,17 @@ public class ChatRoomActivity extends Activity {
 		boolean fLocalDebug = extras.getBoolean("DEBUG");
 		
 		if(!fLocalDebug) {
-			chatController = ChatController.getInstance();
-		    fDebug = false;   
+			setChatController(ChatController.getInstance());
+		    setfDebug(false);   
 		} else {
-			chatController = ChatControllerStub.getInstance();
-			fDebug = true;
+			setChatController(ChatControllerStub.getInstance());
+			setfDebug(true);
 		}
-		userinfo = chatController.getUser();
+		setUserinfo(getChatController().getUser());
 
-		fAnon = extras.getBoolean("ANON", false);
+		setfAnon(extras.getBoolean("ANON", false));
 		
-		String stUser = userinfo.stUserName();
+		String stUser = getUserinfo().stUserName();
 		String stRoom = chatroominfo.stName();
 		
 		TextView textviewRoomTitle = (TextView) findViewById(R.id.chatRoomTitle);
@@ -118,8 +118,8 @@ public class ChatRoomActivity extends Activity {
 		new RoomJoiner(this, this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 		ListView listview = (ListView) findViewById(R.id.list);
-		adapter = new MessageAdapter(this, R.layout.message_item, rgmi);
-		listview.setAdapter(adapter);
+		setAdapter(new MessageAdapter(this, R.layout.message_item, rgmi));
+		listview.setAdapter(getAdapter());
 	}
 	
 	@Override
@@ -172,7 +172,7 @@ public class ChatRoomActivity extends Activity {
 	 * Method that loads messages to adapter. Prepares the chat view to use GCM thereafter.
 	 */
 	public void createGCMMessageLoader() {
-	    new GCMMessageLoader(this, this, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	    new GCMMessageLoader(this, this, chatroominfo, chatController).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
 	/**
@@ -185,7 +185,7 @@ public class ChatRoomActivity extends Activity {
 		String stValue = edittext.getText().toString();
 		
 		if (!stValue.equals("")) {
-			MessageInfo message = new MessageInfo (stValue, userinfo.stUserName(), new Timestamp(System.currentTimeMillis()));
+			MessageInfo message = new MessageInfo (stValue, getUserinfo().stUserName(), new Timestamp(System.currentTimeMillis()));
 			new MessageSender(this, message, chatroominfo).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			edittext.setText("");
 		}
@@ -238,13 +238,13 @@ public class ChatRoomActivity extends Activity {
                     String stRoomId = intent.getExtras().getString(CommonUtilities.ROOM_ID);
                     
                     // Retrieve messages from controller.
-                    List<MessageInfo> rgmessageinfo = chatController.getMessagesFromChatRoom(stRoomId);
+                    List<MessageInfo> rgmessageinfo = getChatController().getMessagesFromChatRoom(stRoomId);
                     
                     // Update adapter to have new messages.
-                    adapter.clear();
+                    getAdapter().clear();
                     
                     for (int iMsgIndex = 0; iMsgIndex < rgmessageinfo.size(); iMsgIndex++) {
-                        adapter.add(rgmessageinfo.get(iMsgIndex));
+                        getAdapter().add(rgmessageinfo.get(iMsgIndex));
                     }
                     
                     soundpool.play(iMessageBeep, LEFT_VOL, RIGHT_VOL, PRIORITY, LOOP, RATE);
@@ -258,11 +258,95 @@ public class ChatRoomActivity extends Activity {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {   
-            	adapter.clear();
+            	getAdapter().clear();
         		for(MessageInfo messageinfo : rgmessageinfo) {
-        			adapter.add(messageinfo);
+        			getAdapter().add(messageinfo);
         		}
             }
         });
 	}
+
+    /**
+     * @return the adapter
+     */
+    public MessageAdapter getAdapter() {
+        return adapter;
+    }
+
+    /**
+     * @param adapter the adapter to set
+     */
+    public void setAdapter(MessageAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    /**
+     * @return the chatController
+     */
+    public IChatController getChatController() {
+        return chatController;
+    }
+
+    /**
+     * @param chatController the chatController to set
+     */
+    public void setChatController(IChatController chatController) {
+        this.chatController = chatController;
+    }
+
+    /**
+     * @return the userinfo
+     */
+    public UserInfo getUserinfo() {
+        return userinfo;
+    }
+
+    /**
+     * @param userinfo the userinfo to set
+     */
+    public void setUserinfo(UserInfo userinfo) {
+        this.userinfo = userinfo;
+    }
+
+    /**
+     * @return the progressdialog
+     */
+    public ProgressDialog getProgressdialog() {
+        return progressdialog;
+    }
+
+    /**
+     * @param progressdialog the progressdialog to set
+     */
+    public void setProgressdialog(ProgressDialog progressdialog) {
+        this.progressdialog = progressdialog;
+    }
+
+    /**
+     * @return the fAnon
+     */
+    public Boolean getfAnon() {
+        return fAnon;
+    }
+
+    /**
+     * @param fAnon the fAnon to set
+     */
+    public void setfAnon(Boolean fAnon) {
+        this.fAnon = fAnon;
+    }
+
+    /**
+     * @return the fDebug
+     */
+    public boolean isfDebug() {
+        return fDebug;
+    }
+
+    /**
+     * @param fDebug the fDebug to set
+     */
+    public void setfDebug(boolean fDebug) {
+        this.fDebug = fDebug;
+    }
 }

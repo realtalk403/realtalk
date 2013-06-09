@@ -38,7 +38,7 @@ public class PwordChanger extends AsyncTask<String, String, RequestResultSet> {
 	 * 
 	 * @param user	the user to add
 	 * @param activity	the activity context
-	 * @param accountSettingsActivity TODO
+	 * @param accountSettingsActivity
 	 */
 	public PwordChanger(AccountSettingsActivity accountSettingsActivity, UserInfo user, Activity activity, String stNewPword) {
 		this.accountSettingsActivity = accountSettingsActivity;
@@ -53,11 +53,11 @@ public class PwordChanger extends AsyncTask<String, String, RequestResultSet> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        this.accountSettingsActivity.progressdialog = new ProgressDialog(this.accountSettingsActivity);
-        this.accountSettingsActivity.progressdialog.setMessage(accountSettingsActivity.getResources().getString(R.string.load_user_details));
-        this.accountSettingsActivity.progressdialog.setIndeterminate(false);
-        this.accountSettingsActivity.progressdialog.setCancelable(true);
-        this.accountSettingsActivity.progressdialog.show();
+        this.accountSettingsActivity.setProgressdialog(new ProgressDialog(this.accountSettingsActivity));
+        this.accountSettingsActivity.getProgressdialog().setMessage(accountSettingsActivity.getResources().getString(R.string.load_user_details));
+        this.accountSettingsActivity.getProgressdialog().setIndeterminate(false);
+        this.accountSettingsActivity.getProgressdialog().setCancelable(true);
+        this.accountSettingsActivity.getProgressdialog().show();
     }
     
     /**
@@ -91,7 +91,7 @@ public class PwordChanger extends AsyncTask<String, String, RequestResultSet> {
      */
     @Override
     protected void onPostExecute(RequestResultSet rrs) {
-        this.accountSettingsActivity.progressdialog.dismiss();
+        this.accountSettingsActivity.getProgressdialog().dismiss();
         if (rrs == null) {
         	Toast toast = Toast.makeText(this.accountSettingsActivity.getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
 			toast.show();
@@ -118,8 +118,8 @@ public class PwordChanger extends AsyncTask<String, String, RequestResultSet> {
 			//show alert dialog
 			alertdialogBadUname.show();	
         } else {
-        	this.accountSettingsActivity.editorLoginPrefs.putString("loggedin_password", stNewPword);
-        	this.accountSettingsActivity.editorLoginPrefs.commit();
+        	this.accountSettingsActivity.getEditorLoginPrefs().putString("loggedin_password", stNewPword);
+        	this.accountSettingsActivity.getEditorLoginPrefs().commit();
         	
         	//password change successful pop up
         	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
