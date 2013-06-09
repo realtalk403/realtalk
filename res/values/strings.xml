@@ -2,14 +2,11 @@
 <resources>
 
     <string name="app_name">RealTalk</string>
-    <string name="intro_message">RealTalk (Alpha Release)</string>
+    <string name="intro_message">RealTalk (V2 Release)</string>
     <string name="create_user_string">Create User</string>
     <string name="authenticate_user_string">Login</string>
     <string name="remove_user_string">Delete Account</string>
-    <string name="query_header">Query Results:</string>
-    <string name="query_results">Press Query to display User ID</string>
     <string name="uname_hint">Type user name</string>
-    <string name="query_instr">This tests the database connection which manages RealTalks users\nSimply enter a users name to return get the users id.\n (For Testing Purposes: use UserX where X = 1,2,3,4 etc)</string>
     <string name="pword_hint">Type password</string>
     <string name="title_activity_create_account">CreateAccountActivity</string>
     <string name="hello_world">Hello world!</string>
@@ -58,6 +55,6 @@
     <string name="turn_gps_on">Please turn on a location service providor (wifi/gps/cellular).</string>
     <string name="gps_out_of_service">GPS is out of service.</string>
     <string name="gps_unavailable">GPS is temporarily unavailable.</string>
-    <string name="leaving_room">Leaving room. Please wait...</string>
+    <string name="leaving_room">Leaving room. Please wait.</string>
     <string name="login_failed">Sorry, we failed to log you in.</string>
 </resources>

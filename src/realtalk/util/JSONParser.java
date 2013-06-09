@@ -49,7 +49,7 @@ public class JSONParser {
                 // defaultHttpClient
                 DefaultHttpClient httpclient = new DefaultHttpClient();
                 HttpPost httppost = new HttpPost(stUrl);
-                httppost.setEntity(new UrlEncodedFormEntity(rgparams));
+                httppost.setEntity(new UrlEncodedFormEntity(rgparams, "UTF-8"));
  
                 HttpResponse httpresponse = httpclient.execute(httppost);
                 HttpEntity httpentity = httpresponse.getEntity();

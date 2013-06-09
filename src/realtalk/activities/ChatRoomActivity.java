@@ -279,7 +279,7 @@ public class ChatRoomActivity extends Activity {
 			ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
 			if (networkinfo != null && networkinfo.isConnected()) {
-				Log.d("connectivity", "Connected and attempting to post message");
+				Log.d("connectivity", "Connected and attempting to post message: \"" + messageinfo.stBody() + "\"");
 				RequestResultSet rrs = chatController.rrsPostMessage(userinfo, chatroominfo, messageinfo);
 				Log.d("connectivity", "Message posted");
 				return rrs;
