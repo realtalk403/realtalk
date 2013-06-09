@@ -1,11 +1,9 @@
 package realtalk.activities;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import realtalk.asynctasks.GCMMessageLoader;
 import realtalk.asynctasks.MessageSender;
@@ -219,9 +217,7 @@ public class ChatRoomActivity extends Activity {
                 	textviewTop.setText(stTopText, BufferType.SPANNABLE);
                 }
                 if (textviewBottom != null) {
-                	SimpleDateFormat simpledateformat = new SimpleDateFormat("hh:mm a, M/dd/yyyy", Locale.US);
-                	simpledateformat.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
-                    textviewBottom.setText("\t" + simpledateformat.format(mi.timestampGet()));
+                    textviewBottom.setText("\t" + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(mi.timestampGet()));
                 }
             }
             return convertView;
