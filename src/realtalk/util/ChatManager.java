@@ -3,11 +3,14 @@ package realtalk.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,29 +30,71 @@ public final class ChatManager {
 	//	pmrs	PullMessageResultSet
 	//	crrs	ChatRoomResultSet
 	
-	public static final String URL_QUALIFIER = "http://realtalkserver.herokuapp.com/";
+	public static final String URL_QUALIFIER = CommonUtilities.URL_QUALIFIER;
 	
 	//User servlets
-    public static final String URL_ADD_USER = URL_QUALIFIER+"register";
-    public static final String URL_REMOVE_USER = URL_QUALIFIER+"unregister";
-    public static final String URL_AUTHENTICATE = URL_QUALIFIER+"authenticate";
-    public static final String URL_CHANGE_PASSWORD = URL_QUALIFIER+"changePwd";
-    public static final String URL_CHANGE_ID = URL_QUALIFIER+"changeRegId";
+    public static final String URL_ADD_USER = CommonUtilities.URL_ADD_USER;
+    public static final String URL_REMOVE_USER = CommonUtilities.URL_REMOVE_USER;
+    public static final String URL_AUTHENTICATE = CommonUtilities.URL_AUTHENTICATE;
+    public static final String URL_CHANGE_PASSWORD = CommonUtilities.URL_CHANGE_PASSWORD;
+    public static final String URL_CHANGE_ID = CommonUtilities.URL_CHANGE_ID;
     //Chat room servlets
-    public static final String URL_ADD_ROOM = URL_QUALIFIER+"addRoom";
-    public static final String URL_JOIN_ROOM = URL_QUALIFIER+"joinRoom";
-    public static final String URL_LEAVE_ROOM = URL_QUALIFIER+"leaveRoom";
-    public static final String URL_POST_MESSAGE = URL_QUALIFIER+"post";
-    public static final String URL_GET_RECENT_MESSAGES = URL_QUALIFIER+"pullRecentChat";
-    public static final String URL_GET_ALL_MESSAGES = URL_QUALIFIER + "pullChat";
-    public static final String URL_GET_NEARBY_CHATROOMS = URL_QUALIFIER + "nearbyRooms";
-    public static final String URL_GET_USERS_ROOMS = URL_QUALIFIER + "userRooms";
+    public static final String URL_ADD_ROOM = CommonUtilities.URL_ADD_ROOM;
+    public static final String URL_JOIN_ROOM = CommonUtilities.URL_JOIN_ROOM;
+    public static final String URL_LEAVE_ROOM = CommonUtilities.URL_LEAVE_ROOM;
+    public static final String URL_POST_MESSAGE = CommonUtilities.URL_POST_MESSAGE;
+    public static final String URL_GET_RECENT_MESSAGES = CommonUtilities.URL_GET_RECENT_MESSAGES;
+    public static final String URL_GET_ALL_MESSAGES = CommonUtilities.URL_GET_ALL_MESSAGES;
+    public static final String URL_GET_NEARBY_CHATROOMS = CommonUtilities.URL_GET_NEARBY_CHATROOMS;
+    public static final String URL_GET_USERS_ROOMS = CommonUtilities.URL_GET_USERS_ROOMS;
+    
     
 	/**
 	 * Private contructor prevents this class from being instantiated.
 	 */
     private ChatManager() {
     	throw new UnsupportedOperationException("ChatManager is a utility class and should not be instantiated.");
+    }
+    
+    /**
+     * This method makes a request to the server using the given url and params and parses
+     * the expected JSON response as a JSON Object. If the call fails or if the response is
+     * not valid json, an empty JSON Object is returned.
+     * 
+     * @param stUrl    Url to query from.
+     * @param rgparams Params to use.
+     * @return         JSONObject that describes the response.
+     */
+    private static JSONObject makeRequest(String stUrl, List<NameValuePair> rgparams) {
+    	// Retrieve Stream from URL
+    	InputStream inputstreamResponse = null;
+    	try {
+			inputstreamResponse = HttpUtility.sendPostRequest(stUrl, rgparams);
+		} catch (UnsupportedOperationException e) {
+			e.printStackTrace();
+			return new JSONObject();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return new JSONObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new JSONObject();
+		}
+    	
+    	// Parse Stream to JSON Object
+    	JSONObject jsonobjectResponse = null;
+    	
+    	try {
+			jsonobjectResponse = JSONParser.parseStream(inputstreamResponse);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return new JSONObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new JSONObject();
+		}
+    	
+    	return jsonobjectResponse;
     }
     
     /**
@@ -122,20 +167,20 @@ public final class ChatManager {
      * @return A RequestResultSet containing the result of the request
      */
     private static RequestResultSet rrsPostRequest(List<NameValuePair> rgparam, String stUrl) {
-    	JSONObject json = null;
-    	JSONParser jsonParser = new JSONParser();
-    	json = jsonParser.makeHttpRequest(stUrl, "POST", rgparam);
+
+		JSONObject json = makeRequest(stUrl, rgparam);
         try {
         	boolean fSucceeded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
         	String stErrorCode = fSucceeded ? "NO ERROR MESSAGE" : json.getString(ResponseParameters.PARAMETER_ERROR_CODE);
         	String stErrorMessage = fSucceeded ? "NO ERROR MESSAGE" : json.getString(ResponseParameters.PARAMETER_ERROR_MSG);
-            return new RequestResultSet(fSucceeded, stErrorCode, stErrorMessage);
+        	return new RequestResultSet(fSucceeded, stErrorCode, stErrorMessage);
         } catch (JSONException e) {
             e.printStackTrace();
+            //if all else fails, return generic error code and message
+        	return new RequestResultSet(false, "REQUEST FAILED", 
+        			"REQUEST FAILED");
         }
-        //if all else fails, return generic error code and message
-    	return new RequestResultSet(false, "REQUEST FAILED", 
-    			"REQUEST FAILED");
+        
     }
     
     /**
@@ -144,9 +189,7 @@ public final class ChatManager {
      * @return A RequestResultSet containing the result of the request
      */
     private static ChatRoomResultSet crrsPostRequest(List<NameValuePair> rgparam, String stUrl) {
-    	JSONObject json = null;
-    	JSONParser jsonParser = new JSONParser();
-		json = jsonParser.makeHttpRequest(stUrl, "POST", rgparam);
+    	JSONObject json = makeRequest(stUrl, rgparam);
         try {
         	boolean fSucceeded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
         	if (fSucceeded) {
@@ -185,9 +228,7 @@ public final class ChatManager {
      * @return A PullMessageResultSet containing the result of the request
      */
     private static PullMessageResultSet pmrsPostRequest(List<NameValuePair> rgparam, String stUrl) {
-    	JSONObject json = null;
-    	JSONParser jsonParser = new JSONParser();
-		json = jsonParser.makeHttpRequest(stUrl, "POST", rgparam);
+    	JSONObject json = makeRequest(stUrl, rgparam);
         try {
         	boolean fSucceeded = json.getString(RequestParameters.PARAMETER_SUCCESS).equals("true");
         	if (fSucceeded) {

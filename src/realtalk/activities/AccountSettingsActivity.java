@@ -1,28 +1,21 @@
 package realtalk.activities;
 
-import realtalk.controller.ChatController;
-import realtalk.util.ChatManager;
+import realtalk.asynctasks.PwordChanger;
+import realtalk.asynctasks.UserRemover;
 import realtalk.util.CommonUtilities;
-import realtalk.util.RequestResultSet;
 import realtalk.util.UserInfo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.realtalk.R;
 
@@ -143,7 +136,7 @@ public class AccountSettingsActivity extends Activity {
 			alertdialogBadPword.show();
 		} else {
 			String stUsername = sharedpreferencesLoginPrefs.getString("loggedin_username", null);
-			new PwordChanger(new UserInfo(stUsername, CommonUtilities.hash(stOldPword), DEFAULT_ID), 
+			new PwordChanger(this, new UserInfo(stUsername, CommonUtilities.hash(stOldPword), DEFAULT_ID), 
 					this, CommonUtilities.hash(stNewPword)).execute();
 		}
 
@@ -170,7 +163,7 @@ public class AccountSettingsActivity extends Activity {
 			public void onClick(DialogInterface dialog, int id) {
 				String stUsername = sharedpreferencesLoginPrefs.getString("loggedin_username", null);
 				String stPassword = sharedpreferencesLoginPrefs.getString("loggedin_password", null);
-			    new UserRemover(new UserInfo(stUsername, stPassword, DEFAULT_ID), AccountSettingsActivity.this).execute();
+			    new UserRemover(AccountSettingsActivity.this, new UserInfo(stUsername, stPassword, DEFAULT_ID), AccountSettingsActivity.this).execute();
 			}	
 		});
 		
@@ -188,253 +181,33 @@ public class AccountSettingsActivity extends Activity {
 		alertdialogDeleteAcc.show();
 	}
 
-	
-	/**
-	 * Changes a user's password
-	 * 
-	 * @author Brandon
-	 *
-	 */
-	class PwordChanger extends AsyncTask<String, String, RequestResultSet> {
-		private UserInfo userinfo;
-		private Activity activity;
-		private String stNewPword;
-		
-		/**
-		 * Constructs a PwordChanger object
-		 * 
-		 * @param user	the user to add
-		 * @param activity	the activity context
-		 */
-		public PwordChanger(UserInfo user, Activity activity, String stNewPword) {
-			this.userinfo = user;
-			this.activity = activity;
-			this.stNewPword = stNewPword;
-		}
-		
-		/**
-		 * Displays a popup dialogue while changing the user's password
-		 */
-	    @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressdialog = new ProgressDialog(AccountSettingsActivity.this);
-            progressdialog.setMessage("Loading user details. Please wait...");
-            progressdialog.setIndeterminate(false);
-            progressdialog.setCancelable(true);
-            progressdialog.show();
-        }
-	    
-	    /**
-	     * Changes the user's password in database
-	     * @return rrs of the request, null if disconnected
-	     */
-        @Override
-        protected RequestResultSet doInBackground(String... params) {
-            ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
-            
-			if (networkinfo != null && networkinfo.isConnected()) {
-				RequestResultSet requestresultset = ChatManager.rrsChangePassword(userinfo, stNewPword);
-				
-	            if (requestresultset.getfSucceeded()) {
-	                ChatController.getInstance().uninitialize();
-	                UserInfo updatedUserinfo = new UserInfo(userinfo.stUserName(), userinfo.stPassword(), stNewPword);
-	                ChatController.getInstance().fInitialize(updatedUserinfo);
-	            }
-	            
-	            return requestresultset;
-			} else {
-				return null;
-			}
-            
-        }
-        
-        /**
-         * Closes the dialogue, and lets the user know if they have input
-         * invalid fields
-         */
-        @Override
-        protected void onPostExecute(RequestResultSet rrs) {
-            progressdialog.dismiss();
-            if (rrs == null) {
-            	Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
-				toast.show();
-            } else if(!rrs.getfSucceeded()) {
-            	//invalid password pop up
-            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertdialogbuilder.setTitle("Invalid fields");
-				
-				//set dialog message
-				alertdialogbuilder
-					.setMessage("Old password incorrect.  Please try again.")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							dialog.cancel();
-						}	
-				});
-				
-				//create alert dialog
-				AlertDialog alertdialogBadUname = alertdialogbuilder.create();
-				
-				//show alert dialog
-				alertdialogBadUname.show();	
-            } else {
-            	editorLoginPrefs.putString("loggedin_password", stNewPword);
-            	editorLoginPrefs.commit();
-            	
-            	//password change successful pop up
-            	AlertDialog.Builder alertdialogbuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertdialogbuilder.setTitle("Password Changed");
-				
-				//set dialog message
-				alertdialogbuilder
-					.setMessage("Password changed.")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							TextView textviewNewPword = (TextView) findViewById(R.id.newpword);
-				            textviewNewPword.setText("");
-				            TextView textviewConfPword = (TextView) findViewById(R.id.confpword);
-				            textviewConfPword.setText("");
-				            TextView textviewOldPword = (TextView) findViewById(R.id.oldpword);
-				            textviewOldPword.setText("");
-							dialog.cancel();
-						}	
-				});
-				
-				//create alert dialog
-				AlertDialog alertdialogBadUname = alertdialogbuilder.create();
-				
-				//show alert dialog
-				alertdialogBadUname.show();	
-            }
-        }
-	}
-	
-	
-	/**
-	 * Removes a user from the database 
-	 * 
-	 * @author Brandon
-	 *
-	 */
-	class UserRemover extends AsyncTask<String, String, RequestResultSet> {
-		private UserInfo userinfo;
-		private Activity activity;
-		
-		/**
-		 * Constructs a UserRemover object
-		 * 
-		 * @param userinfo the user to remove
-		 * @param activity the activity context
-		 */
-		public UserRemover(UserInfo userinfo, Activity activity) {
-			this.userinfo = userinfo;
-			this.activity = activity;
-		}
-		
-		/**
-		 * Displays a popup dialog while account is being removed
-		 */
-	    @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressdialog = new ProgressDialog(AccountSettingsActivity.this);
-            progressdialog.setMessage("Loading user details. Please wait...");
-            progressdialog.setIndeterminate(false);
-            progressdialog.setCancelable(true);
-            progressdialog.show();
-        }
-	    
-	    /**
-	     * Removes account from the database
-	     * 
-	     * @return rrs with results or null if diconnected
-	     */
-        @Override
-        protected RequestResultSet doInBackground(String... params) {
-        	 ConnectivityManager connectivitymanager = (ConnectivityManager) AccountSettingsActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
-             NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
-             
- 			if (networkinfo != null && networkinfo.isConnected()) {
- 				return ChatManager.rrsRemoveUser(userinfo);
- 			} else {
- 				return null;
- 			}
-        }
-        
-        /**
-         * Prompts the user that their account has been deleted and redirects them to login page
-         */
-        @Override
-        protected void onPostExecute(RequestResultSet rrs) {
-        	progressdialog.dismiss();
-        	if (rrs == null) {
-        		Toast toast = Toast.makeText(getApplicationContext(), R.string.network_failed, Toast.LENGTH_LONG);
-				toast.show();
-        	} else if(rrs.getfSucceeded()) {
-	        	editorLoginPrefs.clear();
-	        	editorLoginPrefs.commit();
-	        	
-	            progressdialog.dismiss();
-	            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertDialogBuilder.setTitle("Account deleted");
-				
-				//set dialog message
-				alertDialogBuilder
-					.setMessage("Your account has been deleted.")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							dialog.cancel();
-							
-							Intent itLogin = new Intent(activity, LoginActivity.class);
-							itLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-							itLogin.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							ChatController.getInstance().uninitialize();
-							activity.startActivity(itLogin);
-							activity.finish();
-						}	
-				});
-					
-				//create alert dialog
-				AlertDialog alertdialogAccDeleted = alertDialogBuilder.create();
-					
-				//show alert dialog
-				alertdialogAccDeleted.show();	
-        	} else {
-        		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-				//set title
-				alertDialogBuilder.setTitle("Account not deleted");
-				
-				//set dialog message
-				alertDialogBuilder
-					.setMessage("Error.  Your account has not been deleted.")
-					.setCancelable(false)
-					.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							//close the dialog box if this button is clicked
-							dialog.cancel();
-						}	
-				});
-					
-				//create alert dialog
-				AlertDialog alertdialogAccNotDeleted = alertDialogBuilder.create();
-					
-				//show alert dialog
-				alertdialogAccNotDeleted.show();
-        	}
-			
-        }
-	}
+    /**
+     * @return the progressdialog
+     */
+    public ProgressDialog getProgressdialog() {
+        return progressdialog;
+    }
+
+    /**
+     * @param progressdialog the progressdialog to set
+     */
+    public void setProgressdialog(ProgressDialog progressdialog) {
+        this.progressdialog = progressdialog;
+    }
+
+    /**
+     * @return the editorLoginPrefs
+     */
+    public Editor getEditorLoginPrefs() {
+        return editorLoginPrefs;
+    }
+
+    /**
+     * @param editorLoginPrefs the editorLoginPrefs to set
+     */
+    public void setEditorLoginPrefs(Editor editorLoginPrefs) {
+        this.editorLoginPrefs = editorLoginPrefs;
+    }
 }
 
 
