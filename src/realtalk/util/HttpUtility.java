@@ -13,6 +13,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 /**
  * Utility class used for making POST or GET requests to a given Url.
@@ -57,7 +60,10 @@ public final class HttpUtility {
 	 */
 	public static InputStream sendPostRequest(String stUrl, List<NameValuePair> rgparams) 
 			throws IOException, UnsupportedOperationException, ClientProtocolException {
-		DefaultHttpClient httpclient = new DefaultHttpClient();
+        final HttpParams httpParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
+        
+		DefaultHttpClient httpclient = new DefaultHttpClient(httpParams);
         HttpPost httppost = new HttpPost(stUrl);
         httppost.setEntity(new UrlEncodedFormEntity(rgparams, "UTF-8"));
 
