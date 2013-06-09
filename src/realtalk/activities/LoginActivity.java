@@ -97,7 +97,7 @@ public class LoginActivity extends Activity {
 		
 		//if user is already logged in, redirect to select room page
 		if(fLoggedIn) {
-			UserInfo userinfo = new UserInfo(stUsername, CommonUtilities.hash(stPassword), getStRegisteredId());
+			UserInfo userinfo = new UserInfo(stUsername, stPassword, getStRegisteredId());
 			updateRegId(userinfo);
 		} else {			
 			fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
