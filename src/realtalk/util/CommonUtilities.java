@@ -13,6 +13,27 @@ import android.content.Intent;
  */
 public final class CommonUtilities {
 	
+	// Server URLs (Default: URL_QUALIFIER
+	public static final String URL_QUALIFIER = "http://realtalkserver.herokuapp.com/";
+	public static final String URL_QUALIFIER_ALPHA = "http://realtalkserveralpha.herokuapp.com/";
+	public static final String URL_QUALIFIER_BETA = "http://realtalkserverbeta.herokuapp.com/";
+	
+	//User servlets
+    public static final String URL_ADD_USER = URL_QUALIFIER+"register";
+    public static final String URL_REMOVE_USER = URL_QUALIFIER+"unregister";
+    public static final String URL_AUTHENTICATE = URL_QUALIFIER+"authenticate";
+    public static final String URL_CHANGE_PASSWORD = URL_QUALIFIER+"changePwd";
+    public static final String URL_CHANGE_ID = URL_QUALIFIER+"changeRegId";
+    //Chat room servlets
+    public static final String URL_ADD_ROOM = URL_QUALIFIER+"addRoom";
+    public static final String URL_JOIN_ROOM = URL_QUALIFIER+"joinRoom";
+    public static final String URL_LEAVE_ROOM = URL_QUALIFIER+"leaveRoom";
+    public static final String URL_POST_MESSAGE = URL_QUALIFIER+"post";
+    public static final String URL_GET_RECENT_MESSAGES = URL_QUALIFIER+"pullRecentChat";
+    public static final String URL_GET_ALL_MESSAGES = URL_QUALIFIER + "pullChat";
+    public static final String URL_GET_NEARBY_CHATROOMS = URL_QUALIFIER + "nearbyRooms";
+    public static final String URL_GET_USERS_ROOMS = URL_QUALIFIER + "userRooms";
+	
 	/**
 	 * Private contructor prevents this class from being instantiated.
 	 */

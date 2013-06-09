@@ -34,11 +34,11 @@ import com.realtalk.R;
  */
 public class LoginActivity extends Activity {
     
-	public String stRegisteredId = "";
-    public ProgressDialog progressdialog;
+	private String stRegisteredId = "";
+    private ProgressDialog progressdialog;
     private CheckBox checkboxRememberMe;
     private SharedPreferences sharedpreferencesLoginPrefs;
-    public Editor editorLoginPrefs;
+    private Editor editorLoginPrefs;
     private Boolean fRememberMe;
     private EditText edittextUser;
     private EditText edittextPword;
@@ -65,17 +65,17 @@ public class LoginActivity extends Activity {
 		if (stRegId.equals("")) {
 		    // Register device for the first time.
 		    // Wait for registration result to complete.
-		    progressdialog = new ProgressDialog(LoginActivity.this);
-            progressdialog.setMessage("Initializing RealTalk resources for the first time. Please wait.....");
-            progressdialog.setIndeterminate(false);
-            progressdialog.setCancelable(true);
-            progressdialog.show();
+		    setProgressdialog(new ProgressDialog(LoginActivity.this));
+            getProgressdialog().setMessage("Initializing RealTalk resources for the first time. Please wait.....");
+            getProgressdialog().setIndeterminate(false);
+            getProgressdialog().setCancelable(true);
+            getProgressdialog().show();
             
             // Register Device
             GCMRegistrar.register(this, GCMUtilities.SENDER_ID);
 		} else {
 		    // Already registered on GCM server
-		    stRegisteredId = stRegId;
+		    setStRegisteredId(stRegId);
 		}
 		
 		// For remembering username/password and if user is already logged in
@@ -83,7 +83,7 @@ public class LoginActivity extends Activity {
 		edittextPword = (EditText) findViewById(R.id.editPword);
 		checkboxRememberMe = (CheckBox)findViewById(R.id.rememberme );
 		sharedpreferencesLoginPrefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
-		editorLoginPrefs = sharedpreferencesLoginPrefs.edit();
+		setEditorLoginPrefs(sharedpreferencesLoginPrefs.edit());
 		
 		//Uncomment line below if you need to clear preferences and start at the login page again
 		
@@ -96,7 +96,7 @@ public class LoginActivity extends Activity {
 		
 		//if user is already logged in, redirect to select room page
 		if(fLoggedIn) {
-			UserInfo userinfo = new UserInfo(stUsername, CommonUtilities.hash(stPassword), stRegisteredId);
+			UserInfo userinfo = new UserInfo(stUsername, CommonUtilities.hash(stPassword), getStRegisteredId());
 			updateRegId(userinfo);
 		} else {			
 			fRememberMe = sharedpreferencesLoginPrefs.getBoolean("saveLogin", false);
@@ -168,19 +168,19 @@ public class LoginActivity extends Activity {
 	    } else {
 	    	if(checkboxRememberMe.isChecked()) {
 	    		//stores login info if "Remember Me" checkbox is checked
-	    		editorLoginPrefs.putBoolean("saveLogin", true);
-	    		editorLoginPrefs.putString("savedUsername", stUsername);
-	    		editorLoginPrefs.putString("savedPassword", stPword);
-	    		editorLoginPrefs.commit();
+	    		getEditorLoginPrefs().putBoolean("saveLogin", true);
+	    		getEditorLoginPrefs().putString("savedUsername", stUsername);
+	    		getEditorLoginPrefs().putString("savedPassword", stPword);
+	    		getEditorLoginPrefs().commit();
 	    	} else {
 	    		//clears existing login info if "Remember Me" checkbox is not checked
-	    		editorLoginPrefs.putBoolean("saveLogin", false);
-	    		editorLoginPrefs.putString("savedUsername", null);
-	    		editorLoginPrefs.putString("savedPassword", null);
-	    		editorLoginPrefs.commit();
+	    		getEditorLoginPrefs().putBoolean("saveLogin", false);
+	    		getEditorLoginPrefs().putString("savedUsername", null);
+	    		getEditorLoginPrefs().putString("savedPassword", null);
+	    		getEditorLoginPrefs().commit();
 	    	}
 	    	new Authenticator(this, new UserInfo(stUsername, 
-	    			CommonUtilities.hash(stPword), stRegisteredId), this).execute();
+	    			CommonUtilities.hash(stPword), getStRegisteredId()), this).execute();
 	    }
 	    
 	}
@@ -195,6 +195,51 @@ public class LoginActivity extends Activity {
 	}
 	
 	/**
+     * @return the progressdialog
+     */
+    public ProgressDialog getProgressdialog() {
+        return progressdialog;
+    }
+
+
+    /**
+     * @param progressdialog the progressdialog to set
+     */
+    public void setProgressdialog(ProgressDialog progressdialog) {
+        this.progressdialog = progressdialog;
+    }
+
+    /**
+     * @return the editorLoginPrefs
+     */
+    public Editor getEditorLoginPrefs() {
+        return editorLoginPrefs;
+    }
+
+
+    /**
+     * @param editorLoginPrefs the editorLoginPrefs to set
+     */
+    public void setEditorLoginPrefs(Editor editorLoginPrefs) {
+        this.editorLoginPrefs = editorLoginPrefs;
+    }
+
+    /**
+     * @return the stRegisteredId
+     */
+    public String getStRegisteredId() {
+        return stRegisteredId;
+    }
+
+
+    /**
+     * @param stRegisteredId the stRegisteredId to set
+     */
+    public void setStRegisteredId(String stRegisteredId) {
+        this.stRegisteredId = stRegisteredId;
+    }
+
+    /**
 	 * Receiver that handles a registration intent from GCM.
 	 */
 	private final BroadcastReceiver handleRegisterReceiver =
@@ -204,7 +249,7 @@ public class LoginActivity extends Activity {
                     String stResultCode = intent.getExtras().getString(GCMUtilities.RESULT_MESSAGE);
                     int iText = 0;
                     if (stResultCode.equals(GCMUtilities.SUCCESS)) {
-                        stRegisteredId = intent.getExtras().getString(GCMUtilities.GCM_REG_ID);
+                        setStRegisteredId(intent.getExtras().getString(GCMUtilities.GCM_REG_ID));
                         iText = R.string.init_complete;
                     } else {
                         // Registration failed. Alert user and lock app asking them to try again later.
@@ -216,7 +261,7 @@ public class LoginActivity extends Activity {
                     }
                     Toast toastRegistration = Toast.makeText(context, iText, Toast.LENGTH_SHORT);
                     toastRegistration.show();
-                    progressdialog.dismiss();
+                    getProgressdialog().dismiss();
                 }	    
 	};
 }

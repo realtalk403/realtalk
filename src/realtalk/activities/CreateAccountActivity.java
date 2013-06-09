@@ -26,7 +26,7 @@ public class CreateAccountActivity extends Activity {
 	private static final String DEFAULT_ID = "someID";
 	private static final int USERNAME_MAX_LENGTH = 20;
 	private static final int PASSWORD_MAX_LENGTH = 20;
-	public ProgressDialog progressdialog;
+	private ProgressDialog progressdialog;
 	
 	/**
 	 * Sets up the activity
@@ -169,4 +169,18 @@ public class CreateAccountActivity extends Activity {
 			new UserAdder(this, new UserInfo(stUsername, CommonUtilities.hash(stPword), DEFAULT_ID), this).execute();
 		}
 	}
+
+    /**
+     * @return the progressdialog
+     */
+    public ProgressDialog getProgressdialog() {
+        return progressdialog;
+    }
+
+    /**
+     * @param progressdialog the progressdialog to set
+     */
+    public void setProgressdialog(ProgressDialog progressdialog) {
+        this.progressdialog = progressdialog;
+    }
 }

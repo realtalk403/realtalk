@@ -29,7 +29,8 @@ import com.realtalk.R;
  * @author Jordan Hazari
  *
  */
-@SuppressLint("NewApi") public class ChatRoomActivityTest extends ActivityInstrumentationTestCase2<ChatRoomActivity> {
+ @SuppressLint("NewApi") 
+ public class ChatRoomActivityTest extends ActivityInstrumentationTestCase2<ChatRoomActivity> {
 	private Solo solo;
 	
 	public ChatRoomActivityTest() {
@@ -57,7 +58,7 @@ import com.realtalk.R;
 	 */
 	@Test
 	public void testButtonsAndTextDisplay() {
-	    solo.sleep(10000);
+	    solo.sleep(30000);
 		assertTrue(solo.searchButton("Send"));
 		assertTrue(solo.searchButton("Leave Room"));
 		assertFalse(solo.searchButton("WRONG_BUTTON"));
@@ -68,7 +69,7 @@ import com.realtalk.R;
 	 */
 	@Test
 	public void testSendingMessages() {
-	    solo.sleep(10000);
+	    solo.sleep(30000);
 		int cMessageInfo = ChatControllerStub.getInstance().getMessagesFromChatRoom("testroom").size();
 		sendMessage("test message");
 		solo.sleep(30000);

@@ -33,11 +33,11 @@ public class RoomLeaverFromRoom extends AsyncTask<String, String, Boolean> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        this.chatRoomActivity.progressdialog = new ProgressDialog(this.chatRoomActivity);
-        this.chatRoomActivity.progressdialog.setMessage(this.chatRoomActivity.getApplicationContext().getString(R.string.leaving_room));
-        this.chatRoomActivity.progressdialog.setIndeterminate(false);
-        this.chatRoomActivity.progressdialog.setCancelable(true);
-        this.chatRoomActivity.progressdialog.show();
+        this.chatRoomActivity.setProgressdialog(new ProgressDialog(this.chatRoomActivity));
+        this.chatRoomActivity.getProgressdialog().setMessage(this.chatRoomActivity.getApplicationContext().getString(R.string.leaving_room));
+        this.chatRoomActivity.getProgressdialog().setIndeterminate(false);
+        this.chatRoomActivity.getProgressdialog().setCancelable(true);
+        this.chatRoomActivity.getProgressdialog().show();
     }
     
     /**
@@ -49,7 +49,7 @@ public class RoomLeaverFromRoom extends AsyncTask<String, String, Boolean> {
         NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
         
 		if (networkinfo != null && networkinfo.isConnected()) {
-			Boolean fLeaveRoom = this.chatRoomActivity.chatController.leaveRoom(chatroominfo);
+			Boolean fLeaveRoom = this.chatRoomActivity.getChatController().leaveRoom(chatroominfo);
 			return fLeaveRoom;
 		} else {
 			return false;
@@ -58,15 +58,15 @@ public class RoomLeaverFromRoom extends AsyncTask<String, String, Boolean> {
     
     @Override
     protected void onPostExecute(Boolean success) {
-        if (this.chatRoomActivity.progressdialog != null) {
-            this.chatRoomActivity.progressdialog.dismiss();
+        if (this.chatRoomActivity.getProgressdialog() != null) {
+            this.chatRoomActivity.getProgressdialog().dismiss();
         }
         
         if (!success) {
         	Toast toast = Toast.makeText(this.chatRoomActivity.getApplicationContext(), R.string.leave_room_failed, Toast.LENGTH_SHORT);
 			toast.show();
         } else {
-            if (!this.chatRoomActivity.fDebug) {
+            if (!this.chatRoomActivity.isfDebug()) {
                 Intent itViewRooms = new Intent(this.chatRoomActivity, SelectRoomActivity.class);
 	  		    this.chatRoomActivity.startActivity(itViewRooms);
 	  		    this.chatRoomActivity.finish();
