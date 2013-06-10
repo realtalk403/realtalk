@@ -214,8 +214,7 @@ public final class ChatManager {
         			ResponseParameters.RESPONSE_MESSAGE_ERROR);
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
         	e.printStackTrace();
         }
         //if all else fails, return generic error code and message
