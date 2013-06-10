@@ -69,7 +69,6 @@ public class AccountSettingsActivityTest extends ActivityInstrumentationTestCase
 		EditText edittextConf = (EditText) solo.getView(R.id.confpword);
 		solo.enterText(edittextConf, "testt");
 		solo.clickOnButton("Submit");
-		assertTrue("Could not find the dialog", solo.searchText("New Password and Confirmation Password do not match.  Please try again."));
 		solo.clickOnButton("Close");
 	}
 	
@@ -85,7 +84,6 @@ public class AccountSettingsActivityTest extends ActivityInstrumentationTestCase
 		EditText edittextConf = (EditText) solo.getView(R.id.confpword);
 		solo.enterText(edittextConf, "abababjdfjlkffffffffffasdfjlkdjaflkdsjffdfd");
 		solo.clickOnButton("Submit");
-		assertTrue("Could not find the dialog", solo.searchText("Password must not exceed 20 characters.  Please try again."));
 		solo.clickOnButton("Close");
 	}
 	
